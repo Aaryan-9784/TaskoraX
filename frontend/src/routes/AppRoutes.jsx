@@ -21,6 +21,8 @@ import TasksPage from '../pages/TasksPage';
 import AnalyticsPage from '../pages/AnalyticsPage';
 import ProfilePage from '../pages/ProfilePage';
 import SettingsPage from '../pages/SettingsPage';
+import ProjectsPage from '../pages/ProjectsPage';
+import ProjectDetailsPage from '../pages/ProjectDetailsPage';
 
 const AppRoutes = () => {
   return (
@@ -41,6 +43,8 @@ const AppRoutes = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/tasks" element={<TasksPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/projects/:id" element={<ProjectDetailsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
