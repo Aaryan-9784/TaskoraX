@@ -67,7 +67,9 @@ const AuthInput = forwardRef(({
           onBlur={handleBlur}
           className={cn(
             "w-full h-full bg-transparent outline-none text-text-primary text-sm font-medium px-4 pt-4 pb-1",
-            Icon ? "pl-11" : ""
+            "placeholder:transition-opacity placeholder:duration-200",
+            Icon ? "pl-11" : "",
+            isActive ? "placeholder:opacity-100" : "placeholder:opacity-0"
           )}
           {...props}
         />

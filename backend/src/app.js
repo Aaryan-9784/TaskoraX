@@ -11,6 +11,8 @@ const errorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/AppError');
 
 const app = express();
+const session = require('express-session');
+const passport = require('./config/passport');
 
 // 1. GLOBAL MIDDLEWARES
 
@@ -49,6 +51,17 @@ app.use(mongoSanitize());
 
 // Data sanitization against XSS
 app.use(xss());
+
+// Passport and Session Initialization
+app.use(
+  session({
+    secret: process.env.JWT_SECRET || 'fallback_secret',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // 2. ROUTES
 app.use('/api', routes);

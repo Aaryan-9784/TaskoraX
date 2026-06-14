@@ -12,6 +12,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
 import PasswordResetSuccess from '../pages/PasswordResetSuccess';
 import ResetLinkExpired from '../pages/ResetLinkExpired';
+import OAuthCallback from '../pages/OAuthCallback';
 import NotFoundPage from '../pages/NotFoundPage';
 
 // Protected Pages
@@ -31,6 +32,7 @@ const AppRoutes = () => {
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/reset-success" element={<PasswordResetSuccess />} />
       <Route path="/reset-expired" element={<ResetLinkExpired />} />
+      <Route path="/oauth-callback" element={<OAuthCallback />} />
 
       {/* Protected App Routes */}
       <Route element={<ProtectedRoute />}>

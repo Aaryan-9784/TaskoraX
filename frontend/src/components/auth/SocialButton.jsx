@@ -13,9 +13,15 @@ const SocialButton = ({
   const handleClick = async (e) => {
     if (disabled || loading) return;
     setLoading(true);
-    try {
-      if (onClick) await onClick(e);
-    } finally {
+    
+    // Determine the backend URL (you could use an env variable here if available)
+    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    
+    if (provider === 'google') {
+      window.location.href = `${backendUrl}/auth/google`;
+    } else if (provider === 'github') {
+      window.location.href = `${backendUrl}/auth/github`;
+    } else {
       setLoading(false);
     }
   };

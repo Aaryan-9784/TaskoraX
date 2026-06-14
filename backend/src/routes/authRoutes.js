@@ -11,4 +11,21 @@ router.post('/refresh', authController.refreshToken);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password/:token', authController.resetPassword);
 
+const passport = require('passport');
+const oauthController = require('../controllers/oauthController');
+
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login', session: false }),
+  oauthController.oauthCallback
+);
+
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
+router.get(
+  '/github/callback',
+  passport.authenticate('github', { failureRedirect: '/login', session: false }),
+  oauthController.oauthCallback
+);
+
 module.exports = router;

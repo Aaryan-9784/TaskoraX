@@ -46,13 +46,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Logo area */}
         <div className="flex items-center justify-between px-5 h-16 border-b border-border">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-soft">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
+            <img src="/favicon.svg" alt="TaskoraX Logo" className="w-8 h-8 rounded-lg shadow-soft" />
             <span className="text-xl font-extrabold font-display text-text-primary tracking-tight">
-              Taskora<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-indigo-500">X</span>
+              Taskora<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-primary-700">X</span>
             </span>
           </div>
           <button
@@ -74,7 +70,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 group ${
                   isActive
-                    ? 'bg-gradient-to-r from-primary-50 to-indigo-50/30 text-primary-700 shadow-[inset_4px_0_0_0_rgba(59,130,246,1)]'
+                    ? 'bg-gradient-to-r from-primary-50 to-primary-100/30 text-primary-700 shadow-[inset_4px_0_0_0_rgba(217,59,59,1)]'
                     : 'text-text-secondary hover:text-text-primary hover:bg-surface-secondary hover:translate-x-1'
                 }`
               }

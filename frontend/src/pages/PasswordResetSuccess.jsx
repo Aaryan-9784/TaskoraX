@@ -19,11 +19,7 @@ const PasswordResetSuccess = () => {
         >
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
-            <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center shadow-soft">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
+            <img src="/favicon.svg" alt="TaskoraX Logo" className="w-10 h-10 rounded-xl shadow-soft" />
             <span className="text-2xl font-bold font-display tracking-tight text-text-primary">
               Taskora<span className="text-primary-500">X</span>
             </span>

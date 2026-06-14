@@ -2,11 +2,52 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
-const AuthSidebar = () => {
+const AuthSidebar = ({ type = 'login' }) => {
+  const content = {
+    login: {
+      title: (
+        <>
+          Welcome back to<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-100 to-white">your workspace.</span>
+        </>
+      ),
+      description: "Log in to pick up right where you left off. Manage projects, track progress, and collaborate seamlessly in a beautifully designed environment.",
+    },
+    register: {
+      title: (
+        <>
+          The premium workspace<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-100 to-white">for modern teams.</span>
+        </>
+      ),
+      description: "Join TaskoraX today. Manage projects, track progress, and collaborate seamlessly in a beautifully designed environment built for speed.",
+    },
+    forgot: {
+      title: (
+        <>
+          Secure your<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-100 to-white">account.</span>
+        </>
+      ),
+      description: "Don't worry, we'll help you get back into your workspace securely and quickly. Follow the instructions to reset your password.",
+    }
+  };
+
+  const currentContent = content[type] || content.login;
+
   return (
-    <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden bg-primary-600">
-      {/* Mesh Gradient / Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-800" />
+    <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden bg-[#0A0A0B]">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 z-0 opacity-60"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?auto=format&fit=crop&w=2000&q=80')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      {/* Gradient Overlay for Brand Colors */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-900/70 via-primary-800/40 to-black/90 z-0" />
       
       {/* Animated Blurred Circles */}
       <motion.div 
@@ -19,7 +60,7 @@ const AuthSidebar = () => {
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div 
-        className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-indigo-500/30 rounded-full mix-blend-overlay filter blur-[100px]"
+        className="absolute bottom-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary-500/30 rounded-full mix-blend-overlay filter blur-[100px]"
         animate={{ 
           x: [0, -30, 0], 
           y: [0, -50, 0],
@@ -49,8 +90,9 @@ const AuthSidebar = () => {
         >
           <Link to="/" className="flex items-center gap-3 w-fit group">
             <div className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] group-hover:bg-white/20 transition-all duration-500">
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              <svg className="w-[26px] h-[26px] text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2 8 C 8 3 16 3 22 8 L 20 10 C 15 6 9 6 4 10 Z" />
+                <path d="M12 8.5 L 17 11.5 L 13 22 H 11 L 7 11.5 Z" />
               </svg>
             </div>
             <span className="text-2xl font-extrabold text-white font-display tracking-tight">
@@ -67,46 +109,14 @@ const AuthSidebar = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <h1 className="text-5xl font-extrabold text-white leading-[1.1] tracking-tight mb-6 font-display">
-              The premium workspace<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-100 to-white">for modern teams.</span>
+              {currentContent.title}
             </h1>
             <p className="text-lg text-primary-100/90 leading-relaxed font-medium mb-10 max-w-lg">
-              Manage projects, track progress, and collaborate seamlessly in a beautifully designed environment built for speed.
+              {currentContent.description}
             </p>
           </motion.div>
 
-          {/* Feature/Stat Cards */}
-          <div className="grid grid-cols-2 gap-4">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:bg-white/15 transition-colors duration-300"
-            >
-              <div className="w-10 h-10 rounded-xl bg-primary-500/50 flex items-center justify-center mb-3">
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-white font-semibold text-lg">Lightning Fast</h3>
-              <p className="text-primary-100/70 text-sm mt-1">Built for speed and performance.</p>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-5 hover:bg-white/15 transition-colors duration-300"
-            >
-              <div className="w-10 h-10 rounded-xl bg-primary-500/50 flex items-center justify-center mb-3">
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h3 className="text-white font-semibold text-lg">Bank-grade Security</h3>
-              <p className="text-primary-100/70 text-sm mt-1">Your data is encrypted and safe.</p>
-            </motion.div>
-          </div>
+
         </div>
 
         {/* Bottom: Trust Indicators & Avatars */}

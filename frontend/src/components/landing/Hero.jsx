@@ -7,28 +7,17 @@ const Hero = () => {
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-        <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-indigo-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-primary-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
         <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-purple-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
       </div>
 
       <div className="page-container">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full glass-panel border-primary-200/50 mb-8 animate-fade-in shadow-sm hover:shadow-md transition-shadow">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-500"></span>
-            </span>
-            <span className="text-sm font-semibold text-primary-700">
-              Now in Public Beta — Free to use
-            </span>
-          </div>
-
           {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-text-primary tracking-tight leading-[1.05] mb-6 animate-fade-in-up font-display">
+          <h1 className="text-5xl sm:text-6xl lg:text-[5rem] xl:text-[6rem] font-extrabold text-text-primary tracking-tight leading-[1.05] mb-8 mt-16 lg:mt-24 animate-fade-in-up font-display">
             Manage Tasks
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-primary-500 to-indigo-500">Like Never Before</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 via-primary-500 to-primary-800">Like Never Before</span>
           </h1>
 
           {/* Subtitle */}
@@ -84,7 +73,7 @@ const Hero = () => {
         </div>
 
         {/* Hero visual — App preview mockup */}
-        <div className="mt-24 max-w-5xl mx-auto animate-fade-in-up hover:-translate-y-2 transition-transform duration-500" style={{ animationDelay: '0.4s' }}>
+        <div className="mt-40 lg:mt-64 max-w-5xl mx-auto animate-fade-in-up hover:-translate-y-2 transition-transform duration-500" style={{ animationDelay: '0.4s' }}>
           <div className="relative rounded-2xl border border-border/40 shadow-2xl shadow-primary-500/10 glass-panel p-2 overflow-hidden">
             {/* Browser chrome */}
             <div className="flex items-center gap-2 px-4 py-3 bg-surface-secondary rounded-t-xl border-b border-border/50">
@@ -100,41 +89,99 @@ const Hero = () => {
               </div>
             </div>
             {/* Fake dashboard preview */}
-            <div className="p-6 bg-surface-secondary min-h-[300px] lg:min-h-[400px]">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                {[
-                  { label: 'Total Tasks', value: '248', color: 'bg-primary-500' },
-                  { label: 'Completed', value: '185', color: 'bg-success-500' },
-                  { label: 'In Progress', value: '42', color: 'bg-warning-500' },
-                  { label: 'Overdue', value: '8', color: 'bg-danger-500' },
-                ].map((stat) => (
-                  <div key={stat.label} className="bg-white rounded-xl p-4 border border-border/50">
-                    <div className={`w-8 h-8 ${stat.color} rounded-lg mb-3 opacity-80`} />
-                    <p className="text-2xl font-bold text-text-primary">{stat.value}</p>
-                    <p className="text-xs text-text-secondary mt-0.5">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <div className="lg:col-span-2 bg-white rounded-xl p-4 border border-border/50 h-48">
-                  <div className="h-3 w-24 bg-gray-200 rounded mb-4" />
-                  <div className="flex items-end gap-2 h-32">
-                    {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
-                      <div key={i} className="flex-1 bg-primary-100 rounded-t-md" style={{ height: `${h}%` }}>
-                        <div className="bg-primary-500 rounded-t-md w-full" style={{ height: '60%' }} />
-                      </div>
-                    ))}
-                  </div>
+            <div className="p-6 bg-surface-primary min-h-[300px] lg:min-h-[400px] rounded-b-xl relative overflow-hidden">
+              {/* Decorative background gradients */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
+
+              {/* Sidebar + Main Content layout illusion */}
+              <div className="flex gap-6 h-full relative z-10">
+                {/* Mini Sidebar Illusion */}
+                <div className="hidden md:flex flex-col gap-4 w-16 border-r border-border/40 pr-4 pt-2">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className={`w-10 h-10 rounded-xl flex items-center justify-center ${i === 1 ? 'bg-primary-50 text-primary-600' : 'text-text-tertiary hover:bg-surface-secondary'}`}>
+                      <div className={`w-5 h-5 rounded-md ${i === 1 ? 'bg-primary-500' : 'bg-gray-300'}`} />
+                    </div>
+                  ))}
                 </div>
-                <div className="bg-white rounded-xl p-4 border border-border/50 h-48">
-                  <div className="h-3 w-20 bg-gray-200 rounded mb-4" />
-                  <div className="space-y-3 mt-2">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-primary-200" />
-                        <div className="h-2.5 bg-gray-100 rounded flex-1" />
+
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col gap-6 pt-2">
+                  {/* Top Header Illusion */}
+                  <div className="flex justify-between items-center mb-2">
+                    <div>
+                      <div className="h-5 w-32 bg-text-primary/10 rounded-md mb-2" />
+                      <div className="h-3 w-48 bg-text-secondary/10 rounded-md" />
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white shadow-sm" />
+                      <div className="w-8 h-8 rounded-full bg-primary-100 border-2 border-white shadow-sm -ml-4" />
+                    </div>
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      { label: 'Active Projects', value: '12', trend: '+2', color: 'from-blue-500 to-indigo-600', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                      { label: 'Tasks Completed', value: '84', trend: '+14%', color: 'from-emerald-400 to-emerald-600', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+                      { label: 'Team Members', value: '24', trend: '+3', color: 'from-orange-400 to-orange-600', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
+                      { label: 'Productivity', value: '92%', trend: '+5%', color: 'from-primary-500 to-primary-700', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
+                    ].map((stat) => (
+                      <div key={stat.label} className="bg-white rounded-2xl p-4 border border-border/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                        <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${stat.color} opacity-5 rounded-bl-full`} />
+                        <div className="flex justify-between items-start mb-4">
+                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white shadow-sm`}>
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d={stat.icon} />
+                            </svg>
+                          </div>
+                          <span className="text-xs font-bold text-success-600 bg-success-50 px-2 py-1 rounded-full">{stat.trend}</span>
+                        </div>
+                        <p className="text-2xl font-extrabold text-text-primary tracking-tight">{stat.value}</p>
+                        <p className="text-xs font-semibold text-text-secondary mt-1">{stat.label}</p>
                       </div>
                     ))}
+                  </div>
+
+                  {/* Bottom Section */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Activity Chart */}
+                    <div className="lg:col-span-2 bg-white rounded-2xl p-5 border border-border/60 shadow-sm flex flex-col">
+                      <div className="flex justify-between items-center mb-6">
+                        <div className="h-4 w-32 bg-text-primary/10 rounded-md" />
+                        <div className="h-4 w-16 bg-primary-100 rounded-md" />
+                      </div>
+                      <div className="flex items-end gap-3 flex-1 h-32">
+                        {[40, 55, 35, 75, 60, 95, 80].map((h, i) => (
+                          <div key={i} className="flex-1 flex flex-col justify-end h-full group">
+                            <div className="w-full bg-primary-50 rounded-t-lg transition-all duration-300 relative group-hover:bg-primary-100" style={{ height: `${h}%` }}>
+                              <div className="absolute bottom-0 w-full bg-gradient-to-t from-primary-600 to-primary-400 rounded-lg shadow-sm transition-all duration-500 group-hover:shadow-md" style={{ height: `${Math.max(30, h - 20)}%` }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Recent Tasks */}
+                    <div className="bg-white rounded-2xl p-5 border border-border/60 shadow-sm flex flex-col">
+                      <div className="h-4 w-28 bg-text-primary/10 rounded-md mb-6" />
+                      <div className="space-y-4 flex-1">
+                        {[
+                          { color: 'bg-primary-500', w: 'w-3/4' },
+                          { color: 'bg-success-500', w: 'w-1/2' },
+                          { color: 'bg-warning-500', w: 'w-5/6' },
+                          { color: 'bg-blue-500', w: 'w-2/3' },
+                        ].map((task, i) => (
+                          <div key={i} className="flex items-center gap-3 p-2 hover:bg-surface-secondary rounded-lg transition-colors cursor-default">
+                            <div className={`w-2.5 h-2.5 rounded-full ${task.color} shadow-sm`} />
+                            <div className="flex-1 space-y-2">
+                              <div className={`h-2.5 bg-text-primary/15 rounded-full ${task.w}`} />
+                              <div className="h-2 bg-text-tertiary/20 rounded-full w-1/3" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
