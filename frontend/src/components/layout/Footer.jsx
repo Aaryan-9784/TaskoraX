@@ -35,7 +35,7 @@ const footerLinks = {
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300">
-      <div className="page-container py-16">
+      <div className="mx-auto px-5 sm:px-8 lg:px-12 xl:px-20 py-16">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           {/* Brand */}
           <div className="col-span-2">

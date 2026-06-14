@@ -7,21 +7,21 @@ const testimonials = [
     role: 'Product Manager at Vercel',
     quote:
       'TaskoraX completely transformed how our team manages sprints. The intuitive interface and powerful analytics have boosted our productivity by 40%.',
-    avatar: '#7C3AED',
+    avatar: 'https://i.pravatar.cc/80?img=5',
   },
   {
     name: 'Marcus Johnson',
     role: 'CTO at StartupFlow',
     quote:
       "We've tried every task management tool out there. TaskoraX is the first one that our entire team actually enjoys using. The design is just beautiful.",
-    avatar: '#2563EB',
+    avatar: 'https://i.pravatar.cc/80?img=8',
   },
   {
     name: 'Emily Rodriguez',
     role: 'Engineering Lead at Stripe',
     quote:
       'The speed and reliability of TaskoraX is unmatched. Our team of 50+ engineers relies on it daily, and it has never let us down.',
-    avatar: '#059669',
+    avatar: 'https://i.pravatar.cc/80?img=9',
   },
 ];
 
@@ -77,12 +77,11 @@ const Testimonials = () => {
 
               {/* Author */}
               <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                  style={{ backgroundColor: t.avatar }}
-                >
-                  {t.name.charAt(0)}
-                </div>
+                <img
+                  src={t.avatar}
+                  alt={t.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
                 <div>
                   <p className="text-sm font-semibold text-text-primary">
                     {t.name}

@@ -47,14 +47,13 @@ const Hero = () => {
           {/* Social proof */}
           <div className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             <div className="flex -space-x-3">
-              {['#7C3AED', '#2563EB', '#0891B2', '#059669', '#D97706'].map((color, i) => (
-                <div
+              {[11, 12, 16, 25, 32].map((imgId, i) => (
+                <img
                   key={i}
-                  className="w-10 h-10 rounded-full border-[3px] border-white flex items-center justify-center text-white text-xs font-bold"
-                  style={{ backgroundColor: color }}
-                >
-                  {String.fromCharCode(65 + i)}
-                </div>
+                  src={`https://i.pravatar.cc/80?img=${imgId}`}
+                  alt="User"
+                  className="w-10 h-10 rounded-full border-[3px] border-white object-cover"
+                />
               ))}
             </div>
             <div className="text-left">

@@ -9,12 +9,12 @@ const LandingNavbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-border/40 transition-all duration-300">
-      <div className="page-container">
-        <div className="flex items-center justify-between h-16">
+      <div className="mx-auto px-5 sm:px-8 lg:px-12 xl:px-20">
+        <div className="flex items-center justify-between h-16 md:h-18 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <img src="/favicon.svg" alt="TaskoraX Logo" className="w-8 h-8 rounded-lg shadow-soft group-hover:shadow-glow group-hover:scale-105 transition-all duration-300" />
-            <span className="text-xl font-extrabold font-display text-text-primary tracking-tight">
+          <Link to="/" className="flex items-center gap-2.5 lg:gap-3 group">
+            <img src="/favicon.svg" alt="TaskoraX Logo" className="w-8 h-8 lg:w-9 lg:h-9 rounded-lg shadow-soft group-hover:shadow-glow group-hover:scale-105 transition-all duration-300" />
+            <span className="text-xl lg:text-2xl font-extrabold font-display text-text-primary tracking-tight">
               Taskora<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-primary-700">X</span>
             </span>
           </Link>
