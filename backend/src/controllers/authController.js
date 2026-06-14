@@ -86,26 +86,45 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
   
   const html = `
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: 'Inter', sans-serif; background-color: #f9fafb; border-radius: 10px;">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #111827; font-size: 28px; font-weight: 800; margin: 0;">Taskora<span style="color: #4f46e5;">X</span></h1>
+    <div style="max-width: 600px; margin: 0 auto; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color: #f8fafc;">
+      <!-- Gradient top bar -->
+      <div style="height: 5px; background: linear-gradient(90deg, #d93b3b, #a31919); border-radius: 10px 10px 0 0;"></div>
+      
+      <!-- Header -->
+      <div style="text-align: center; padding: 36px 20px 24px;">
+        <h1 style="color: #0f172a; font-size: 30px; font-weight: 800; margin: 0; letter-spacing: -0.5px;">Taskora<span style="color: #d93b3b;">X</span></h1>
       </div>
-      <div style="background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
-        <h2 style="color: #1f2937; font-size: 20px; margin-top: 0;">Reset Your Password</h2>
-        <p style="color: #4b5563; line-height: 1.6; font-size: 16px;">
-          You requested a password reset. Click the button below to choose a new password. 
-          This link is only valid for <strong>15 minutes</strong>.
+
+      <!-- Main Card -->
+      <div style="background-color: #ffffff; margin: 0 20px; padding: 36px 32px; border-radius: 12px; box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 0 3px rgba(0, 0, 0, 0.02); border-left: 4px solid #d93b3b;">
+        <h2 style="color: #0f172a; font-size: 22px; font-weight: 700; margin: 0 0 16px 0; letter-spacing: -0.3px;">Reset Your Password</h2>
+        <p style="color: #475569; line-height: 1.7; font-size: 15px; margin: 0 0 8px 0;">
+          You requested a password reset. Click the button below to choose a new password.
         </p>
-        <div style="text-align: center; margin: 30px 0;">
-          <a href="${resetURL}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px; display: inline-block;">Reset Password</a>
+        <p style="color: #475569; line-height: 1.7; font-size: 15px; margin: 0 0 28px 0;">
+          This link is only valid for <strong style="color: #0f172a;">15 minutes</strong>.
+        </p>
+        
+        <!-- CTA Button -->
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${resetURL}" style="background: linear-gradient(135deg, #d93b3b, #a31919); color: #ffffff; padding: 14px 36px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; display: inline-block; letter-spacing: 0.3px; box-shadow: 0 4px 14px rgba(217, 59, 59, 0.35);">Reset Password</a>
         </div>
-        <p style="color: #6b7280; font-size: 14px; margin-bottom: 0;">
+
+        <!-- Divider -->
+        <div style="border-top: 1px solid #e2e8f0; margin: 28px 0 20px;"></div>
+
+        <p style="color: #94a3b8; font-size: 13px; line-height: 1.6; margin: 0;">
           If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.
         </p>
       </div>
-      <div style="text-align: center; margin-top: 20px;">
-        <p style="color: #9ca3af; font-size: 12px;">
+
+      <!-- Footer -->
+      <div style="text-align: center; padding: 28px 20px 32px;">
+        <p style="color: #94a3b8; font-size: 12px; margin: 0 0 4px 0; font-weight: 500;">
           Secure Message from TaskoraX Support
+        </p>
+        <p style="color: #cbd5e1; font-size: 11px; margin: 0;">
+          © ${new Date().getFullYear()} TaskoraX · All rights reserved
         </p>
       </div>
     </div>

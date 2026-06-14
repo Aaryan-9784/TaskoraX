@@ -30,6 +30,15 @@ const AuthSidebar = ({ type = 'login' }) => {
         </>
       ),
       description: "Don't worry, we'll help you get back into your workspace securely and quickly. Follow the instructions to reset your password.",
+    },
+    reset: {
+      title: (
+        <>
+          Create a new<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-100 to-white">secure password.</span>
+        </>
+      ),
+      description: "You're almost there. Choose a strong, unique password to keep your workspace protected. Once updated, you'll be back in action.",
     }
   };
 

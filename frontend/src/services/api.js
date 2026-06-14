@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getToken, getRefreshToken, saveTokens, clearTokens } from '../utils/storage';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
@@ -11,7 +12,7 @@ const api = axios.create({
 // Request interceptor — attach token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('taskorax_token');
+    const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,7 +31,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem('taskorax_refresh_token');
+        const refreshToken = getRefreshToken();
         if (!refreshToken) throw new Error('No refresh token');
 
         // Attempt to refresh
@@ -39,17 +40,16 @@ api.interceptors.response.use(
           { refreshToken }
         );
 
-        // Store new tokens
-        localStorage.setItem('taskorax_token', data.token);
-        localStorage.setItem('taskorax_refresh_token', data.refreshToken);
+        // Store new tokens (preserve the current storage type)
+        const storageType = localStorage.getItem('taskorax_storage_type');
+        saveTokens(data.token, data.refreshToken, storageType !== 'session');
 
         // Update header and retry
         originalRequest.headers.Authorization = `Bearer ${data.token}`;
         return api(originalRequest);
       } catch (refreshError) {
         // Refresh failed, logout user
-        localStorage.removeItem('taskorax_token');
-        localStorage.removeItem('taskorax_refresh_token');
+        clearTokens();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }

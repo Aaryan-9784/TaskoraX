@@ -6,6 +6,7 @@ import AuthInput from '../components/auth/AuthInput';
 import AuthButton from '../components/auth/AuthButton';
 import { HiOutlineEnvelope, HiArrowLeft } from 'react-icons/hi2';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -26,9 +27,11 @@ const ForgotPassword = () => {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/forgot-password`, { email });
       setSuccess(true);
+      toast.success('Reset link sent! Check your inbox.');
       setLoading(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send reset link. Please try again.');
+      toast.error(err.response?.data?.message || 'Failed to send reset link.');
       setLoading(false);
     }
   };

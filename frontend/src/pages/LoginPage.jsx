@@ -8,11 +8,13 @@ import PasswordField from '../components/auth/PasswordField';
 import AuthButton from '../components/auth/AuthButton';
 import SocialButton from '../components/auth/SocialButton';
 import { HiOutlineEnvelope } from 'react-icons/hi2';
+import toast from 'react-hot-toast';
 
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -28,13 +30,15 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await login(form.email, form.password);
+      await login(form.email, form.password, rememberMe);
       setSuccess(true);
+      toast.success('Welcome back! Redirecting...');
       setTimeout(() => {
         navigate('/dashboard');
       }, 800);
     } catch (err) {
       setError(err.message || 'Failed to login');
+      toast.error(err.message || 'Login failed. Please try again.');
       setLoading(false);
     }
   };
@@ -122,6 +126,8 @@ const LoginPage = () => {
                   <div className="relative flex items-center justify-center w-5 h-5">
                     <input
                       type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
                       className="peer appearance-none w-5 h-5 border-2 border-text-tertiary rounded-md checked:bg-primary-500 checked:border-primary-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:ring-offset-2"
                     />
                     <svg

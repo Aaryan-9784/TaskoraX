@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
+import { saveTokens, getToken, clearTokens } from '../utils/storage';
 
 const AuthContext = createContext();
 
@@ -9,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('taskorax_token');
+      const token = getToken();
       if (token) {
         try {
           // Fetch current user from backend using token via api interceptor
@@ -17,8 +18,7 @@ export const AuthProvider = ({ children }) => {
           setUser(data.data.user);
         } catch (error) {
           console.error('Failed to authenticate token', error);
-          localStorage.removeItem('taskorax_token');
-          localStorage.removeItem('taskorax_refresh_token');
+          clearTokens();
         }
       }
       setLoading(false);
@@ -27,11 +27,10 @@ export const AuthProvider = ({ children }) => {
     initAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = true) => {
     try {
       const { data } = await api.post('/auth/login', { email, password });
-      localStorage.setItem('taskorax_token', data.token);
-      localStorage.setItem('taskorax_refresh_token', data.refreshToken);
+      saveTokens(data.token, data.refreshToken, rememberMe);
       setUser(data.data.user);
       return data;
     } catch (error) {
@@ -42,8 +41,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     try {
       const { data } = await api.post('/auth/register', { name, email, password });
-      localStorage.setItem('taskorax_token', data.token);
-      localStorage.setItem('taskorax_refresh_token', data.refreshToken);
+      saveTokens(data.token, data.refreshToken, true); // new accounts always remember
       setUser(data.data.user);
       return data;
     } catch (error) {
@@ -64,8 +62,7 @@ export const AuthProvider = ({ children }) => {
   const changePassword = async (passwordCurrent, password) => {
     try {
       const { data } = await api.put('/users/updateMyPassword', { passwordCurrent, password });
-      localStorage.setItem('taskorax_token', data.token);
-      localStorage.setItem('taskorax_refresh_token', data.refreshToken);
+      saveTokens(data.token, data.refreshToken, true);
       setUser(data.data.user);
       return data;
     } catch (error) {
@@ -74,8 +71,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('taskorax_token');
-    localStorage.removeItem('taskorax_refresh_token');
+    clearTokens();
     setUser(null);
   };
 

@@ -4,6 +4,7 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import { useTask } from '../../context/TaskContext';
 import { TASK_STATUS, TASK_PRIORITY } from '../../utils/constants';
+import toast from 'react-hot-toast';
 
 const CreateTaskModal = ({ isOpen, onClose }) => {
   const { addTask } = useTask();
@@ -31,12 +32,17 @@ const CreateTaskModal = ({ isOpen, onClose }) => {
     if (!validate()) return;
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 500));
-    addTask(form);
-    setLoading(false);
-    setForm({ title: '', description: '', priority: 'Medium', status: 'Todo', dueDate: '' });
-    setErrors({});
-    onClose();
+    try {
+      await addTask(form);
+      toast.success('Task created successfully!');
+      setForm({ title: '', description: '', priority: 'Medium', status: 'Todo', dueDate: '' });
+      setErrors({});
+      onClose();
+    } catch (err) {
+      toast.error(err.message || 'Failed to create task.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field, value) => {

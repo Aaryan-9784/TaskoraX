@@ -53,6 +53,7 @@ const ResetPassword = () => {
       }, 1000);
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid or expired token.');
+      toast.error(err.response?.data?.message || 'Invalid or expired token.');
       setLoading(false);
       
       // If token expired error, redirect to expired page
@@ -64,7 +65,7 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen bg-surface-primary flex font-sans text-text-primary selection:bg-primary-500/30">
-      <AuthSidebar />
+      <AuthSidebar type="reset" />
 
       {/* Right panel — Form */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-16 xl:px-24">

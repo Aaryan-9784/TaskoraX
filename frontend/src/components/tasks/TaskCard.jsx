@@ -8,10 +8,32 @@ import {
 import Badge from '../common/Badge';
 import { formatDate, isOverdue, truncateText } from '../../utils/helpers';
 import { useTask } from '../../context/TaskContext';
+import toast from 'react-hot-toast';
 
 const TaskCard = ({ task, onEdit }) => {
   const { deleteTask, toggleTaskStatus } = useTask();
   const overdue = isOverdue(task.dueDate) && task.status !== 'Done';
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      try {
+        await deleteTask(task._id || task.id);
+        toast.success('Task deleted successfully.');
+      } catch (err) {
+        toast.error(err.message || 'Failed to delete task.');
+      }
+    }
+  };
+
+  const handleToggle = async () => {
+    try {
+      await toggleTaskStatus(task._id || task.id, task.status);
+      const newStatus = task.status === 'Done' ? 'Todo' : 'Done';
+      toast.success(`Task marked as ${newStatus}.`);
+    } catch (err) {
+      toast.error(err.message || 'Failed to update task status.');
+    }
+  };
 
   const priorityVariant =
     task.priority === 'High'
@@ -72,7 +94,7 @@ const TaskCard = ({ task, onEdit }) => {
       {/* Actions */}
       <div className="flex items-center gap-2 pt-3 border-t border-border/50">
         <button
-          onClick={() => toggleTaskStatus(task._id || task.id, task.status)}
+          onClick={handleToggle}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             task.status === 'Done'
               ? 'text-warning-600 hover:bg-warning-50'
@@ -90,11 +112,7 @@ const TaskCard = ({ task, onEdit }) => {
           Edit
         </button>
         <button
-          onClick={() => {
-            if (window.confirm('Are you sure you want to delete this task?')) {
-              deleteTask(task._id || task.id);
-            }
-          }}
+          onClick={handleDelete}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-danger-500 hover:bg-danger-50 transition-colors ml-auto"
         >
           <HiOutlineTrash className="h-4 w-4" />

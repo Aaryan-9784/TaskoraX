@@ -8,6 +8,7 @@ import PasswordField from '../components/auth/PasswordField';
 import AuthButton from '../components/auth/AuthButton';
 import SocialButton from '../components/auth/SocialButton';
 import { HiOutlineUser, HiOutlineEnvelope, HiOutlineLockClosed, HiCheck, HiXMark } from 'react-icons/hi2';
+import toast from 'react-hot-toast';
 
 const RegisterPage = () => {
   const { register } = useAuth();
@@ -43,11 +44,13 @@ const RegisterPage = () => {
     try {
       await register(form.name, form.email, form.password);
       setSuccess(true);
+      toast.success('Account created successfully! Welcome aboard.');
       setTimeout(() => {
         navigate('/dashboard');
       }, 800);
     } catch (err) {
       setError(err.message || 'Failed to create account');
+      toast.error(err.message || 'Registration failed. Please try again.');
       setLoading(false);
     }
   };

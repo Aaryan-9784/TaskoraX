@@ -4,6 +4,7 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import { useTask } from '../../context/TaskContext';
 import { TASK_STATUS, TASK_PRIORITY } from '../../utils/constants';
+import toast from 'react-hot-toast';
 
 const EditTaskModal = ({ isOpen, onClose, task }) => {
   const { updateTask } = useTask();
@@ -44,10 +45,15 @@ const EditTaskModal = ({ isOpen, onClose, task }) => {
     if (!validate()) return;
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 500));
-    updateTask(task.id, form);
-    setLoading(false);
-    onClose();
+    try {
+      await updateTask(task._id || task.id, form);
+      toast.success('Task updated successfully!');
+      onClose();
+    } catch (err) {
+      toast.error(err.message || 'Failed to update task.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field, value) => {
