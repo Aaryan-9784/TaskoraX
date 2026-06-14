@@ -1,47 +1,29 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { HiOutlineBars3 } from 'react-icons/hi2';
-import { useAuth } from '../../context/AuthContext';
-import { getGreeting } from '../../utils/helpers';
+import DashboardNavbar from './DashboardNavbar';
 
 const AppLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user } = useAuth();
 
   return (
-    <div className="flex h-screen bg-surface-secondary">
+    <div className="flex h-screen bg-surface-secondary overflow-hidden selection:bg-primary-500/20 selection:text-primary-900">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
-        <header className="h-16 glass-panel z-40 sticky top-0 flex items-center justify-between px-4 lg:px-8 flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <button
-              className="lg:hidden p-2 rounded-lg hover:bg-surface-secondary transition-colors"
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Open sidebar"
-            >
-              <HiOutlineBars3 className="h-5 w-5 text-text-secondary" />
-            </button>
-            <div>
-              <p className="text-sm text-text-secondary">{getGreeting()}</p>
-              <p className="text-base font-semibold text-text-primary -mt-0.5">
-                {user?.name || 'User'}
-              </p>
-            </div>
-          </div>
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+        {/* Background ambient gradients */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-100/40 rounded-full blur-3xl -z-10 animate-blob pointer-events-none"></div>
+        <div className="absolute top-40 left-20 w-[400px] h-[400px] bg-accent-100/40 rounded-full blur-3xl -z-10 animate-blob animation-delay-2000 pointer-events-none"></div>
+        <div className="absolute bottom-0 right-40 w-[500px] h-[500px] bg-secondary-100/30 rounded-full blur-3xl -z-10 animate-blob animation-delay-4000 pointer-events-none"></div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center text-sm font-semibold">
-              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </div>
-          </div>
-        </header>
+        {/* Top Navbar */}
+        <DashboardNavbar onOpenSidebar={() => setSidebarOpen(true)} />
 
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-8">
-          <Outlet />
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 lg:p-8 custom-scrollbar relative z-0">
+          <div className="max-w-[1600px] mx-auto w-full">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

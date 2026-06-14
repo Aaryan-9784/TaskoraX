@@ -1,4 +1,5 @@
 import { getRelativeTime } from '../../utils/helpers';
+import { HiOutlineDocumentPlus, HiOutlineCheckBadge, HiOutlinePencilSquare, HiOutlineTrash, HiOutlineCog8Tooth } from 'react-icons/hi2';
 
 const activities = [
   {
@@ -7,6 +8,8 @@ const activities = [
     target: 'Design new landing page',
     time: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
     type: 'create',
+    user: 'Sarah M.',
+    avatar: 'bg-accent-100 text-accent-600',
   },
   {
     id: 2,
@@ -14,6 +17,8 @@ const activities = [
     target: 'Write API documentation',
     time: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     type: 'complete',
+    user: 'You',
+    avatar: 'bg-primary-100 text-primary-600',
   },
   {
     id: 3,
@@ -21,6 +26,8 @@ const activities = [
     target: 'Optimize database queries',
     time: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
     type: 'update',
+    user: 'Alex K.',
+    avatar: 'bg-secondary-100 text-secondary-600',
   },
   {
     id: 4,
@@ -28,49 +35,54 @@ const activities = [
     target: 'Old migration script',
     time: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString(),
     type: 'delete',
-  },
-  {
-    id: 5,
-    action: 'Created task',
-    target: 'Set up CI/CD pipeline',
-    time: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    type: 'create',
+    user: 'You',
+    avatar: 'bg-primary-100 text-primary-600',
   },
 ];
 
-const typeColors = {
-  create: 'bg-primary-500',
-  complete: 'bg-success-500',
-  update: 'bg-warning-500',
-  delete: 'bg-danger-500',
+const typeIcons = {
+  create: <HiOutlineDocumentPlus className="w-4 h-4 text-accent-500" />,
+  complete: <HiOutlineCheckBadge className="w-4 h-4 text-success-500" />,
+  update: <HiOutlinePencilSquare className="w-4 h-4 text-warning-500" />,
+  delete: <HiOutlineTrash className="w-4 h-4 text-danger-500" />,
 };
 
 const ActivityFeed = () => {
   return (
-    <div className="bg-white border border-border/50 rounded-2xl p-5">
-      <h3 className="text-sm font-semibold text-text-primary mb-4">
-        Activity Feed
-      </h3>
-      <div className="space-y-0">
+    <div className="card-premium h-full flex flex-col">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-lg font-bold font-display text-text-primary">Activity Center</h3>
+          <p className="text-sm text-text-tertiary mt-0.5">Recent team updates</p>
+        </div>
+        <button className="text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
+          Filter
+        </button>
+      </div>
+      
+      <div className="flex-1 space-y-0 relative">
+        <div className="absolute left-5 top-2 bottom-6 w-px bg-gradient-to-b from-border/80 via-border/40 to-transparent"></div>
+        
         {activities.map((activity, index) => (
-          <div key={activity.id} className="flex gap-3 group">
-            {/* Timeline */}
-            <div className="flex flex-col items-center">
-              <div
-                className={`w-2.5 h-2.5 rounded-full ${typeColors[activity.type]} flex-shrink-0 mt-1.5`}
-              />
-              {index < activities.length - 1 && (
-                <div className="w-px h-full bg-border min-h-[32px]" />
-              )}
+          <div key={activity.id} className="flex gap-4 group relative z-10 pb-6 last:pb-0">
+            {/* Avatar & Icon */}
+            <div className="relative">
+              <div className={`w-10 h-10 rounded-full ${activity.avatar} flex items-center justify-center text-sm font-bold shadow-sm ring-4 ring-white group-hover:scale-110 transition-transform`}>
+                {activity.user.charAt(0)}
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm border border-border/40">
+                {typeIcons[activity.type]}
+              </div>
             </div>
 
             {/* Content */}
-            <div className="pb-4">
-              <p className="text-sm text-text-primary">
-                <span className="font-medium">{activity.action}</span>{' '}
-                <span className="text-text-secondary">"{activity.target}"</span>
+            <div className="flex-1 bg-surface-secondary/30 group-hover:bg-surface-secondary border border-transparent group-hover:border-border/60 rounded-xl p-3 -mt-1 transition-colors">
+              <p className="text-sm text-text-primary leading-snug">
+                <span className="font-bold">{activity.user}</span>{' '}
+                <span className="text-text-secondary">{activity.action.toLowerCase()}</span>{' '}
+                <span className="font-semibold">"{activity.target}"</span>
               </p>
-              <p className="text-xs text-text-tertiary mt-0.5">
+              <p className="text-xs font-medium text-text-tertiary mt-1">
                 {getRelativeTime(activity.time)}
               </p>
             </div>
