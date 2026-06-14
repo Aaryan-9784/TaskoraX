@@ -18,6 +18,7 @@ import NotFoundPage from '../pages/NotFoundPage';
 // Protected Pages
 import DashboardPage from '../pages/DashboardPage';
 import TasksPage from '../pages/TasksPage';
+import AnalyticsPage from '../pages/AnalyticsPage';
 import ProfilePage from '../pages/ProfilePage';
 import SettingsPage from '../pages/SettingsPage';
 
@@ -39,6 +40,7 @@ const AppRoutes = () => {
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
