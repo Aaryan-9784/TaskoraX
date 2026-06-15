@@ -10,13 +10,13 @@ import { getRelativeTime } from '../../utils/helpers';
 
 const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
   const { allTasks = [] } = useTask();
-  const [readIds, setReadIds] = useState([]);
+  const [lastReadTime, setLastReadTime] = useState(0);
 
   useEffect(() => {
-    const saved = localStorage.getItem('taskora_read_notifs');
+    const saved = localStorage.getItem('taskora_last_read');
     if (saved) {
       try {
-        setReadIds(JSON.parse(saved));
+        setLastReadTime(parseInt(saved, 10));
       } catch (e) {
         // ignore
       }
@@ -27,9 +27,16 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
 
   // Generate dynamic notifications from tasks
   const sortedTasks = [...allTasks].sort((a, b) => {
-    const dateA = new Date(a.updatedAt || a.createdAt || Date.now());
-    const dateB = new Date(b.updatedAt || b.createdAt || Date.now());
-    return dateB - dateA;
+    const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+    const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+    
+    if (timeA !== timeB) {
+      return timeB - timeA;
+    }
+    
+    const idA = (a._id || a.id || '').toString();
+    const idB = (b._id || b.id || '').toString();
+    return idB.localeCompare(idA);
   });
 
   const recentTasks = sortedTasks.slice(0, 6);
@@ -59,6 +66,7 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
     }
 
     const taskId = task._id || task.id;
+    const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
 
     return {
       id: taskId,
@@ -68,17 +76,21 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
       icon,
       color,
       bg,
-      unread: !readIds.includes(taskId)
+      unread: taskTime > lastReadTime
     };
   });
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const markAllRead = () => {
-    const allIds = notifications.map(n => n.id);
-    const combinedIds = Array.from(new Set([...readIds, ...allIds]));
-    setReadIds(combinedIds);
-    localStorage.setItem('taskora_read_notifs', JSON.stringify(combinedIds));
+    let maxTime = lastReadTime;
+    recentTasks.forEach(task => {
+      const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
+      if (taskTime > maxTime) maxTime = taskTime;
+    });
+    setLastReadTime(maxTime);
+    localStorage.setItem('taskora_last_read', maxTime.toString());
+    window.dispatchEvent(new Event('taskora_read_update'));
   };
 
   return (

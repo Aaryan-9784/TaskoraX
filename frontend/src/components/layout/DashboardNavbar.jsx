@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTask } from '../../context/TaskContext';
 import { getGreeting, getInitials } from '../../utils/helpers';
 import {
   HiOutlineBars3,
@@ -14,8 +15,45 @@ import CreateTaskModal from '../tasks/CreateTaskModal';
 
 const DashboardNavbar = ({ onOpenSidebar }) => {
   const { user } = useAuth();
+  const { allTasks = [] } = useTask();
   const [activePopup, setActivePopup] = useState(null);
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
+  const [lastReadTime, setLastReadTime] = useState(0);
+
+  useEffect(() => {
+    const fetchReadTime = () => {
+      const saved = localStorage.getItem('taskora_last_read');
+      if (saved) {
+        try { setLastReadTime(parseInt(saved, 10)); } catch (e) {}
+      }
+    };
+    fetchReadTime();
+    window.addEventListener('taskora_read_update', fetchReadTime);
+    return () => window.removeEventListener('taskora_read_update', fetchReadTime);
+  }, []);
+
+  const getRecentTasks = (tasks) => {
+    return [...tasks].sort((a, b) => {
+      const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+      const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+      
+      if (timeA !== timeB) {
+        return timeB - timeA;
+      }
+      
+      const idA = (a._id || a.id || '').toString();
+      const idB = (b._id || b.id || '').toString();
+      return idB.localeCompare(idA);
+    }).slice(0, 6);
+  };
+
+  const hasUnread = getRecentTasks(allTasks).some(task => {
+    const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
+    return taskTime > lastReadTime;
+  });
+  
+  const todayStr = new Date().toDateString();
+  const hasTasksToday = allTasks.some(t => t.dueDate && new Date(t.dueDate).toDateString() === todayStr);
   
   const closePopups = () => setActivePopup(null);
   const rightSectionRef = useClickOutside(closePopups);
@@ -62,9 +100,12 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
         <div className="relative">
           <button 
             onClick={() => togglePopup('calendar')}
-            className={`p-2.5 rounded-xl transition-all duration-200 ${activePopup === 'calendar' ? 'text-primary-600 bg-primary-50 shadow-sm' : 'text-text-secondary hover:text-primary-600 hover:bg-primary-50'}`}
+            className={`p-2.5 rounded-xl transition-all duration-200 relative ${activePopup === 'calendar' ? 'text-primary-600 bg-primary-50 shadow-sm' : 'text-text-secondary hover:text-primary-600 hover:bg-primary-50'}`}
           >
             <HiOutlineCalendar className="h-5 w-5" />
+            {hasTasksToday && (
+              <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-primary-500 ring-2 ring-white"></span>
+            )}
           </button>
           <CalendarPopup 
             isOpen={activePopup === 'calendar'} 
@@ -82,7 +123,9 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
             className={`p-2.5 rounded-xl transition-all duration-200 relative ${activePopup === 'notifications' ? 'text-primary-600 bg-primary-50 shadow-sm' : 'text-text-secondary hover:text-primary-600 hover:bg-primary-50'}`}
           >
             <HiOutlineBell className="h-5 w-5" />
-            <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-danger-500 ring-2 ring-white animate-pulse-soft"></span>
+            {hasUnread && (
+              <span className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-danger-500 ring-2 ring-white animate-pulse-soft"></span>
+            )}
           </button>
           <NotificationsPopup isOpen={activePopup === 'notifications'} onClose={closePopups} />
         </div>
