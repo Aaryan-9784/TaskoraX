@@ -81,7 +81,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
 
         {/* Nav links */}
-        <nav className="flex-1 px-4 py-3 space-y-1.5 overflow-y-auto no-scrollbar custom-scrollbar">
+        <nav className="flex-1 px-4 py-3 space-y-1.5 overflow-y-auto no-scrollbar custom-scrollbar flex flex-col">
           {!isCollapsed && (
             <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-text-tertiary mb-4 mt-2">Main Menu</p>
           )}
@@ -122,69 +122,68 @@ const Sidebar = ({ isOpen, onClose }) => {
               )}
             </NavLink>
           ))}
-        </nav>
-
-        {/* Workspace Summary Card */}
-        {!isCollapsed && (
-          <div className="px-5 py-4 animate-fade-in mt-auto">
-            <div className="bg-white/40 dark:bg-surface-secondary/20 backdrop-blur-md border border-border/30 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow duration-300 group/card relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
-              
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">Workspace Summary</h4>
-                </div>
+          {/* Workspace Summary Card */}
+          {!isCollapsed && (
+            <div className="mt-auto pt-6 pb-2 animate-fade-in">
+              <div className="bg-white/40 dark:bg-surface-secondary/20 backdrop-blur-md border border-border/30 rounded-2xl p-3 shadow-sm hover:shadow-md transition-shadow duration-300 group/card relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
                 
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-2 -mx-2 rounded-lg transition-colors cursor-default">
-                    <div className="flex items-center gap-2.5 text-text-secondary">
-                      <div className="p-1.5 bg-success-50 rounded-lg group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
-                        <HiOutlineCheckCircle className="h-4 w-4 text-success-600" />
-                      </div>
-                      <span className="text-[13px] font-medium group-hover/row:text-text-primary transition-colors">Total Tasks</span>
-                    </div>
-                    <span className="text-[13px] font-bold text-text-primary">{stats?.total || 0}</span>
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">Workspace Summary</h4>
                   </div>
                   
-                  <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-2 -mx-2 rounded-lg transition-colors cursor-default">
-                    <div className="flex items-center gap-2.5 text-text-secondary">
-                      <div className="p-1.5 bg-primary-50 rounded-lg group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
-                        <HiOutlineBriefcase className="h-4 w-4 text-primary-600" />
+                  <div className="space-y-0.5">
+                    <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-1.5 -mx-1.5 rounded-lg transition-colors cursor-default">
+                      <div className="flex items-center gap-2 text-text-secondary">
+                        <div className="p-1 bg-success-50 rounded-md group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
+                          <HiOutlineCheckCircle className="h-3.5 w-3.5 text-success-600" />
+                        </div>
+                        <span className="text-xs font-medium group-hover/row:text-text-primary transition-colors">Total Tasks</span>
                       </div>
-                      <span className="text-[13px] font-medium group-hover/row:text-text-primary transition-colors">Active Projects</span>
+                      <span className="text-xs font-bold text-text-primary">{stats?.total || 0}</span>
                     </div>
-                    <span className="text-[13px] font-bold text-text-primary">12</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-2 -mx-2 rounded-lg transition-colors cursor-default">
-                    <div className="flex items-center gap-2.5 text-text-secondary">
-                      <div className="p-1.5 bg-accent-50 rounded-lg group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
-                        <HiOutlineUsers className="h-4 w-4 text-accent-600" />
+                    
+                    <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-1.5 -mx-1.5 rounded-lg transition-colors cursor-default">
+                      <div className="flex items-center gap-2 text-text-secondary">
+                        <div className="p-1 bg-primary-50 rounded-md group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
+                          <HiOutlineBriefcase className="h-3.5 w-3.5 text-primary-600" />
+                        </div>
+                        <span className="text-xs font-medium group-hover/row:text-text-primary transition-colors">Active Projects</span>
                       </div>
-                      <span className="text-[13px] font-medium group-hover/row:text-text-primary transition-colors">Team Members</span>
+                      <span className="text-xs font-bold text-text-primary">12</span>
                     </div>
-                    <span className="text-[13px] font-bold text-text-primary">8</span>
+                    
+                    <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-1.5 -mx-1.5 rounded-lg transition-colors cursor-default">
+                      <div className="flex items-center gap-2 text-text-secondary">
+                        <div className="p-1 bg-accent-50 rounded-md group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
+                          <HiOutlineUsers className="h-3.5 w-3.5 text-accent-600" />
+                        </div>
+                        <span className="text-xs font-medium group-hover/row:text-text-primary transition-colors">Team Members</span>
+                      </div>
+                      <span className="text-xs font-bold text-text-primary">8</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="mt-4 pt-4 border-t border-border/30">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-[11px] font-semibold text-text-secondary">Productivity</span>
-                    <span className="text-[11px] font-bold text-success-600">
-                      {stats?.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-success-400 to-success-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]"
-                      style={{ width: `${stats?.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%` }}
-                    ></div>
+                  <div className="mt-3 pt-3 border-t border-border/30">
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-[10px] font-semibold text-text-secondary">Productivity</span>
+                      <span className="text-[10px] font-bold text-success-600">
+                        {stats?.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-success-400 to-success-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                        style={{ width: `${stats?.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%` }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </nav>
 
         {/* User section + logout */}
         <div className={`border-t border-border/30 p-4 ${isCollapsed ? 'space-y-2' : 'space-y-1.5'}`}>
