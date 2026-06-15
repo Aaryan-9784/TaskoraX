@@ -43,8 +43,14 @@ const AnalyticsPage = () => {
   };
 
   const handleExport = () => {
-    // In a real app, this would trigger a download
-    // Removing toast to reduce notification noise
+    const csvContent = "data:text/csv;charset=utf-8,Metric,Value\nTotal Tasks,42\nCompleted,18\nPending,20\nOverdue,4\nProductivity,92\nCompletion Rate,85%";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "analytics_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const dateOptions = ['Last 7 Days', 'Last 30 Days', 'This Month', 'This Year'];

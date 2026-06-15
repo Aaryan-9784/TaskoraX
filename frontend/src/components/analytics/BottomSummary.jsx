@@ -6,8 +6,14 @@ const BottomSummary = () => {
   const navigate = useNavigate();
 
   const handleExportCSV = () => {
-    // In a real app, this would trigger a download
-    // Removing toast to reduce notification noise
+    const csvContent = "data:text/csv;charset=utf-8,Project,Tasks,Progress\nWebsite Redesign,12,65%\nMobile App V2,8,45%\nMarketing Q4,5,30%";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "projects_summary.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
