@@ -1,9 +1,11 @@
 import { useAuth } from '../../context/AuthContext';
 import { HiOutlineSparkles, HiOutlineArrowRight } from 'react-icons/hi2';
 import { getGreeting } from '../../utils/helpers';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   return (
     <div className="card-premium overflow-hidden border-0 bg-white relative animate-in mb-6">
@@ -31,10 +33,16 @@ const HeroSection = () => {
           </p>
           
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <button className="btn-primary shadow-glow">
+            <button 
+              onClick={() => navigate('/tasks?new=true')}
+              className="btn-primary shadow-glow"
+            >
               Create New Task
             </button>
-            <button className="btn-secondary group">
+            <button 
+              onClick={() => navigate('/analytics')}
+              className="btn-secondary group"
+            >
               View Analytics 
               <HiOutlineArrowRight className="inline-block ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </button>
