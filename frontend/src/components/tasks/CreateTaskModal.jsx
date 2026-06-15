@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import Select from '../common/Select';
 import { useTask } from '../../context/TaskContext';
 import { TASK_STATUS, TASK_PRIORITY } from '../../utils/constants';
 import toast from 'react-hot-toast';
@@ -81,37 +82,21 @@ const CreateTaskModal = ({ isOpen, onClose }) => {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-text-primary">
-              Priority
-            </label>
-            <select
+            <Select
+              label="Priority"
               value={form.priority}
               onChange={(e) => handleChange('priority', e.target.value)}
-              className="input-field"
-            >
-              {Object.values(TASK_PRIORITY).map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+              options={Object.values(TASK_PRIORITY).map((p) => ({ label: p, value: p }))}
+            />
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-text-primary">
-              Status
-            </label>
-            <select
+            <Select
+              label="Status"
               value={form.status}
               onChange={(e) => handleChange('status', e.target.value)}
-              className="input-field"
-            >
-              {Object.values(TASK_STATUS).map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+              options={Object.values(TASK_STATUS).map((s) => ({ label: s, value: s }))}
+            />
           </div>
         </div>
 

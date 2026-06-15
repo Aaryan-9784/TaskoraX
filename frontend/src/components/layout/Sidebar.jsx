@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTask } from '../../context/TaskContext';
 import {
   HiOutlineSquares2X2,
   HiOutlineClipboardDocumentList,
@@ -15,9 +16,9 @@ import {
   HiOutlineCheckCircle,
 } from 'react-icons/hi2';
 
-const menuItems = [
+const getMenuItems = (stats) => [
   { label: 'Dashboard', path: '/dashboard', icon: HiOutlineSquares2X2, badge: null },
-  { label: 'Tasks', path: '/tasks', icon: HiOutlineClipboardDocumentList, badge: 3 },
+  { label: 'Tasks', path: '/tasks', icon: HiOutlineClipboardDocumentList, badge: stats?.pending > 0 ? stats.pending : null },
   { label: 'Analytics', path: '/analytics', icon: HiOutlineChartBar, badge: null },
   { label: 'Projects', path: '/projects', icon: HiOutlineFolderOpen, badge: null },
   { label: 'Team', path: '/team', icon: HiOutlineUsers, badge: 'New' },
@@ -26,6 +27,7 @@ const menuItems = [
 const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { stats } = useTask();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleLogout = () => {
@@ -84,7 +86,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-text-tertiary mb-4 mt-2">Main Menu</p>
           )}
           
-          {menuItems.map((item) => (
+          {getMenuItems(stats).map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -141,7 +143,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                       </div>
                       <span className="text-[13px] font-medium group-hover/row:text-text-primary transition-colors">Total Tasks</span>
                     </div>
-                    <span className="text-[13px] font-bold text-text-primary">142</span>
+                    <span className="text-[13px] font-bold text-text-primary">{stats?.total || 0}</span>
                   </div>
                   
                   <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-2 -mx-2 rounded-lg transition-colors cursor-default">
@@ -165,14 +167,18 @@ const Sidebar = ({ isOpen, onClose }) => {
                   </div>
                 </div>
 
-                {/* Productivity Indicator */}
                 <div className="mt-4 pt-4 border-t border-border/30">
                   <div className="flex justify-between items-center mb-1.5">
                     <span className="text-[11px] font-semibold text-text-secondary">Productivity</span>
-                    <span className="text-[11px] font-bold text-success-600">78%</span>
+                    <span className="text-[11px] font-bold text-success-600">
+                      {stats?.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
+                    </span>
                   </div>
                   <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-success-400 to-success-500 w-[78%] rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+                    <div 
+                      className="h-full bg-gradient-to-r from-success-400 to-success-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                      style={{ width: `${stats?.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%` }}
+                    ></div>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { HiXMark, HiOutlineBriefcase, HiOutlineUser, HiOutlineCalendar, HiOutlineFlag } from 'react-icons/hi2';
+import Select from '../common/Select';
 
 const TaskAssignmentPanel = ({ isOpen, onClose, members }) => {
   const [taskName, setTaskName] = useState('');
@@ -42,12 +43,15 @@ const TaskAssignmentPanel = ({ isOpen, onClose, members }) => {
               <label className="block text-xs font-bold text-text-secondary uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
                 <HiOutlineUser className="w-4 h-4" /> Assignee
               </label>
-              <select className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium text-text-primary appearance-none cursor-pointer">
-                <option value="">Select team member...</option>
-                {members?.map(m => (
-                  <option key={m.id} value={m.id}>{m.name}</option>
-                ))}
-              </select>
+              <Select 
+                options={[
+                  { label: 'Select team member...', value: '' },
+                  ...(members?.map(m => ({ label: m.name, value: m.id })) || [])
+                ]}
+                className="w-full"
+                value=""
+                onChange={() => {}}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -56,11 +60,16 @@ const TaskAssignmentPanel = ({ isOpen, onClose, members }) => {
                 <label className="block text-xs font-bold text-text-secondary uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
                   <HiOutlineBriefcase className="w-4 h-4" /> Project
                 </label>
-                <select className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium text-text-primary appearance-none cursor-pointer">
-                  <option value="">Select project...</option>
-                  <option value="p1">Website Redesign</option>
-                  <option value="p2">Q3 Marketing</option>
-                </select>
+                <Select
+                  options={[
+                    { label: 'Select project...', value: '' },
+                    { label: 'Website Redesign', value: 'p1' },
+                    { label: 'Q3 Marketing', value: 'p2' }
+                  ]}
+                  className="w-full"
+                  value=""
+                  onChange={() => {}}
+                />
               </div>
 
               {/* Priority */}
@@ -68,12 +77,17 @@ const TaskAssignmentPanel = ({ isOpen, onClose, members }) => {
                 <label className="block text-xs font-bold text-text-secondary uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
                   <HiOutlineFlag className="w-4 h-4" /> Priority
                 </label>
-                <select className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-medium text-text-primary appearance-none cursor-pointer">
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
+                <Select
+                  options={[
+                    { label: 'Low', value: 'low' },
+                    { label: 'Medium', value: 'medium' },
+                    { label: 'High', value: 'high' },
+                    { label: 'Urgent', value: 'urgent' }
+                  ]}
+                  className="w-full"
+                  value="medium"
+                  onChange={() => {}}
+                />
               </div>
             </div>
 

@@ -8,7 +8,9 @@ import {
   HiOutlineArrowTrendingDown
 } from 'react-icons/hi2';
 
-const cards = [
+import { useTask } from '../../context/TaskContext';
+
+const getCards = (stats) => [
   {
     title: 'Total Members',
     value: '24',
@@ -29,7 +31,7 @@ const cards = [
   },
   {
     title: 'Tasks Completed',
-    value: '142',
+    value: stats ? stats.completed : '0',
     trend: '+12%',
     trendUp: true,
     icon: HiOutlineClipboardDocumentCheck,
@@ -38,7 +40,7 @@ const cards = [
   },
   {
     title: 'Team Productivity',
-    value: '94%',
+    value: stats?.total > 0 ? `${Math.round((stats.completed / stats.total) * 100)}%` : '0%',
     trend: '+4%',
     trendUp: true,
     icon: HiOutlineChartBar,
@@ -47,7 +49,7 @@ const cards = [
   },
   {
     title: 'Overdue Tasks',
-    value: '3',
+    value: stats ? stats.overdue : '0',
     trend: '-2',
     trendUp: true, // fewer overdue is good
     icon: HiOutlineClock,
@@ -57,9 +59,10 @@ const cards = [
 ];
 
 const TeamOverviewCards = () => {
+  const { stats } = useTask();
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-      {cards.map((card, idx) => (
+      {getCards(stats).map((card, idx) => (
         <div key={idx} className="glass-panel p-5 rounded-2xl hover:shadow-card-hover transition-all duration-300 group">
           <div className="flex justify-between items-start mb-4">
             <div className={`p-3 rounded-xl ${card.bg} ${card.color} group-hover:scale-110 transition-transform`}>

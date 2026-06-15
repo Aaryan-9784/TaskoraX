@@ -10,10 +10,12 @@ import { useClickOutside } from '../../hooks/useClickOutside';
 import CalendarPopup from './CalendarPopup';
 import NotificationsPopup from './NotificationsPopup';
 import UserProfilePopup from './UserProfilePopup';
+import CreateTaskModal from '../tasks/CreateTaskModal';
 
 const DashboardNavbar = ({ onOpenSidebar }) => {
   const { user } = useAuth();
   const [activePopup, setActivePopup] = useState(null);
+  const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
   
   const closePopups = () => setActivePopup(null);
   const rightSectionRef = useClickOutside(closePopups);
@@ -64,7 +66,14 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
           >
             <HiOutlineCalendar className="h-5 w-5" />
           </button>
-          <CalendarPopup isOpen={activePopup === 'calendar'} onClose={closePopups} />
+          <CalendarPopup 
+            isOpen={activePopup === 'calendar'} 
+            onClose={closePopups} 
+            onCreateTask={() => {
+              closePopups();
+              setIsCreateTaskOpen(true);
+            }} 
+          />
         </div>
         
         <div className="relative">
@@ -101,6 +110,7 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
         </div>
       </div>
       
+      <CreateTaskModal isOpen={isCreateTaskOpen} onClose={() => setIsCreateTaskOpen(false)} />
     </header>
   );
 };

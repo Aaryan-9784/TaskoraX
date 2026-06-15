@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { HiOutlineChartPie } from 'react-icons/hi2';
+import Select from '../common/Select';
 
 const data = [
   { name: 'Mon', tasks: 12, productivity: 65 },
@@ -31,6 +33,8 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 const AnalyticsWidget = () => {
+  const [timeframe, setTimeframe] = useState('This Week');
+
   return (
     <div className="card-premium h-full flex flex-col group">
       <div className="flex items-center justify-between mb-6">
@@ -42,11 +46,17 @@ const AnalyticsWidget = () => {
           <p className="text-sm text-text-tertiary mt-0.5">Weekly task completion & velocity</p>
         </div>
         
-        <select className="bg-surface-secondary border-none text-xs font-semibold text-text-secondary py-1.5 px-3 rounded-lg focus:ring-2 focus:ring-primary-500 cursor-pointer outline-none">
-          <option>This Week</option>
-          <option>Last Week</option>
-          <option>This Month</option>
-        </select>
+        <div className="w-36">
+          <Select 
+            options={[
+              { label: 'This Week', value: 'This Week' },
+              { label: 'Last Week', value: 'Last Week' },
+              { label: 'This Month', value: 'This Month' }
+            ]}
+            value={timeframe}
+            onChange={(e) => setTimeframe(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="flex-1 min-h-[250px] w-full">

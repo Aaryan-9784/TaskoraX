@@ -1,6 +1,7 @@
 import { useTask } from '../../context/TaskContext';
 import { TASK_STATUS, TASK_PRIORITY } from '../../utils/constants';
 import { HiOutlineMagnifyingGlass, HiOutlineFunnel } from 'react-icons/hi2';
+import Select from '../common/Select';
 
 const TaskFilters = () => {
   const {
@@ -58,42 +59,37 @@ const TaskFilters = () => {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-3">
-          <select
+          <Select
             value={statusFilter === 'All' ? '' : statusFilter}
             onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="input-field w-auto min-w-[140px] text-sm"
-          >
-            <option value="">All Statuses</option>
-            {Object.values(TASK_STATUS).map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+            className="w-40"
+            options={[
+              { label: 'All Statuses', value: '' },
+              ...Object.values(TASK_STATUS).map((status) => ({ label: status, value: status }))
+            ]}
+          />
 
-          <select
+          <Select
             value={priorityFilter === 'All' ? '' : priorityFilter}
             onChange={(e) => handleFilterChange('priority', e.target.value)}
-            className="input-field w-auto min-w-[140px] text-sm"
-          >
-            <option value="">All Priorities</option>
-            {Object.values(TASK_PRIORITY).map((priority) => (
-              <option key={priority} value={priority}>
-                {priority}
-              </option>
-            ))}
-          </select>
+            className="w-40"
+            options={[
+              { label: 'All Priorities', value: '' },
+              ...Object.values(TASK_PRIORITY).map((priority) => ({ label: priority, value: priority }))
+            ]}
+          />
 
-          <select
+          <Select
             value={sortBy}
             onChange={handleSortChange}
-            className="input-field w-auto min-w-[140px] text-sm"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="due-date">Due Date</option>
-            <option value="priority">Priority</option>
-          </select>
+            className="w-40"
+            options={[
+              { label: 'Newest First', value: 'newest' },
+              { label: 'Oldest First', value: 'oldest' },
+              { label: 'Due Date', value: 'due-date' },
+              { label: 'Priority', value: 'priority' },
+            ]}
+          />
 
           {hasActiveFilters && (
             <button

@@ -21,7 +21,7 @@ const UserProfilePopup = ({ isOpen, onClose, user, domNode, onLogout }) => {
   return (
     <div 
       ref={domNode}
-      className="absolute top-16 right-0 mt-2 w-[300px] glass-panel rounded-2xl shadow-card-hover border border-border/60 z-50 animate-scale-in origin-top-right overflow-hidden flex flex-col"
+      className="absolute top-16 right-0 mt-2 w-[300px] bg-white rounded-2xl shadow-elevated border border-border/60 z-50 animate-scale-in origin-top-right overflow-hidden flex flex-col"
     >
       {/* Header Profile Section */}
       <div className="p-4 bg-surface-primary/50 border-b border-border/40 relative">

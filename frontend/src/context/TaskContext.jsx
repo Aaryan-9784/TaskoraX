@@ -7,6 +7,7 @@ const TaskContext = createContext();
 export const TaskProvider = ({ children }) => {
   const { isAuthenticated } = useAuth();
   const [tasks, setTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // Filters & Pagination state
@@ -49,12 +50,6 @@ export const TaskProvider = ({ children }) => {
       setTotalPages(data.pagination.totalPages);
       setTotalCount(data.pagination.totalTasks);
 
-      // We should ideally have a separate /tasks/stats endpoint,
-      // but for now, we'll fetch all tasks without pagination to calculate stats,
-      // OR we just use the backend to provide stats. Let's do a quick separate fetch 
-      // without limits to get accurate global stats if needed, or just calculate on current page (less ideal).
-      // For production, we will fetch stats from a dedicated endpoint. 
-      // Let's create a quick stat calculation from a broad fetch just to make it work here.
       fetchStats();
       
     } catch (error) {
@@ -67,15 +62,17 @@ export const TaskProvider = ({ children }) => {
   const fetchStats = async () => {
     try {
       const { data } = await api.get('/tasks?limit=1000'); // simple hack for stats
-      const allTasks = data.data.tasks;
+      const fetchedAllTasks = data.data.tasks || [];
+      setAllTasks(fetchedAllTasks);
+      
       const now = new Date();
       
       setStats({
-        total: allTasks.length,
-        completed: allTasks.filter(t => t.status === 'Done').length,
-        inProgress: allTasks.filter(t => t.status === 'In Progress').length,
-        pending: allTasks.filter(t => t.status === 'Todo').length,
-        overdue: allTasks.filter(t => t.dueDate && new Date(t.dueDate) < now && t.status !== 'Done').length,
+        total: fetchedAllTasks.length,
+        completed: fetchedAllTasks.filter(t => t.status === 'Done').length,
+        inProgress: fetchedAllTasks.filter(t => t.status === 'In Progress').length,
+        pending: fetchedAllTasks.filter(t => t.status === 'Todo').length,
+        overdue: fetchedAllTasks.filter(t => t.dueDate && new Date(t.dueDate) < now && t.status !== 'Done').length,
       });
     } catch (error) {
       console.error('Failed to fetch stats', error);
@@ -89,6 +86,15 @@ export const TaskProvider = ({ children }) => {
   const addTask = async (taskData) => {
     try {
       await api.post('/tasks', taskData);
+      
+      // Reset filters and sort by newest to ensure the new task is immediately visible
+      setSearch('');
+      setStatusFilter('All');
+      setPriorityFilter('All');
+      setSortBy('newest');
+      setCurrentPage(1);
+      
+      // Fetch tasks again to reflect the newly added task from the server
       fetchTasks();
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to add task');
@@ -125,6 +131,7 @@ export const TaskProvider = ({ children }) => {
 
   const value = {
     tasks, // These are already paginated and filtered by the backend
+    allTasks, // All tasks for calendar and stats
     loading,
     stats,
     // Filter controls
