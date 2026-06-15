@@ -40,27 +40,36 @@ const renderLegend = (props) => {
 
 const StatusDistributionChart = () => {
   return (
-    <div className="card-premium h-full flex flex-col">
-      <div className="mb-2">
+    <div className="card-premium h-full flex flex-col group relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-primary-500/5 rounded-full blur-3xl -z-10 group-hover:bg-primary-500/10 transition-colors duration-700"></div>
+
+      <div className="mb-2 relative z-10">
         <h3 className="text-lg font-bold text-text-primary">Task Distribution</h3>
         <p className="text-sm text-text-tertiary">Current status of active projects</p>
       </div>
       
-      <div className="flex-1 min-h-[300px] relative">
+      <div className="flex-1 min-h-[300px] relative z-10">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
+            <defs>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.15" />
+              </filter>
+            </defs>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
               innerRadius={80}
               outerRadius={110}
-              paddingAngle={5}
+              paddingAngle={6}
               dataKey="value"
               stroke="none"
+              cornerRadius={8}
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell key={`cell-${index}`} fill={entry.color} style={{ filter: 'url(#shadow)' }} className="hover:opacity-80 transition-opacity cursor-pointer focus:outline-none" />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
@@ -70,8 +79,10 @@ const StatusDistributionChart = () => {
         
         {/* Center Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-[-20px]">
-          <span className="text-3xl font-extrabold text-text-primary">42</span>
-          <span className="text-xs font-medium text-text-tertiary">Total Tasks</span>
+          <div className="bg-surface/50 backdrop-blur-sm w-28 h-28 rounded-full flex flex-col items-center justify-center border border-border/40 shadow-sm group-hover:border-primary-200/50 transition-colors">
+            <span className="text-3xl font-extrabold text-text-primary group-hover:text-primary-600 transition-colors">42</span>
+            <span className="text-xs font-bold text-text-tertiary uppercase tracking-wider mt-0.5">Tasks</span>
+          </div>
         </div>
       </div>
     </div>

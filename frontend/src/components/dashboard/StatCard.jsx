@@ -56,8 +56,11 @@ const StatCard = ({ title, value, icon: Icon, trend, color = 'primary', sparklin
 
   return (
     <div className={`card-premium group cursor-pointer ${colors.border}`}>
-      <div className="flex justify-between items-start mb-4">
-        <div className={`w-10 h-10 rounded-xl ${colors.bg} flex items-center justify-center transition-transform group-hover:scale-110 group-hover:${colors.glow}`}>
+      {/* Dynamic Background Glow based on card color */}
+      <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none ${colors.bg.split('/')[0]}`}></div>
+      
+      <div className="flex justify-between items-start mb-4 relative z-10">
+        <div className={`w-10 h-10 rounded-xl ${colors.bg} flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:${colors.glow}`}>
           <Icon className={`h-5 w-5 ${colors.icon}`} />
         </div>
         
@@ -70,7 +73,7 @@ const StatCard = ({ title, value, icon: Icon, trend, color = 'primary', sparklin
       </div>
 
       <div>
-        <p className="text-3xl font-extrabold font-display text-text-primary mb-1 group-hover:text-primary-600 transition-colors">
+        <p className="text-2xl font-bold text-text-primary mb-1 group-hover:text-primary-600 transition-colors">
           {value}
         </p>
         <p className="text-sm font-medium text-text-tertiary">

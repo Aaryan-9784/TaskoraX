@@ -30,56 +30,62 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const TaskCompletionChart = () => {
   return (
-    <div className="card-premium h-full flex flex-col">
-      <div className="mb-6">
+    <div className="card-premium h-full flex flex-col group relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-10 left-10 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl -z-10 group-hover:bg-primary-500/10 transition-colors duration-700"></div>
+
+      <div className="mb-6 relative z-10">
         <h3 className="text-lg font-bold text-text-primary">Task Completion Trend</h3>
         <p className="text-sm text-text-tertiary">Daily tasks completed vs added</p>
       </div>
       
-      <div className="flex-1 min-h-[300px]">
+      <div className="flex-1 min-h-[300px] relative z-10 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 15 }}>
             <defs>
               <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
               </linearGradient>
               <linearGradient id="colorAdded" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.2}/>
+                <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.3}/>
                 <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.2} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.15} />
             <XAxis 
               dataKey="name" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#64748b', fontSize: 12 }} 
-              dy={10}
+              tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }} 
+              tickMargin={10}
             />
             <YAxis 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#64748b', fontSize: 12 }}
+              tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }}
+              dx={-10}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#64748b', strokeWidth: 1, strokeDasharray: '4 4' }} />
             <Area 
               type="monotone" 
               dataKey="completed" 
               name="Completed"
-              stroke="#8b5cf6" 
+              stroke="#6366f1" 
               strokeWidth={3}
               fillOpacity={1} 
               fill="url(#colorCompleted)" 
+              activeDot={{ r: 6, fill: '#6366f1', stroke: '#fff', strokeWidth: 2 }}
             />
             <Area 
               type="monotone" 
               dataKey="added" 
               name="Added"
               stroke="#94a3b8" 
-              strokeWidth={2}
+              strokeWidth={3}
               fillOpacity={1} 
               fill="url(#colorAdded)" 
+              activeDot={{ r: 6, fill: '#94a3b8', stroke: '#fff', strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -87,5 +93,6 @@ const TaskCompletionChart = () => {
     </div>
   );
 };
+
 
 export default TaskCompletionChart;

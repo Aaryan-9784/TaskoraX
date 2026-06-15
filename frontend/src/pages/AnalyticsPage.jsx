@@ -6,6 +6,7 @@ import ProductivityChart from '../components/analytics/ProductivityChart';
 import StatusDistributionChart from '../components/analytics/StatusDistributionChart';
 import InsightsPanel from '../components/analytics/InsightsPanel';
 import BottomSummary from '../components/analytics/BottomSummary';
+import TeamVelocityWidget from '../components/analytics/TeamVelocityWidget';
 import {
   HiOutlineClipboardDocumentList,
   HiOutlineCheckCircle,
@@ -47,12 +48,12 @@ const AnalyticsPage = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Top Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 animate-in animate-in-delay-1">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-in animate-in-delay-1">
         <div>
-          <h1 className="text-3xl font-extrabold font-display text-text-primary mb-1">
+          <h1 className="text-2xl font-bold text-text-primary">
             Analytics
           </h1>
-          <p className="text-sm text-text-secondary">
+          <p className="text-sm text-text-secondary mt-1">
             Track productivity, measure progress, and gather insights.
           </p>
         </div>
@@ -147,16 +148,7 @@ const AnalyticsPage = () => {
             <InsightsPanel />
           </div>
           <div className="h-[350px]">
-            {/* Can add another chart or list here, re-using productivity chart or just padding it */}
-             <div className="card-premium h-full flex flex-col justify-center items-center text-center">
-               <div className="w-16 h-16 bg-surface-secondary rounded-full flex items-center justify-center mb-4">
-                 <HiOutlineSparkles className="h-8 w-8 text-text-tertiary" />
-               </div>
-               <h3 className="text-lg font-bold text-text-primary mb-2">More Insights Coming Soon</h3>
-               <p className="text-sm text-text-tertiary max-w-[200px]">
-                 We are gathering more data to provide deep team performance metrics.
-               </p>
-             </div>
+            <TeamVelocityWidget />
           </div>
         </div>
       </div>

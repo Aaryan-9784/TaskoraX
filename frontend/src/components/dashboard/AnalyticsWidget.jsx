@@ -42,7 +42,7 @@ const AnalyticsWidget = () => {
     <div className="card-premium h-full flex flex-col group p-6">
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h3 className="text-xl font-bold font-display text-text-primary flex items-center gap-2.5 mb-1">
+          <h3 className="text-lg font-bold text-text-primary flex items-center gap-2.5 mb-1">
             <div className="p-1.5 bg-primary-50 rounded-lg">
                <HiOutlineChartPie className="h-5 w-5 text-primary-600" />
             </div>
