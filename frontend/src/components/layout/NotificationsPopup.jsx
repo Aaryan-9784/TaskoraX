@@ -31,7 +31,7 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
   return (
     <div 
       ref={domNode}
-      className="absolute top-16 right-0 sm:-right-4 mt-2 w-[380px] max-w-[calc(100vw-2rem)] glass-panel rounded-2xl shadow-card-hover border border-border/60 z-50 animate-scale-in origin-top-right flex flex-col overflow-hidden"
+      className="absolute top-16 right-0 mt-2 w-[380px] max-w-[calc(100vw-2rem)] glass-panel rounded-2xl shadow-card-hover border border-border/60 z-50 animate-scale-in origin-top-right flex flex-col overflow-hidden"
     >
       <div className="p-4 border-b border-border/40">
         <div className="flex items-center justify-between mb-3">

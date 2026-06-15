@@ -16,7 +16,7 @@ const CalendarPopup = ({ isOpen, onClose, domNode }) => {
   return (
     <div 
       ref={domNode}
-      className="absolute top-16 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 md:translate-x-0 md:left-auto mt-2 w-[340px] glass-panel rounded-2xl shadow-card-hover border border-border/60 p-4 z-50 animate-scale-in origin-top"
+      className="absolute top-16 right-0 mt-2 w-[340px] max-w-[calc(100vw-2rem)] glass-panel rounded-2xl shadow-card-hover border border-border/60 p-4 z-50 animate-scale-in origin-top-right"
     >
       <div className="flex items-center justify-between mb-4">
         <div>
