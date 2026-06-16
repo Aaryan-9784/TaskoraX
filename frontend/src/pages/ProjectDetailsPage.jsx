@@ -19,8 +19,9 @@ const ProjectDetailsPage = () => {
   const [project, setProject] = useState(null);
 
   useEffect(() => {
-    // Simulate fetching project
-    const found = mockProjects.find((p) => p.id === id);
+    const saved = localStorage.getItem('taskora_projects');
+    const allProjects = saved ? JSON.parse(saved) : mockProjects;
+    const found = allProjects.find((p) => p.id === id);
     setProject(found);
   }, [id]);
 

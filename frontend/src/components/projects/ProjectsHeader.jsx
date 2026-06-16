@@ -27,9 +27,6 @@ const ProjectsHeader = ({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" icon={HiOutlineArrowUpTray} className="hidden sm:flex" onClick={onImport}>
-            Import
-          </Button>
           <Button variant="secondary" icon={HiOutlineArchiveBox} className="hidden sm:flex" onClick={onArchive}>
             Archive
           </Button>

@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineCalendar, HiOutlineClipboardDocumentList, HiOutlineEllipsisVertical } from 'react-icons/hi2';
+import toast from 'react-hot-toast';
 
-const ProjectCard = ({ project }) => {
+const ProjectCard = ({ project, onDelete, onArchive, onEdit }) => {
   const navigate = useNavigate();
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const statusStyles = {
     'Active': 'bg-accent-500/10 text-accent-500 border-accent-500/20',
@@ -31,12 +34,40 @@ const ProjectCard = ({ project }) => {
               {project.status}
             </span>
           </div>
-          <button 
-            onClick={(e) => { e.stopPropagation(); }}
-            className="p-1.5 text-text-tertiary hover:text-text-primary hover:bg-surface-secondary rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-          >
-            <HiOutlineEllipsisVertical className="h-5 w-5" />
-          </button>
+          <div className="relative">
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowDropdown(!showDropdown); }}
+              className={`p-1.5 text-text-tertiary hover:text-text-primary hover:bg-surface-secondary rounded-lg transition-colors ${showDropdown ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+            >
+              <HiOutlineEllipsisVertical className="h-5 w-5" />
+            </button>
+            {showDropdown && (
+              <div 
+                className="absolute right-0 top-full mt-1 w-36 bg-surface-primary border border-border/40 rounded-xl shadow-elevated z-10 overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button 
+                  className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-surface-secondary hover:text-primary-500 transition-colors"
+                  onClick={(e) => { e.stopPropagation(); setShowDropdown(false); onEdit && onEdit(); }}
+                >
+                  Edit Project
+                </button>
+                <button 
+                  className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-surface-secondary hover:text-primary-500 transition-colors"
+                  onClick={(e) => { e.stopPropagation(); setShowDropdown(false); onArchive && onArchive(); }}
+                >
+                  Archive
+                </button>
+                <div className="h-px w-full bg-border/40"></div>
+                <button 
+                  className="w-full text-left px-4 py-2 text-sm text-danger-500 hover:bg-danger-500/10 transition-colors"
+                  onClick={(e) => { e.stopPropagation(); setShowDropdown(false); onDelete && onDelete(); }}
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Description */}
@@ -48,12 +79,14 @@ const ProjectCard = ({ project }) => {
         <div className="mb-4">
           <div className="flex justify-between text-xs mb-1.5">
             <span className="font-semibold text-text-secondary">Progress</span>
-            <span className="font-bold text-text-primary">{project.progress}%</span>
+            <span className="font-bold text-text-primary">
+              {project.tasks?.total > 0 ? Math.round((project.tasks.completed / project.tasks.total) * 100) : 0}%
+            </span>
           </div>
           <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
             <div 
               className={`h-full rounded-full transition-all duration-1000 ${project.coverColor}`}
-              style={{ width: `${project.progress}%` }}
+              style={{ width: `${project.tasks?.total > 0 ? Math.round((project.tasks.completed / project.tasks.total) * 100) : 0}%` }}
             />
           </div>
         </div>
