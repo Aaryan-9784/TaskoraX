@@ -52,15 +52,7 @@ const ActivityTab = ({ project }) => {
                if (!isNaN(parsed) && parsed > 1000000) ts = parsed;
            }
            
-           if (t.status === 'Done') {
-              acts.push({
-                  id: `task-done-${t.id}`,
-                  action: `completed task "${t.name}"`,
-                  user: 'You',
-                  time: 'Recently',
-                  timestamp: ts + 1 // slight offset for completion
-              });
-           } else {
+           if (t.status !== 'Done') {
               acts.push({
                   id: `task-${t.id}`,
                   action: `created task "${t.name}"`,

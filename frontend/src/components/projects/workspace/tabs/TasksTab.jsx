@@ -8,6 +8,8 @@ import Modal from '../../../common/Modal';
 const TasksTab = ({ project, onUpdateProject }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskName, setTaskName] = useState('');
+  const [taskStartDay, setTaskStartDay] = useState(0);
+  const [taskDuration, setTaskDuration] = useState(5);
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'board'
   
   const tasksList = project.tasksList || [];
@@ -21,7 +23,9 @@ const TasksTab = ({ project, onUpdateProject }) => {
     const newTask = {
       id: `task-${Date.now()}`,
       name: taskName,
-      status: 'Todo'
+      status: 'Todo',
+      startDay: taskStartDay,
+      durationDays: taskDuration
     };
 
     const newTasksList = [newTask, ...tasksList];
@@ -42,6 +46,8 @@ const TasksTab = ({ project, onUpdateProject }) => {
 
     toast.success('Task created successfully');
     setTaskName('');
+    setTaskStartDay(0);
+    setTaskDuration(5);
     setIsModalOpen(false);
   };
 
@@ -196,6 +202,24 @@ const TasksTab = ({ project, onUpdateProject }) => {
             onChange={(e) => setTaskName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCreateTask()}
           />
+          <div className="grid grid-cols-2 gap-4">
+             <Input 
+               label="Start Day (0-30)"
+               type="number"
+               min="0"
+               max="30"
+               value={taskStartDay}
+               onChange={(e) => setTaskStartDay(parseInt(e.target.value) || 0)}
+             />
+             <Input 
+               label="Duration (days)"
+               type="number"
+               min="1"
+               max="30"
+               value={taskDuration}
+               onChange={(e) => setTaskDuration(parseInt(e.target.value) || 1)}
+             />
+          </div>
           <div className="flex justify-end gap-3 mt-6 border-t border-border/40 pt-6">
             <Button variant="secondary" onClick={() => setIsModalOpen(false)}>Cancel</Button>
             <Button onClick={handleCreateTask}>Create Task</Button>

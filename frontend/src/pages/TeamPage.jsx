@@ -60,8 +60,8 @@ const TeamPage = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-text-primary tracking-tight font-display mb-1">Team Workspace</h1>
-          <p className="text-sm text-text-secondary">Manage members, monitor workloads, and collaborate efficiently.</p>
+          <h1 className="text-2xl font-bold text-text-primary">Team Workspace</h1>
+          <p className="text-sm text-text-secondary mt-1">Manage members, monitor workloads, and collaborate efficiently.</p>
         </div>
         
         <div className="flex items-center gap-3">

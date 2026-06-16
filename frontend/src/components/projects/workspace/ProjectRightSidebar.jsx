@@ -69,11 +69,35 @@ const ProjectRightSidebar = ({ project, onUpdateProject }) => {
   const handleOpenFile = (file) => {
     if (file.url) {
       try {
-        const newWindow = window.open();
-        if (newWindow) {
-          newWindow.document.write(`<iframe src="${file.url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+        if (file.url.startsWith('data:')) {
+          const arr = file.url.split(',');
+          const mime = arr[0].match(/:(.*?);/)[1];
+          const bstr = atob(arr[1]);
+          let n = bstr.length;
+          const u8arr = new Uint8Array(n);
+          while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+          }
+          const blob = new Blob([u8arr], { type: mime });
+          const blobUrl = URL.createObjectURL(blob);
+          const newWindow = window.open(blobUrl, '_blank', 'noopener,noreferrer');
+          if (!newWindow) {
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = file.name;
+            a.click();
+            toast.error('Popup blocked. Downloading file instead.');
+          }
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
         } else {
-          window.location.href = file.url;
+          const newWindow = window.open(file.url, '_blank', 'noopener,noreferrer');
+          if (!newWindow) {
+            const a = document.createElement('a');
+            a.href = file.url;
+            a.download = file.name;
+            a.click();
+            toast.error('Popup blocked. Downloading file instead.');
+          }
         }
       } catch (err) {
         const a = document.createElement('a');

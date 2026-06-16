@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HiOutlineUserPlus, HiOutlineShieldCheck, HiOutlineTrash, HiOutlinePencilSquare } from 'react-icons/hi2';
+import { HiOutlineUserPlus, HiOutlineShieldCheck, HiOutlineTrash, HiOutlinePencilSquare, HiOutlineCheckCircle } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 import Button from '../../../common/Button';
 import Input from '../../../common/Input';
@@ -29,6 +29,7 @@ const TeamTab = ({ project, onUpdateProject }) => {
       name: name.trim(),
       email: email.trim(),
       role: role,
+      status: 'Pending Approval',
       avatar: `https://i.pravatar.cc/150?u=${email}`
     };
 
@@ -37,8 +38,22 @@ const TeamTab = ({ project, onUpdateProject }) => {
       team: [...project.team, newMember]
     });
 
-    toast.success(`Invitation sent to ${email}`);
+    // Actually trigger an email draft to the user
+    const subject = encodeURIComponent(`Invitation to join project: ${project?.name || 'TaskoraX'}`);
+    const body = encodeURIComponent(`Hi ${name.trim()},\n\nYou have been invited to join the project "${project?.name || 'TaskoraX'}" as a ${role}.\n\nPlease click the link below or log in to TaskoraX to approve your invitation and join the team.\n\nThanks!`);
+    window.location.href = `mailto:${email.trim()}?subject=${subject}&body=${body}`;
+
+    toast.success(`Invitation email draft opened for ${email}. Waiting for approval.`);
     closeModal();
+  };
+
+  const handleSimulateApproval = (memberId) => {
+    onUpdateProject({
+      ...project,
+      team: project.team.map(m => m.id === memberId ? { ...m, status: 'Online' } : m)
+    });
+    const approvedMember = project.team.find(m => m.id === memberId);
+    toast.success(`${approvedMember?.name || 'Member'} has approved the invitation and joined!`, { icon: '🎉' });
   };
 
   const handleSaveEdit = () => {
@@ -158,6 +173,15 @@ const TeamTab = ({ project, onUpdateProject }) => {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {member.status === 'Pending Approval' && (
+                        <button 
+                          onClick={() => handleSimulateApproval(member.id)}
+                          className="p-2 text-text-tertiary hover:text-success-600 hover:bg-success-50 rounded-lg transition-colors"
+                          title="Simulate Member Approval"
+                        >
+                          <HiOutlineCheckCircle className="w-5 h-5" />
+                        </button>
+                      )}
                       <button 
                         onClick={() => handleEditClick(member)}
                         className="p-2 text-text-tertiary hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"

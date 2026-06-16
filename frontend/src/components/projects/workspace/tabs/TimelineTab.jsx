@@ -22,11 +22,11 @@ const TimelineTab = ({ project }) => {
     );
   }
 
-  // Generate deterministic dates for the tasks so it looks like a real Gantt chart
+  // Use real task duration and start day instead of purely mock data
   const timelineTasks = tasks.map((task, i) => {
-    // Cascade like a waterfall
-    const startDay = (i * 3) % 20; 
-    const durationDays = 4 + (i % 6);
+    // If the user specified the time, use it, otherwise fallback to deterministic mock
+    const startDay = task.startDay !== undefined ? task.startDay : (i * 3) % 20; 
+    const durationDays = task.durationDays !== undefined ? task.durationDays : 4 + (i % 6);
     return {
       ...task,
       startDay,
