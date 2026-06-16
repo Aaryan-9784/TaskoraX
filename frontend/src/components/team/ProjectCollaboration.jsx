@@ -25,19 +25,20 @@ const ProjectCollaboration = ({ projects }) => {
                 <span>{project.progress}%</span>
               </div>
               <div className="w-full h-1.5 bg-surface-secondary rounded-full overflow-hidden">
-                <div className="h-full bg-primary-500 rounded-full" style={{ width: `${project.progress}%` }}></div>
+                <div className={`h-full rounded-full ${project.status === 'On Track' ? 'bg-success-500' : 'bg-warning-500'}`} style={{ width: `${project.progress}%` }}></div>
               </div>
             </div>
 
             <div className="flex justify-between items-center mt-4 pt-3 border-t border-border/50">
               <div className="flex -space-x-2">
                 {project.members.slice(0, 3).map((member, i) => (
-                  <img 
+                  <div 
                     key={i}
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(member)}&background=random`}
-                    alt={member}
-                    className="w-6 h-6 rounded-full border-2 border-surface-primary"
-                  />
+                    className="w-6 h-6 rounded-full border-2 border-surface-primary bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-[10px]"
+                    title={member}
+                  >
+                    {member.charAt(0).toUpperCase()}
+                  </div>
                 ))}
                 {project.members.length > 3 && (
                   <div className="w-6 h-6 rounded-full border-2 border-surface-primary bg-surface-secondary text-text-secondary flex items-center justify-center text-[8px] font-bold">

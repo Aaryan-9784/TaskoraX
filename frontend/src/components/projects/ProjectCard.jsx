@@ -96,12 +96,13 @@ const ProjectCard = ({ project, onDelete, onArchive, onEdit }) => {
           {/* Team Avatars */}
           <div className="flex -space-x-2">
             {project.team.slice(0, 3).map((member, idx) => (
-              <img 
+              <div 
                 key={idx}
-                src={member.avatar} 
-                alt={member.name}
-                className="w-7 h-7 rounded-full border-2 border-surface-primary object-cover"
-              />
+                className="w-7 h-7 rounded-full border-2 border-surface-primary bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-[10px]"
+                title={member.name}
+              >
+                {member.name ? member.name.charAt(0).toUpperCase() : '?'}
+              </div>
             ))}
             {project.team.length > 3 && (
               <div className="w-7 h-7 rounded-full border-2 border-surface-primary bg-surface-secondary flex items-center justify-center text-[10px] font-bold text-text-secondary">

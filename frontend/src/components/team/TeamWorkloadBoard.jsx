@@ -27,7 +27,9 @@ const TeamWorkloadBoard = ({ members }) => {
               <div key={member.id} className="group">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    <img src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}`} alt={member.name} className="w-8 h-8 rounded-full border border-border" />
+                    <div className="w-8 h-8 rounded-full border border-border bg-surface-secondary flex items-center justify-center text-text-primary font-bold text-sm">
+                      {member.name.charAt(0).toUpperCase()}
+                    </div>
                     <div>
                       <p className="text-sm font-bold text-text-primary">{member.name}</p>
                       <p className="text-[10px] text-text-tertiary font-medium">{member.role}</p>

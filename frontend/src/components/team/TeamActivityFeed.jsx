@@ -31,7 +31,9 @@ const TeamActivityFeed = ({ activities }) => {
               </div>
               <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] p-4 rounded-xl glass-panel border border-border/50 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary-200">
                 <div className="flex items-center gap-3 mb-2">
-                  <img src={activity.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activity.user)}`} alt={activity.user} className="w-6 h-6 rounded-full" />
+                  <div className="w-6 h-6 rounded-full bg-secondary-100 text-secondary-700 flex items-center justify-center font-bold text-[10px]">
+                    {activity.user.charAt(0).toUpperCase()}
+                  </div>
                   <span className="text-xs font-bold text-text-primary">{activity.user}</span>
                   <span className="text-[10px] text-text-tertiary ml-auto">
                     {formatDistanceToNow(new Date(activity.timestamp))}

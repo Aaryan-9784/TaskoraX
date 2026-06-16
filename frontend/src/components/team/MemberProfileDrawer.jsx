@@ -25,11 +25,11 @@ const MemberProfileDrawer = ({ member, isOpen, onClose }) => {
         <div className="px-6 relative flex-1 overflow-y-auto pb-8 custom-scrollbar">
           {/* Profile Picture */}
           <div className="relative -mt-12 mb-4">
-            <img 
-              src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}`} 
-              alt={member.name} 
-              className="w-24 h-24 rounded-2xl border-4 border-surface-primary object-cover shadow-lg bg-surface-primary"
-            />
+            <div 
+              className="w-24 h-24 rounded-2xl border-4 border-surface-primary shadow-lg bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-4xl"
+            >
+              {member.name.charAt(0).toUpperCase()}
+            </div>
             <div className={`absolute bottom-1 right-1 w-5 h-5 border-2 border-surface-primary rounded-full ${member.status === 'Online' ? 'bg-success-500' : 'bg-warning-500'}`}></div>
           </div>
 

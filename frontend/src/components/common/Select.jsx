@@ -41,27 +41,27 @@ const Select = ({ label, options, value, onChange, error, className = '' }) => {
         </button>
 
         {isOpen && (
-          <div className="absolute z-50 mt-1.5 max-h-60 w-full overflow-auto rounded-xl bg-white p-1 shadow-elevated border border-border/50 focus:outline-none animate-scale-in origin-top">
-            {options.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                className={`relative w-full cursor-pointer rounded-lg select-none py-2 pl-4 pr-9 text-left text-sm transition-colors ${
-                  value === opt.value ? 'bg-primary-50/50 text-primary-700 font-semibold' : 'text-text-primary font-medium hover:bg-surface-secondary'
-                }`}
-                onClick={() => {
-                  onChange({ target: { value: opt.value } });
-                  setIsOpen(false);
-                }}
-              >
-                <span className="block truncate">{opt.label}</span>
-                {value === opt.value && (
-                  <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-primary-600">
-                    <HiCheck className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                )}
-              </button>
-            ))}
+          <div className="absolute z-50 mt-2 max-h-60 w-full overflow-auto bg-surface-primary/90 backdrop-blur-xl border border-border/50 rounded-2xl shadow-xl shadow-black/5 p-1.5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex flex-col gap-0.5">
+              {options.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  className={`flex items-center justify-between w-full px-3 py-2 text-sm font-medium rounded-xl transition-all ${
+                    value === opt.value ? 'bg-primary-500/10 text-primary-600' : 'text-text-secondary hover:text-text-primary hover:bg-surface-secondary/80'
+                  }`}
+                  onClick={() => {
+                    onChange({ target: { value: opt.value } });
+                    setIsOpen(false);
+                  }}
+                >
+                  <span className="block truncate text-left">{opt.label}</span>
+                  {value === opt.value && (
+                    <HiCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
