@@ -97,14 +97,36 @@ const userSchema = new mongoose.Schema(
         email: { type: Boolean, default: true },
         push: { type: Boolean, default: false },
         taskReminders: { type: Boolean, default: true },
+        projectUpdates: { type: Boolean, default: true },
+        teamMentions: { type: Boolean, default: true },
         weeklyDigest: { type: Boolean, default: true },
         marketing: { type: Boolean, default: false },
+        schedule: {
+          type: String,
+          enum: ['always', 'batched', 'quiet'],
+          default: 'always',
+        },
       },
     },
-    refreshToken: {
-      type: String,
+    is2FAEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
       select: false,
     },
+    sessions: [
+      {
+        token: { type: String, select: false },
+        device: String,
+        os: String,
+        browser: String,
+        ip: String,
+        lastActive: { type: Date, default: Date.now },
+      }
+    ],
     passwordResetToken: String,
     passwordResetExpires: Date,
   },

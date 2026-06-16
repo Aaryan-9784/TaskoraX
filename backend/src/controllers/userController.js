@@ -36,7 +36,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated
   const filteredBody = {};
-  const allowedFields = ['name', 'username', 'phone', 'email', 'avatar', 'role', 'bio', 'preferences'];
+  const allowedFields = ['name', 'username', 'phone', 'email', 'avatar', 'role', 'bio', 'preferences', 'is2FAEnabled'];
   Object.keys(req.body).forEach((el) => {
     if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
   });
@@ -69,5 +69,48 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // 4) Log user in, send JWT
-  createSendToken(user, 200, res);
+  await createSendToken(user, 200, res, req);
+});
+
+exports.deactivateAccount = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { isActive: false });
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
+exports.deleteAccount = catchAsync(async (req, res, next) => {
+  await User.findByIdAndDelete(req.user.id);
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
+exports.getSessions = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+sessions');
+  res.status(200).json({
+    status: 'success',
+    data: {
+      sessions: user.sessions,
+    },
+  });
+});
+
+exports.revokeSession = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+sessions');
+  
+  user.sessions = user.sessions.filter(
+    (session) => session._id.toString() !== req.params.sessionId
+  );
+  
+  await user.save({ validateBeforeSave: false });
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
 });

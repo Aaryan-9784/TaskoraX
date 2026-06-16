@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import Switch from '../common/Switch';
@@ -10,14 +10,31 @@ import {
 } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
-const SecurityCenter = ({ changePassword }) => {
+const SecurityCenter = ({ user, updateProfile, changePassword, getSessions, revokeSession }) => {
   const [passwordForm, setPasswordForm] = useState({
     current: '',
     newPassword: '',
     confirm: '',
   });
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [is2FAEnabled, setIs2FAEnabled] = useState(user?.is2FAEnabled || false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const [activeSessions, setActiveSessions] = useState([]);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(true);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const sessions = await getSessions();
+        setActiveSessions(sessions);
+      } catch (error) {
+        toast.error('Failed to load active sessions');
+      } finally {
+        setIsLoadingSessions(false);
+      }
+    };
+    fetchSessions();
+  }, [getSessions]);
 
   const calculatePasswordStrength = (password) => {
     let strength = 0;
@@ -45,6 +62,27 @@ const SecurityCenter = ({ changePassword }) => {
       toast.error(error.message || 'Failed to update password');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handle2FAToggle = async (checked) => {
+    setIs2FAEnabled(checked);
+    try {
+      await updateProfile({ is2FAEnabled: checked });
+      toast.success(checked ? '2FA enabled successfully' : '2FA disabled successfully');
+    } catch (error) {
+      setIs2FAEnabled(!checked);
+      toast.error('Failed to update 2FA settings');
+    }
+  };
+
+  const handleRevokeSession = async (sessionId) => {
+    try {
+      await revokeSession(sessionId);
+      setActiveSessions((prev) => prev.filter((session) => session._id !== sessionId));
+      toast.success('Session revoked successfully');
+    } catch (error) {
+      toast.error('Failed to revoke session');
     }
   };
 
@@ -149,7 +187,7 @@ const SecurityCenter = ({ changePassword }) => {
             </div>
             <Switch
               checked={is2FAEnabled}
-              onChange={setIs2FAEnabled}
+              onChange={handle2FAToggle}
               aria-label="Toggle 2FA"
             />
           </div>
@@ -160,58 +198,78 @@ const SecurityCenter = ({ changePassword }) => {
             Active Sessions
           </h3>
           <div className="space-y-3">
-            {[
-              {
-                device: 'MacBook Pro',
-                os: 'macOS 14.1',
-                browser: 'Chrome',
-                location: 'San Francisco, CA',
-                time: 'Active now',
-                icon: HiOutlineComputerDesktop,
-                current: true,
-              },
-              {
-                device: 'iPhone 13',
-                os: 'iOS 17.0',
-                browser: 'Safari',
-                location: 'San Francisco, CA',
-                time: 'Last active 2 hours ago',
-                icon: HiOutlineDevicePhoneMobile,
-                current: false,
-              },
-            ].map((session, idx) => {
-              const Icon = session.icon;
-              return (
-                <div key={idx} className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-gray-100 rounded-lg">
-                      <Icon className="w-5 h-5 text-gray-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-text-primary flex items-center gap-2">
-                        {session.device}
-                        {session.current && (
-                          <span className="px-2 py-0.5 bg-success-50 text-success-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                            Current
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-xs text-text-secondary mt-0.5">
-                        {session.os} · {session.browser} · {session.location}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right flex flex-col items-end gap-2">
-                    <p className="text-xs text-text-secondary">{session.time}</p>
-                    {!session.current && (
-                      <button className="text-xs font-medium text-danger-600 hover:text-danger-700 transition-colors">
-                        Revoke
-                      </button>
+            {isLoadingSessions ? (
+              <p className="text-sm text-text-secondary">Loading sessions...</p>
+            ) : activeSessions.length === 0 ? (
+              <div className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-gray-100 rounded-lg">
+                    {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? (
+                      <HiOutlineDevicePhoneMobile className="w-5 h-5 text-gray-600" />
+                    ) : (
+                      <HiOutlineComputerDesktop className="w-5 h-5 text-gray-600" />
                     )}
                   </div>
+                  <div>
+                    <p className="text-sm font-medium text-text-primary flex items-center gap-2">
+                      Current Device
+                      <span className="px-2 py-0.5 bg-success-50 text-success-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                        Current
+                      </span>
+                    </p>
+                    <p className="text-xs text-text-secondary mt-0.5">
+                      Legacy Session · Please log out and log back in to fully enable tracking
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
+                <div className="text-right flex flex-col items-end gap-2">
+                  <p className="text-xs text-text-secondary">Active now</p>
+                </div>
+              </div>
+            ) : (
+              activeSessions.map((session, index) => {
+                const isMobile = session.device.toLowerCase().includes('phone') || session.os.toLowerCase().includes('ios') || session.os.toLowerCase().includes('android');
+                const Icon = isMobile ? HiOutlineDevicePhoneMobile : HiOutlineComputerDesktop;
+                // Assuming the most recent session is the current one for simplicity, or last element if it's ordered
+                const isCurrent = index === activeSessions.length - 1;
+
+                return (
+                  <div key={session._id} className="flex items-center justify-between p-4 border border-border/50 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 bg-gray-100 rounded-lg">
+                        <Icon className="w-5 h-5 text-gray-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-text-primary flex items-center gap-2">
+                          {session.device}
+                          {isCurrent && (
+                            <span className="px-2 py-0.5 bg-success-50 text-success-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                              Current
+                            </span>
+                          )}
+                        </p>
+                        <p className="text-xs text-text-secondary mt-0.5">
+                          {session.os} · {session.browser} · {session.ip}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right flex flex-col items-end gap-2">
+                      <p className="text-xs text-text-secondary">
+                        {new Date(session.lastActive).toLocaleDateString()} {new Date(session.lastActive).toLocaleTimeString()}
+                      </p>
+                      {!isCurrent && (
+                        <button 
+                          onClick={() => handleRevokeSession(session._id)}
+                          className="text-xs font-medium text-danger-600 hover:text-danger-700 transition-colors"
+                        >
+                          Revoke
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

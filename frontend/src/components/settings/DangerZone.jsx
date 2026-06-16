@@ -6,27 +6,45 @@ import { HiOutlineExclamationTriangle } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-const DangerZone = ({ logout }) => {
+const DangerZone = ({ deactivateAccount, deleteAccount }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeactivating, setIsDeactivating] = useState(false);
   const navigate = useNavigate();
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (deleteConfirmation !== 'DELETE') {
       toast.error('Please type DELETE to confirm');
       return;
     }
     
     setIsDeleting(true);
-    // Simulate API delay
-    setTimeout(() => {
-      setIsDeleting(false);
+    try {
+      await deleteAccount();
       setShowDeleteModal(false);
-      logout();
       navigate('/');
       toast.success('Account deleted successfully');
-    }, 1500);
+    } catch (error) {
+      toast.error(error.message || 'Failed to delete account');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeactivateAccount = async () => {
+    setIsDeactivating(true);
+    try {
+      await deactivateAccount();
+      setShowDeactivateModal(false);
+      navigate('/');
+      toast.success('Account deactivated successfully');
+    } catch (error) {
+      toast.error(error.message || 'Failed to deactivate account');
+    } finally {
+      setIsDeactivating(false);
+    }
   };
 
   return (
@@ -56,7 +74,12 @@ const DangerZone = ({ logout }) => {
                 Temporarily disable your account. You can reactivate it anytime by logging back in.
               </p>
             </div>
-            <Button variant="outline" size="sm" className="text-danger-600 border-danger-200 hover:bg-danger-50 flex-shrink-0">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowDeactivateModal(true)}
+              className="text-danger-600 border-danger-200 hover:bg-danger-50 flex-shrink-0"
+            >
               Deactivate
             </Button>
           </div>
@@ -84,6 +107,39 @@ const DangerZone = ({ logout }) => {
         </div>
       </div>
 
+      {/* Deactivate Account Modal */}
+      <Modal
+        isOpen={showDeactivateModal}
+        onClose={() => setShowDeactivateModal(false)}
+        title="Deactivate Account"
+      >
+        <div className="space-y-4">
+          <div className="p-3 bg-warning-50 border border-warning-200 rounded-lg">
+            <p className="text-sm text-warning-800">
+              Your account will be temporarily disabled. Your profile, projects, and tasks will be hidden from other users. 
+              You can reactivate your account anytime by logging back in.
+            </p>
+          </div>
+          
+          <div className="flex justify-end gap-3 pt-4 border-t border-border/50">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDeactivateModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="danger" 
+              onClick={handleDeactivateAccount}
+              disabled={isDeactivating}
+            >
+              {isDeactivating ? 'Deactivating...' : 'Yes, Deactivate'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Account Modal */}
       <Modal
         isOpen={showDeleteModal}
         onClose={() => {

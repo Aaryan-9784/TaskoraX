@@ -14,18 +14,43 @@ const NotificationPreferences = ({ user, updateProfile }) => {
       teamMentions: true,
       weeklyDigest: true,
       marketing: false,
+      schedule: 'always',
     }
   );
-  const [schedule, setSchedule] = useState('always');
+  const [schedule, setSchedule] = useState(user?.preferences?.notifications?.schedule || 'always');
 
   const toggleNotification = async (key, value) => {
     const newNotifications = { ...notifications, [key]: value };
     setNotifications(newNotifications);
     try {
-      await updateProfile({ preferences: { notifications: newNotifications } });
+      await updateProfile({ 
+        preferences: { 
+          ...user?.preferences, 
+          notifications: newNotifications 
+        } 
+      });
       toast.success('Preferences updated successfully');
     } catch (error) {
       toast.error('Failed to update preferences');
+      setNotifications(notifications);
+    }
+  };
+
+  const handleScheduleChange = async (newSchedule) => {
+    setSchedule(newSchedule);
+    const newNotifications = { ...notifications, schedule: newSchedule };
+    setNotifications(newNotifications);
+    try {
+      await updateProfile({ 
+        preferences: { 
+          ...user?.preferences, 
+          notifications: newNotifications 
+        } 
+      });
+      toast.success('Schedule updated');
+    } catch (error) {
+      toast.error('Failed to update schedule');
+      setSchedule(schedule);
       setNotifications(notifications);
     }
   };
@@ -77,10 +102,7 @@ const NotificationPreferences = ({ user, updateProfile }) => {
             <Select
               label="Notification Schedule"
               value={schedule}
-              onChange={(e) => {
-                setSchedule(e.target.value);
-                toast.success('Schedule updated');
-              }}
+              onChange={(e) => handleScheduleChange(e.target.value)}
               options={[
                 { value: 'always', label: 'Always send notifications immediately' },
                 { value: 'batched', label: 'Batch notifications (Every hour)' },

@@ -75,6 +75,41 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const deactivateAccount = async () => {
+    try {
+      await api.patch('/users/deactivate');
+      logout();
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to deactivate account');
+    }
+  };
+
+  const deleteAccount = async () => {
+    try {
+      await api.delete('/users/delete');
+      logout();
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to delete account');
+    }
+  };
+
+  const getSessions = async () => {
+    try {
+      const { data } = await api.get('/users/sessions');
+      return data.data.sessions;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch sessions');
+    }
+  };
+
+  const revokeSession = async (sessionId) => {
+    try {
+      await api.delete(`/users/sessions/${sessionId}`);
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to revoke session');
+    }
+  };
+
   const value = {
     user,
     isAuthenticated: !!user,
@@ -84,6 +119,10 @@ export const AuthProvider = ({ children }) => {
     updateProfile,
     changePassword,
     logout,
+    deactivateAccount,
+    deleteAccount,
+    getSessions,
+    revokeSession,
   };
 
   return (

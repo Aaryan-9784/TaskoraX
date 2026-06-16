@@ -14,7 +14,7 @@ exports.register = catchAsync(async (req, res, next) => {
     password: req.body.password,
   });
 
-  createSendToken(newUser, 201, res);
+  await createSendToken(newUser, 201, res, req);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -26,14 +26,20 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 2) Check if user exists && password is correct
-  const user = await User.findOne({ email }).select('+password');
+  const user = await User.findOne({ email }).select('+password +isActive');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
 
+  // Reactivate account if it was deactivated
+  if (user.isActive === false) {
+    user.isActive = true;
+    await user.save({ validateBeforeSave: false });
+  }
+
   // 3) If everything ok, send token to client
-  createSendToken(user, 200, res);
+  await createSendToken(user, 200, res, req);
 });
 
 exports.refreshToken = catchAsync(async (req, res, next) => {
@@ -54,19 +60,27 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid refresh token. Please log in again.', 401));
   }
 
-  // 2) Check if user still exists
-  const currentUser = await User.findById(decoded.id);
+  // 2) Check if user still exists and has the token in their sessions
+  const currentUser = await User.findOne({
+    _id: decoded.id,
+    'sessions.token': refreshToken
+  });
+
   if (!currentUser) {
     return next(
       new AppError(
-        'The user belonging to this token does no longer exist.',
+        'The user belonging to this token does no longer exist or the session is revoked.',
         401
       )
     );
   }
 
+  // Find the old session and remove it so we can issue a new one
+  currentUser.sessions = currentUser.sessions.filter(s => s.token !== refreshToken);
+  await currentUser.save({ validateBeforeSave: false });
+
   // 3) Issue new tokens
-  createSendToken(currentUser, 200, res);
+  await createSendToken(currentUser, 200, res, req);
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
@@ -180,5 +194,5 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // 3) Log the user in, send JWT
-  createSendToken(user, 200, res);
+  await createSendToken(user, 200, res, req);
 });

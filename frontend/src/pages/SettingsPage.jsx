@@ -9,7 +9,7 @@ import NotificationPreferences from '../components/settings/NotificationPreferen
 import DangerZone from '../components/settings/DangerZone';
 
 const SettingsPage = () => {
-  const { user, updateProfile, changePassword, logout } = useAuth();
+  const { user, updateProfile, changePassword, logout, deactivateAccount, deleteAccount, getSessions, revokeSession } = useAuth();
   const [activeTab, setActiveTab] = useState('account');
 
   // Map tabs to their components
@@ -18,11 +18,11 @@ const SettingsPage = () => {
       case 'account':
         return <AccountSettings user={user} updateProfile={updateProfile} />;
       case 'security':
-        return <SecurityCenter changePassword={changePassword} />;
+        return <SecurityCenter user={user} updateProfile={updateProfile} changePassword={changePassword} getSessions={getSessions} revokeSession={revokeSession} />;
       case 'notifications':
         return <NotificationPreferences user={user} updateProfile={updateProfile} />;
       case 'danger':
-        return <DangerZone logout={logout} />;
+        return <DangerZone deactivateAccount={deactivateAccount} deleteAccount={deleteAccount} />;
       default:
         return <AccountSettings user={user} updateProfile={updateProfile} />;
     }
