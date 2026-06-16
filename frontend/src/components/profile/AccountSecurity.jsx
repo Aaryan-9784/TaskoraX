@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import toast from 'react-hot-toast';
@@ -20,6 +20,40 @@ const AccountSecurity = () => {
   });
   const [loading, setLoading] = useState(false);
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [is2FALoading, setIs2FALoading] = useState(false);
+
+  const [sessions, setSessions] = useState(() => {
+    const saved = localStorage.getItem('active_sessions');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        // Fallback to default
+      }
+    }
+    return [
+      {
+        id: '1',
+        device: 'Windows 11',
+        browser: 'Chrome',
+        location: 'New York, USA',
+        status: 'Active now',
+        isCurrent: true
+      },
+      {
+        id: '2',
+        device: 'iPhone 14 Pro',
+        browser: 'Safari',
+        location: 'New York, USA',
+        status: 'Last active 2 hours ago',
+        isCurrent: false
+      }
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('active_sessions', JSON.stringify(sessions));
+  }, [sessions]);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -42,6 +76,30 @@ const AccountSecurity = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggle2FA = async () => {
+    setIs2FALoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIs2FAEnabled(!is2FAEnabled);
+      setIs2FALoading(false);
+      if (!is2FAEnabled) {
+        toast.success('Two-Factor Authentication enabled successfully');
+      } else {
+        toast.success('Two-Factor Authentication disabled');
+      }
+    }, 800);
+  };
+
+  const handleLogoutAll = () => {
+    setSessions(sessions.filter(s => s.isCurrent));
+    toast.success('Logged out of all other devices successfully');
+  };
+
+  const handleRevoke = (id) => {
+    setSessions(sessions.filter(s => s.id !== id));
+    toast.success('Session revoked successfully');
   };
 
   return (
@@ -106,7 +164,8 @@ const AccountSecurity = () => {
           </div>
           <Button 
             variant={is2FAEnabled ? 'outline' : 'primary'} 
-            onClick={() => setIs2FAEnabled(!is2FAEnabled)}
+            onClick={toggle2FA}
+            isLoading={is2FALoading}
           >
             {is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA'}
           </Button>
@@ -126,31 +185,47 @@ const AccountSecurity = () => {
                 <p className="text-sm text-text-secondary">Manage and log out your active sessions on other browsers and devices.</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="text-danger-600 hover:bg-danger-50 hover:text-danger-700 hover:border-danger-200">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-danger-600 hover:bg-danger-50 hover:text-danger-700 hover:border-danger-200"
+              onClick={handleLogoutAll}
+              disabled={sessions.length <= 1}
+            >
               Log out all devices
             </Button>
           </div>
 
           <div className="ml-13 pl-4 border-l border-border/60 space-y-4">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-surface-secondary/50 border border-border/50">
-              <div className="flex items-center gap-3">
-                <HiOutlineComputerDesktop className="w-6 h-6 text-primary-500" />
-                <div>
-                  <p className="text-sm font-medium text-text-primary">Windows 11 • Chrome <span className="ml-2 text-[10px] font-bold text-success-600 bg-success-50 px-2 py-0.5 rounded-full uppercase">Current</span></p>
-                  <p className="text-xs text-text-tertiary">New York, USA • Active now</p>
+            {sessions.map((session) => (
+              <div 
+                key={session.id} 
+                className={`flex items-center justify-between p-3 rounded-xl border ${session.isCurrent ? 'bg-surface-secondary/50 border-border/50' : 'hover:bg-surface-secondary/50 border-transparent transition-colors group'}`}
+              >
+                <div className="flex items-center gap-3">
+                  {session.id === '1' ? (
+                    <HiOutlineComputerDesktop className={`w-6 h-6 ${session.isCurrent ? 'text-primary-500' : 'text-text-secondary group-hover:text-primary-500 transition-colors'}`} />
+                  ) : (
+                    <HiOutlineDevicePhoneMobile className={`w-6 h-6 ${session.isCurrent ? 'text-primary-500' : 'text-text-secondary group-hover:text-primary-500 transition-colors'}`} />
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-text-primary">
+                      {session.device} • {session.browser} 
+                      {session.isCurrent && <span className="ml-2 text-[10px] font-bold text-success-600 bg-success-50 px-2 py-0.5 rounded-full uppercase">Current</span>}
+                    </p>
+                    <p className="text-xs text-text-tertiary">{session.location} • {session.status}</p>
+                  </div>
                 </div>
+                {!session.isCurrent && (
+                  <button 
+                    onClick={() => handleRevoke(session.id)}
+                    className="text-xs font-medium text-danger-600 hover:text-danger-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    Revoke
+                  </button>
+                )}
               </div>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-xl hover:bg-surface-secondary/50 border border-transparent transition-colors group">
-              <div className="flex items-center gap-3">
-                <HiOutlineDevicePhoneMobile className="w-6 h-6 text-text-secondary group-hover:text-primary-500 transition-colors" />
-                <div>
-                  <p className="text-sm font-medium text-text-primary">iPhone 14 Pro • Safari</p>
-                  <p className="text-xs text-text-tertiary">New York, USA • Last active 2 hours ago</p>
-                </div>
-              </div>
-              <button className="text-xs font-medium text-danger-600 hover:text-danger-700 opacity-0 group-hover:opacity-100 transition-opacity">Revoke</button>
-            </div>
+            ))}
           </div>
         </div>
 

@@ -14,7 +14,7 @@ import UserProfilePopup from './UserProfilePopup';
 import CreateTaskModal from '../tasks/CreateTaskModal';
 
 const DashboardNavbar = ({ onOpenSidebar }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { allTasks = [] } = useTask();
   const [activePopup, setActivePopup] = useState(null);
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
@@ -149,7 +149,7 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
               {getInitials(user?.name)}
             </div>
           </button>
-          <UserProfilePopup isOpen={activePopup === 'profile'} onClose={closePopups} user={user} onLogout={() => { /* Handle logout */ }} />
+          <UserProfilePopup isOpen={activePopup === 'profile'} onClose={closePopups} user={user} onLogout={logout} />
         </div>
       </div>
       

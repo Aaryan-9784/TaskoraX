@@ -1,42 +1,54 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useTask } from '../context/TaskContext';
 
-// Import new profile components
+// Import core profile components
 import ProfileHeader from '../components/profile/ProfileHeader';
-import OverviewCards from '../components/profile/OverviewCards';
 import PersonalInfo from '../components/profile/PersonalInfo';
-import WorkSummary from '../components/profile/WorkSummary';
-import ActivityTimeline from '../components/profile/ActivityTimeline';
-import SkillsExpertise from '../components/profile/SkillsExpertise';
-import CurrentProjects from '../components/profile/CurrentProjects';
 import AccountSecurity from '../components/profile/AccountSecurity';
+import NotificationPreferences from '../components/profile/NotificationPreferences';
+import { 
+  HiOutlineUser, 
+  HiOutlineShieldCheck, 
+  HiOutlineBell
+} from 'react-icons/hi2';
 
 const ProfilePage = () => {
   const { user, updateProfile } = useAuth();
-  const { stats } = useTask();
-  
-  // Refs for scrolling
-  const securityRef = useRef(null);
-  const personalInfoRef = useRef(null);
+  const [activeTab, setActiveTab] = useState('general');
+  const [editSignal, setEditSignal] = useState(null);
 
   const handleEditProfile = () => {
-    personalInfoRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setActiveTab('general');
+    setEditSignal(Date.now());
+    setTimeout(() => {
+      document.getElementById('profile-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleChangePassword = () => {
-    securityRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setActiveTab('security');
+    setTimeout(() => {
+      document.getElementById('profile-content')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
+  const tabs = [
+    { id: 'general', label: 'General Info', icon: HiOutlineUser },
+    { id: 'security', label: 'Security', icon: HiOutlineShieldCheck },
+    { id: 'notifications', label: 'Notifications', icon: HiOutlineBell },
+  ];
+
   return (
-    <div className="space-y-6 animate-fade-in max-w-[1400px] mx-auto pb-10">
+    <div className="space-y-6 animate-fade-in pb-12">
       
-      {/* Page Title (Optional since we have a hero header, but good for structure) */}
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-text-primary tracking-tight">Profile & Account</h1>
-        <p className="text-sm text-text-secondary mt-1">
-          Manage your personal information, work settings, and security preferences.
-        </p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-text-primary">Profile & Account</h1>
+          <p className="text-sm text-text-secondary mt-1">
+            Manage your personal information, work settings, and security preferences.
+          </p>
+        </div>
       </div>
 
       {/* Hero Header Section */}
@@ -46,36 +58,50 @@ const ProfilePage = () => {
         onChangePassword={handleChangePassword}
       />
 
-      {/* Top Overview Cards */}
-      <OverviewCards stats={stats} />
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+      {/* Main Content Layout */}
+      <div className="flex flex-col lg:flex-row gap-6 mt-6 items-start">
         
-        {/* Left Column (Main Information) */}
-        <div className="xl:col-span-2 space-y-6">
-          <div ref={personalInfoRef}>
-            <PersonalInfo user={user} updateProfile={updateProfile} />
-          </div>
-          
-          <CurrentProjects />
-          
-          <div ref={securityRef}>
-            <AccountSecurity />
+        {/* Sidebar Navigation */}
+        <div className="w-full lg:w-64 flex-shrink-0 sticky top-6 z-10">
+          <div className="bg-white border border-border/50 rounded-2xl p-2 shadow-sm">
+            <nav className="flex flex-row lg:flex-col gap-1 overflow-x-auto pb-2 lg:pb-0 hide-scrollbar">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? 'bg-primary-50 text-primary-600'
+                      : 'text-text-secondary hover:bg-surface-secondary/80 hover:text-text-primary'
+                  }`}
+                >
+                  <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-primary-600' : 'text-text-tertiary'}`} />
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
           </div>
         </div>
 
-        {/* Right Column (Summaries & Activity) */}
-        <div className="xl:col-span-1 space-y-6 flex flex-col">
-          <div className="flex-1 min-h-[300px]">
-             <WorkSummary stats={stats} />
-          </div>
-          <div className="flex-1 min-h-[300px]">
-             <SkillsExpertise />
-          </div>
-          <div className="flex-1 min-h-[400px]">
-             <ActivityTimeline />
-          </div>
+        {/* Content Area */}
+        <div id="profile-content" className="flex-1 w-full max-w-4xl scroll-mt-24">
+          {activeTab === 'general' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <PersonalInfo user={user} updateProfile={updateProfile} editSignal={editSignal} />
+            </div>
+          )}
+          
+          {activeTab === 'security' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <AccountSecurity />
+            </div>
+          )}
+
+          {activeTab === 'notifications' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <NotificationPreferences />
+            </div>
+          )}
         </div>
 
       </div>
