@@ -26,12 +26,17 @@ const TasksTab = ({ project, onUpdateProject }) => {
 
     const newTasksList = [newTask, ...tasksList];
     
+    const newTotal = project.tasks.total + 1;
+    const newCompleted = project.tasks.completed;
+    const newProgress = newTotal > 0 ? Math.round((newCompleted / newTotal) * 100) : 0;
+    
     onUpdateProject({
       ...project,
       tasksList: newTasksList,
+      progress: newProgress,
       tasks: {
-        total: project.tasks.total + 1,
-        completed: project.tasks.completed
+        total: newTotal,
+        completed: newCompleted
       }
     });
 
@@ -48,12 +53,17 @@ const TasksTab = ({ project, onUpdateProject }) => {
       t.id === taskId ? { ...t, status: newStatus } : t
     );
     
+    const newCompleted = project.tasks.completed + (isCompleting ? 1 : -1);
+    const newTotal = project.tasks.total;
+    const newProgress = newTotal > 0 ? Math.round((newCompleted / newTotal) * 100) : 0;
+    
     onUpdateProject({
       ...project,
       tasksList: newTasksList,
+      progress: newProgress,
       tasks: {
-        total: project.tasks.total,
-        completed: project.tasks.completed + (isCompleting ? 1 : -1)
+        total: newTotal,
+        completed: newCompleted
       }
     });
     

@@ -116,7 +116,19 @@ const TeamTab = ({ project, onUpdateProject }) => {
                 <tr key={member.id} className="hover:bg-surface-secondary/30 transition-colors group">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary-500/10 text-primary-600 flex items-center justify-center font-bold text-sm shrink-0">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${
+                        (() => {
+                          const colors = [
+                            'bg-primary-500/10 text-primary-600',
+                            'bg-success-500/10 text-success-600',
+                            'bg-warning-500/10 text-warning-600',
+                            'bg-accent-500/10 text-accent-600',
+                            'bg-info-500/10 text-info-600'
+                          ];
+                          if (!member.name) return colors[0];
+                          return colors[member.name.charCodeAt(0) % colors.length];
+                        })()
+                      }`}>
                         {member.name ? member.name.charAt(0).toUpperCase() : '?'}
                       </div>
                       <span className="text-sm font-semibold text-text-primary">{member.name}</span>

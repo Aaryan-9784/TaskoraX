@@ -1,16 +1,21 @@
 import { HiOutlineChartPie, HiOutlineClock, HiOutlineFire } from 'react-icons/hi2';
 
 const OverviewTab = ({ project }) => {
+  const tasksTotal = project.tasksList ? project.tasksList.length : (project.tasks ? project.tasks.total : 0);
+  const tasksCompleted = project.tasksList ? project.tasksList.filter(t => t.status === 'Done').length : (project.tasks ? project.tasks.completed : 0);
+  const remainingTasks = Math.max(0, tasksTotal - tasksCompleted);
+  const actualProgress = tasksTotal > 0 ? Math.round((tasksCompleted / tasksTotal) * 100) : project.progress;
+
   const getHealth = () => {
     if (project.status === 'Completed') return { text: 'Completed', color: 'text-primary-500 bg-primary-500/10' };
     if (project.status === 'At Risk') return { text: 'At Risk', color: 'text-danger-500 bg-danger-500/10' };
     if (project.status === 'On Hold') return { text: 'Paused', color: 'text-warning-500 bg-warning-500/10' };
-    if (project.progress < 20 && project.status === 'Planning') return { text: 'Starting', color: 'text-accent-500 bg-accent-500/10' };
+    if (actualProgress < 20 && project.status === 'Planning') return { text: 'Starting', color: 'text-accent-500 bg-accent-500/10' };
     return { text: 'On Track', color: 'text-success-500 bg-success-500/10' };
   };
 
   const health = getHealth();
-  const budgetUsed = project.progress > 0 ? Math.min(100, Math.floor(project.progress * 1.15)) + '% Used' : 'Not Started';
+  const budgetUsed = actualProgress > 0 ? Math.min(100, Math.floor(actualProgress * 1.15)) + '% Used' : 'Not Started';
 
   let resources = 'Optimal';
   let resourceColor = 'bg-success-500/10 text-success-500';
@@ -21,10 +26,6 @@ const OverviewTab = ({ project }) => {
     resources = 'Stretched';
     resourceColor = 'bg-warning-500/10 text-warning-500';
   }
-
-  const tasksTotal = project.tasks ? project.tasks.total : 0;
-  const tasksCompleted = project.tasks ? project.tasks.completed : 0;
-  const remainingTasks = Math.max(0, tasksTotal - tasksCompleted);
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
@@ -42,7 +43,7 @@ const OverviewTab = ({ project }) => {
                 <HiOutlineChartPie className="h-5 w-5" />
                 <span className="text-sm font-medium">Completion</span>
               </div>
-              <div className="text-2xl font-bold text-text-primary">{project.progress}%</div>
+              <div className="text-2xl font-bold text-text-primary">{actualProgress}%</div>
             </div>
 
             <div className="p-4 rounded-xl bg-surface-secondary border border-border/60">

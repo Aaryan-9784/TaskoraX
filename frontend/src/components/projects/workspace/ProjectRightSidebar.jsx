@@ -1,7 +1,30 @@
-import { HiOutlineCalendar, HiOutlineDocumentText } from 'react-icons/hi2';
+import { useState, useEffect } from 'react';
+import { HiOutlineCalendar, HiOutlineDocumentText, HiOutlineCheckCircle } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
-const ProjectRightSidebar = ({ project }) => {
+const ProjectRightSidebar = ({ project, onUpdateProject }) => {
+  const [noteText, setNoteText] = useState(project.quickNote || '');
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Sync state if project note changes externally
+  useEffect(() => {
+    setNoteText(project.quickNote || '');
+  }, [project.quickNote]);
+
+  const handleSaveNote = () => {
+    if (noteText !== (project.quickNote || '')) {
+      setIsSaving(true);
+      if (onUpdateProject) {
+        onUpdateProject({
+          ...project,
+          quickNote: noteText
+        });
+        toast.success('Notes saved successfully', { id: 'quick-note-save' });
+      }
+      setTimeout(() => setIsSaving(false), 500);
+    }
+  };
+
   const getUpcomingDeadlines = () => {
     let deadlines = [];
     if (project.dueDate) {
@@ -19,7 +42,8 @@ const ProjectRightSidebar = ({ project }) => {
         deadlines.push({
           id: t.id,
           title: t.name,
-          time: 'Pending Task'
+          time: 'Pending Task',
+          isTask: true
         });
       });
     }
@@ -79,8 +103,12 @@ const ProjectRightSidebar = ({ project }) => {
                 className="flex items-start gap-4 p-4 rounded-xl bg-surface-secondary border border-border/40 hover:border-border/80 transition-colors cursor-pointer group"
                 onClick={() => toast('Opening deadline details...', { icon: '📅' })}
               >
-                <div className="w-10 h-10 rounded-lg bg-primary-500/10 text-primary-500 flex items-center justify-center shrink-0 group-hover:bg-primary-500/20 transition-colors">
-                  <HiOutlineCalendar className="h-5 w-5" />
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                  deadline.isTask 
+                    ? 'bg-warning-500/10 text-warning-500 group-hover:bg-warning-500/20' 
+                    : 'bg-primary-500/10 text-primary-500 group-hover:bg-primary-500/20'
+                }`}>
+                  {deadline.isTask ? <HiOutlineCheckCircle className="h-5 w-5" /> : <HiOutlineCalendar className="h-5 w-5" />}
                 </div>
                 <div className="min-w-0 flex-1 pt-0.5">
                   <p className="text-sm font-semibold text-text-primary truncate">{deadline.title}</p>
@@ -93,12 +121,18 @@ const ProjectRightSidebar = ({ project }) => {
 
         {/* Quick Notes */}
         <div>
-          <h4 className="text-xs font-bold text-text-tertiary uppercase tracking-wider mb-4">Quick Notes</h4>
-          <div 
-            className="p-4 rounded-xl bg-surface-secondary border border-border/40 text-sm text-text-secondary cursor-pointer hover:border-border/80 transition-colors leading-relaxed"
-            onClick={() => toast('Opening notes editor...', { icon: '📝' })}
-          >
-            {project.quickNote || `Keep important reminders and brief notes about ${project.name} here.`}
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-xs font-bold text-text-tertiary uppercase tracking-wider">Quick Notes</h4>
+            {isSaving && <span className="text-xs font-medium text-success-500 animate-pulse">Saving...</span>}
+          </div>
+          <div className="relative group">
+            <textarea
+              className="w-full p-4 rounded-xl bg-surface-secondary border border-border/40 text-sm text-text-primary focus:outline-none focus:border-primary-500 focus:bg-surface-primary focus:ring-4 focus:ring-primary-500/10 transition-all leading-relaxed resize-none min-h-[140px] custom-scrollbar placeholder:text-text-tertiary"
+              placeholder={`Keep important reminders and brief notes about ${project.name} here...`}
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              onBlur={handleSaveNote}
+            />
           </div>
         </div>
 

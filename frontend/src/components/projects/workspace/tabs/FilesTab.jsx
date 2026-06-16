@@ -1,17 +1,64 @@
 import { useState } from 'react';
-import { HiOutlineDocumentText, HiOutlineArrowUpTray } from 'react-icons/hi2';
+import { 
+  HiOutlineDocumentText, 
+  HiOutlineArrowUpTray, 
+  HiOutlineArrowDownTray, 
+  HiOutlineTrash, 
+  HiOutlinePhoto,
+  HiOutlineTableCells,
+  HiOutlinePresentationChartBar,
+  HiOutlineArchiveBox,
+  HiOutlineVideoCamera,
+  HiOutlineCodeBracket
+} from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 import Button from '../../../common/Button';
 
+const getFileTypeInfo = (filename) => {
+  if (!filename) return { icon: HiOutlineDocumentText, color: 'text-text-tertiary', bg: 'bg-surface-secondary', label: 'FILE' };
+  const ext = filename.split('.').pop().toLowerCase();
+  switch (ext) {
+    case 'pdf':
+      return { icon: HiOutlineDocumentText, color: 'text-error-500', bg: 'bg-error-500/10', label: 'PDF' };
+    case 'doc':
+    case 'docx':
+    case 'txt':
+      return { icon: HiOutlineDocumentText, color: 'text-primary-500', bg: 'bg-primary-500/10', label: 'DOC' };
+    case 'xls':
+    case 'xlsx':
+    case 'csv':
+      return { icon: HiOutlineTableCells, color: 'text-success-500', bg: 'bg-success-500/10', label: 'SPREADSHEET' };
+    case 'ppt':
+    case 'pptx':
+      return { icon: HiOutlinePresentationChartBar, color: 'text-warning-500', bg: 'bg-warning-500/10', label: 'PRESENTATION' };
+    case 'zip':
+    case 'rar':
+    case '7z':
+    case 'tar':
+      return { icon: HiOutlineArchiveBox, color: 'text-text-secondary', bg: 'bg-surface-tertiary', label: 'ARCHIVE' };
+    case 'mp4':
+    case 'mov':
+    case 'avi':
+    case 'mkv':
+      return { icon: HiOutlineVideoCamera, color: 'text-accent-500', bg: 'bg-accent-500/10', label: 'VIDEO' };
+    case 'js':
+    case 'jsx':
+    case 'html':
+    case 'css':
+    case 'json':
+      return { icon: HiOutlineCodeBracket, color: 'text-blue-500', bg: 'bg-blue-500/10', label: 'CODE' };
+    default:
+      return { icon: HiOutlineDocumentText, color: 'text-text-tertiary', bg: 'bg-surface-secondary', label: ext.substring(0, 4).toUpperCase() || 'FILE' };
+  }
+};
+
 const FilesTab = ({ project, onUpdateProject }) => {
-  // Ensure project has a files array
   const files = project.files || [];
 
   const handleFileUpload = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       
-      // Limit file size to 1.5MB to prevent localStorage overflow
       if (file.size > 1.5 * 1024 * 1024) {
         toast.error('File size must be less than 1.5MB for this demo.');
         return;
@@ -20,12 +67,14 @@ const FilesTab = ({ project, onUpdateProject }) => {
       const reader = new FileReader();
       
       reader.onloadend = () => {
+        const isImage = file.type.startsWith('image/');
         const newFile = {
           id: Date.now(),
           name: file.name,
           size: (file.size / 1024).toFixed(1) + ' KB',
           date: new Date().toLocaleDateString(),
-          url: reader.result
+          url: reader.result,
+          isImage: isImage
         };
         
         try {
@@ -49,17 +98,14 @@ const FilesTab = ({ project, onUpdateProject }) => {
 
   const handleOpenFile = (file) => {
     if (file.url) {
-      // Create a temporary window or tab to display the file
       try {
         const newWindow = window.open();
         if (newWindow) {
           newWindow.document.write(`<iframe src="${file.url}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
         } else {
-          // Fallback if popup blocker prevents new window
           window.location.href = file.url;
         }
       } catch (err) {
-        // Fallback for some browsers that restrict data URLs in new tabs
         const a = document.createElement('a');
         a.href = file.url;
         a.download = file.name;
@@ -68,6 +114,28 @@ const FilesTab = ({ project, onUpdateProject }) => {
     } else {
       toast.success(`Opened ${file.name}`);
     }
+  };
+
+  const handleDownloadFile = (e, file) => {
+    e.stopPropagation();
+    if (file.url) {
+      const a = document.createElement('a');
+      a.href = file.url;
+      a.download = file.name;
+      a.click();
+      toast.success(`Downloading ${file.name}`);
+    } else {
+      toast.error('Cannot download this file');
+    }
+  };
+
+  const handleDeleteFile = (e, fileId) => {
+    e.stopPropagation();
+    onUpdateProject({
+      ...project,
+      files: files.filter(f => f.id !== fileId)
+    });
+    toast.success('File deleted');
   };
 
   return (
@@ -84,18 +152,64 @@ const FilesTab = ({ project, onUpdateProject }) => {
       </div>
 
       {files.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {files.map(f => (
-            <div key={f.id} className="glass-panel p-4 rounded-xl border border-border/40 flex items-start gap-4 hover:border-border/80 transition-colors cursor-pointer" onClick={() => handleOpenFile(f)}>
-              <div className="w-10 h-10 rounded-lg bg-surface-secondary flex items-center justify-center shrink-0">
-                <HiOutlineDocumentText className="w-6 h-6 text-primary-500" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {files.map(f => {
+            const isImg = f.isImage || (f.url && f.url.startsWith('data:image'));
+            const fileInfo = getFileTypeInfo(f.name);
+            const IconComponent = isImg ? HiOutlinePhoto : fileInfo.icon;
+            
+            return (
+              <div key={f.id} className="glass-panel rounded-xl border border-border/40 overflow-hidden hover:border-border/80 transition-all hover:shadow-lg hover:-translate-y-1 group flex flex-col">
+                {/* Preview Area */}
+                <div 
+                  className={`h-40 flex items-center justify-center cursor-pointer relative overflow-hidden ${isImg ? 'bg-surface-secondary' : fileInfo.bg}`}
+                  onClick={() => handleOpenFile(f)}
+                >
+                  {isImg ? (
+                    <img src={f.url} alt={f.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                      <IconComponent className={`w-14 h-14 ${fileInfo.color} mb-3`} />
+                      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest ${fileInfo.color} bg-white shadow-sm ring-1 ring-border/50`}>
+                        {fileInfo.label}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {/* Hover Actions Overlay */}
+                  <div className="absolute inset-0 bg-surface-primary/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <button 
+                      onClick={(e) => handleDownloadFile(e, f)} 
+                      className="p-2.5 bg-surface-secondary hover:bg-white text-text-primary rounded-xl shadow-sm transition-colors" 
+                      title="Download"
+                    >
+                      <HiOutlineArrowDownTray className="w-5 h-5" />
+                    </button>
+                    <button 
+                      onClick={(e) => handleDeleteFile(e, f.id)} 
+                      className="p-2.5 bg-error-50 hover:bg-error-500 text-error-600 hover:text-white rounded-xl shadow-sm transition-colors" 
+                      title="Delete"
+                    >
+                      <HiOutlineTrash className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* File Details */}
+                <div className="p-4 bg-surface-primary flex-1 border-t border-border/40 cursor-pointer" onClick={() => handleOpenFile(f)}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isImg ? 'bg-accent-500/10 text-accent-500' : fileInfo.bg + ' ' + fileInfo.color}`}>
+                      <IconComponent className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-text-primary truncate" title={f.name}>{f.name}</h4>
+                      <p className="text-xs text-text-secondary mt-0.5 truncate">{f.size} • {f.date}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-text-primary truncate">{f.name}</h4>
-                <p className="text-xs text-text-secondary mt-1">{f.size} • {f.date}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="flex-1 glass-panel border border-border/40 rounded-xl flex items-center justify-center p-12">

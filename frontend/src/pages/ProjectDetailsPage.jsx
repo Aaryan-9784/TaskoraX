@@ -155,7 +155,7 @@ const ProjectDetailsPage = () => {
       </div>
 
       {/* Right Sidebar */}
-      <ProjectRightSidebar project={project} />
+      <ProjectRightSidebar project={project} onUpdateProject={handleUpdateProject} />
 
       {/* Settings Modal */}
       <Modal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} title="Project Settings" size="md">
