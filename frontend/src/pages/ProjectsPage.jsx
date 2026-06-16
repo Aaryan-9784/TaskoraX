@@ -13,8 +13,25 @@ const ProjectsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('taskora_projects');
-    return saved ? JSON.parse(saved) : mockProjects;
+    const parsed = saved ? JSON.parse(saved) : mockProjects;
+    
+    // Backfill tasksList for projects that have tasks.total but no tasksList
+    return parsed.map(p => {
+      if (!p.tasksList && p.tasks && p.tasks.total > 0) {
+        const list = [];
+        for (let i = 0; i < p.tasks.total; i++) {
+          list.push({
+            id: `mock-task-${p.id}-${i}`,
+            name: `Project Task ${i + 1}`,
+            status: i < p.tasks.completed ? 'Done' : 'Todo'
+          });
+        }
+        return { ...p, tasksList: list };
+      }
+      return p;
+    });
   });
+
   const [activeModal, setActiveModal] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [newProjectName, setNewProjectName] = useState('');
@@ -82,7 +99,8 @@ const ProjectsPage = () => {
         priority: 'Medium',
         coverColor: 'bg-primary-500',
         team: [],
-        tasks: { total: 0, completed: 0 }
+        tasks: { total: 0, completed: 0 },
+        tasksList: []
       };
       
       setProjects([restoredProject, ...projects]);
@@ -141,7 +159,8 @@ const ProjectsPage = () => {
       priority: 'Medium',
       coverColor: ['bg-primary-500', 'bg-secondary-500', 'bg-accent-500', 'bg-warning-500'][Math.floor(Math.random() * 4)],
       team: [],
-      tasks: { total: 0, completed: 0 }
+      tasks: { total: 0, completed: 0 },
+      tasksList: []
     };
     
     setProjects([newProject, ...projects]);
@@ -159,6 +178,15 @@ const ProjectsPage = () => {
     handleCloseModal();
   };
 
+  const currentMetrics = useMemo(() => {
+    return {
+      total: projects.length,
+      active: projects.filter(p => p.status === 'Active' || p.status === 'Planning').length,
+      completed: projects.filter(p => p.status === 'Completed').length,
+      atRisk: projects.filter(p => p.status === 'At Risk').length,
+    };
+  }, [projects]);
+
   return (
     <div className="space-y-8 animate-fade-in pb-8">
       <ProjectsHeader 
@@ -172,7 +200,7 @@ const ProjectsPage = () => {
         onSort={() => setActiveModal('sort')}
       />
       
-      {!searchQuery && <ProjectOverviewCards metrics={projectMetrics} />}
+      {!searchQuery && <ProjectOverviewCards metrics={currentMetrics} />}
       
       {filteredProjects.length > 0 ? (
         <ProjectsGrid 
