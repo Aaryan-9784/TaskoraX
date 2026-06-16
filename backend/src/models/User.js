@@ -39,8 +39,41 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
-      default: 'user',
+      enum: ['user', 'admin', 'Manager', 'Owner', 'Member'],
+      default: 'Member',
+    },
+    department: {
+      type: String,
+      default: 'General',
+    },
+    status: {
+      type: String,
+      enum: ['Online', 'Offline', 'Busy', 'Away', 'Pending'],
+      default: 'Offline',
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    assignedTasks: {
+      type: Number,
+      default: 0,
+    },
+    completedTasks: {
+      type: Number,
+      default: 0,
+    },
+    pendingTasks: {
+      type: Number,
+      default: 0,
+    },
+    productivityScore: {
+      type: Number,
+      default: 0,
+    },
+    workloadPercentage: {
+      type: Number,
+      default: 0,
     },
     bio: {
       type: String,

@@ -13,13 +13,15 @@ import TimelineTab from '../components/projects/workspace/tabs/TimelineTab';
 import FilesTab from '../components/projects/workspace/tabs/FilesTab';
 import ActivityTab from '../components/projects/workspace/tabs/ActivityTab';
 import ProjectRightSidebar from '../components/projects/workspace/ProjectRightSidebar';
-import { mockProjects } from '../utils/mockProjects';
+import { useProjects } from '../context/ProjectContext';
 
 const ProjectDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { projects, loading, updateProject, deleteProject } = useProjects();
   const [activeTab, setActiveTab] = useState('overview');
-  const [project, setProject] = useState(null);
+  
+  const project = projects.find(p => p._id === id || p.id === id);
   
   // Settings Modal State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -30,50 +32,17 @@ const ProjectDetailsPage = () => {
   const [editDueDate, setEditDueDate] = useState('');
 
   useEffect(() => {
-    const saved = localStorage.getItem('taskora_projects');
-    const allProjects = saved ? JSON.parse(saved) : mockProjects;
-    
-    // Also check archived projects just in case
-    const savedArchived = localStorage.getItem('taskora_archived_projects');
-    const archivedProjects = savedArchived ? JSON.parse(savedArchived) : [
-      { id: 'proj-arc-1', name: 'Legacy Dashboard UI', date: '2025-11-20', status: 'Archived', progress: 100, coverColor: 'bg-surface-tertiary', team: [], tasks: { total: 0, completed: 0 } }
-    ];
-
-    let found = allProjects.find((p) => p.id === id);
-    if (!found) {
-      found = archivedProjects.find((p) => p.id === id);
-      if (found && !found.tasks) {
-        found = { ...found, status: 'Archived', progress: 100, coverColor: 'bg-surface-tertiary', team: [], tasks: { total: 0, completed: 0 }, description: 'Archived project.' };
-      }
+    if (project) {
+      setEditName(project.name || '');
+      setEditDesc(project.description || '');
+      setEditStatus(project.status || 'Active');
+      setEditPriority(project.priority || 'Medium');
+      setEditDueDate(project.dueDate || '');
     }
-    setProject(found);
-    if (found) {
-      setEditName(found.name || '');
-      setEditDesc(found.description || '');
-      setEditStatus(found.status || 'Active');
-      setEditPriority(found.priority || 'Medium');
-      setEditDueDate(found.dueDate || '');
-    }
-  }, [id]);
+  }, [project]);
 
   const handleUpdateProject = (updatedProject) => {
-    setProject(updatedProject);
-    
-    // Save to local storage
-    const saved = localStorage.getItem('taskora_projects');
-    const allProjects = saved ? JSON.parse(saved) : mockProjects;
-    
-    if (allProjects.some(p => p.id === updatedProject.id)) {
-      const newProjects = allProjects.map(p => p.id === updatedProject.id ? updatedProject : p);
-      localStorage.setItem('taskora_projects', JSON.stringify(newProjects));
-    } else {
-      const savedArchived = localStorage.getItem('taskora_archived_projects');
-      const archivedProjects = savedArchived ? JSON.parse(savedArchived) : [];
-      if (archivedProjects.some(p => p.id === updatedProject.id)) {
-        const newArchived = archivedProjects.map(p => p.id === updatedProject.id ? updatedProject : p);
-        localStorage.setItem('taskora_archived_projects', JSON.stringify(newArchived));
-      }
-    }
+    updateProject(updatedProject);
   };
 
   const handleSaveSettings = () => {
@@ -94,27 +63,20 @@ const ProjectDetailsPage = () => {
   };
 
   const handleDeleteProject = () => {
-    const saved = localStorage.getItem('taskora_projects');
-    const allProjects = saved ? JSON.parse(saved) : mockProjects;
-    localStorage.setItem('taskora_projects', JSON.stringify(allProjects.filter(p => p.id !== project.id)));
+    deleteProject(project._id || project.id);
     toast.success('Project deleted');
     navigate('/projects');
   };
 
   const handleArchiveProject = () => {
-    const saved = localStorage.getItem('taskora_projects');
-    const allProjects = saved ? JSON.parse(saved) : mockProjects;
-    localStorage.setItem('taskora_projects', JSON.stringify(allProjects.filter(p => p.id !== project.id)));
-    
-    const savedArchived = localStorage.getItem('taskora_archived_projects');
-    const archivedProjects = savedArchived ? JSON.parse(savedArchived) : [];
-    localStorage.setItem('taskora_archived_projects', JSON.stringify([{ ...project, status: 'Archived', date: new Date().toISOString().split('T')[0] }, ...archivedProjects]));
-    
+    handleUpdateProject({ ...project, status: 'Archived' });
     toast.success('Project archived');
     navigate('/projects');
   };
 
-  if (!project) return null; // Or a loading spinner
+  if (loading) return <div className="p-8 text-center text-text-secondary">Loading project data...</div>;
+
+  if (!project) return null;
 
   return (
     <div className="flex h-[calc(100vh-theme(spacing.16))] -m-6 animate-fade-in">

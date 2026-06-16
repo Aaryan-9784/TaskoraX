@@ -20,43 +20,13 @@ import TeamPerformance from '../components/team/TeamPerformance';
 import MemberProfileDrawer from '../components/team/MemberProfileDrawer';
 import TaskAssignmentPanel from '../components/team/TaskAssignmentPanel';
 import ProjectCollaboration from '../components/team/ProjectCollaboration';
-import { mockProjects } from '../utils/mockProjects';
-
-// Mock Data
-const MOCK_MEMBERS = [
-  { id: '1', name: 'Sarah Jenkins', role: 'Owner', department: 'Executive', status: 'Online', assignedTasks: 12, completedTasks: 142, pendingTasks: 4, productivityScore: 98, workloadPercentage: 45, email: 'sarah@taskorax.com' },
-  { id: '2', name: 'David Chen', role: 'Admin', department: 'Engineering', status: 'Busy', assignedTasks: 28, completedTasks: 89, pendingTasks: 15, productivityScore: 92, workloadPercentage: 90, email: 'david@taskorax.com' },
-  { id: '3', name: 'Emily Davis', role: 'Manager', department: 'Design', status: 'Online', assignedTasks: 18, completedTasks: 112, pendingTasks: 6, productivityScore: 95, workloadPercentage: 60, email: 'emily@taskorax.com' },
-  { id: '4', name: 'Michael Brown', role: 'Member', department: 'Engineering', status: 'Away', assignedTasks: 22, completedTasks: 76, pendingTasks: 8, productivityScore: 88, workloadPercentage: 75, email: 'michael@taskorax.com' },
-  { id: '5', name: 'Jessica Wilson', role: 'Member', department: 'Marketing', status: 'Offline', assignedTasks: 15, completedTasks: 95, pendingTasks: 5, productivityScore: 91, workloadPercentage: 50, email: 'jessica@taskorax.com' },
-];
-
-const MOCK_ACTIVITIES = [
-  { user: 'David Chen', avatar: '', action: 'completed task', target: 'API Integration', timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString() },
-  { user: 'Emily Davis', avatar: '', action: 'commented on', target: 'Homepage Redesign', timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString() },
-  { user: 'Sarah Jenkins', avatar: '', action: 'assigned a task to', target: 'Michael Brown', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() },
-  { user: 'Jessica Wilson', avatar: '', action: 'uploaded file', target: 'Q3_Marketing_Plan.pdf', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString() },
-];
-
-
+import { useTeam } from '../context/TeamContext';
+import { useProjects } from '../context/ProjectContext';
 
 const TeamPage = () => {
+  const { members, loading: teamLoading, updateMember } = useTeam();
+  const { projects, loading: projectsLoading } = useProjects();
   const [searchTerm, setSearchTerm] = useState('');
-  const [members, setMembers] = useState(() => {
-    const saved = localStorage.getItem('taskorax_team_members');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return MOCK_MEMBERS;
-      }
-    }
-    return MOCK_MEMBERS;
-  });
-  const [projects] = useState(() => {
-    const saved = localStorage.getItem('taskora_projects');
-    return saved ? JSON.parse(saved) : mockProjects;
-  });
   const [selectedMember, setSelectedMember] = useState(null);
   const [isAssignmentOpen, setIsAssignmentOpen] = useState(false);
   const [assigningMember, setAssigningMember] = useState(null);
@@ -73,10 +43,6 @@ const TeamPage = () => {
   const [showSortDrop, setShowSortDrop] = useState(false);
   const [activeSort, setActiveSort] = useState('Name');
   const sortOptions = ['Name', 'Productivity', 'Workload', 'Tasks'];
-
-  useEffect(() => {
-    localStorage.setItem('taskorax_team_members', JSON.stringify(members));
-  }, [members]);
 
   // Button Handlers
   const handleExport = () => {
@@ -97,16 +63,8 @@ const TeamPage = () => {
       toast.error('Please enter a valid email');
       return;
     }
-    const newMember = {
-      id: Date.now().toString(),
-      name: inviteEmail.split('@')[0],
-      role: inviteRole,
-      department: 'General',
-      status: 'Pending',
-      assignedTasks: 0, completedTasks: 0, pendingTasks: 0, productivityScore: 0, workloadPercentage: 0,
-      email: inviteEmail
-    };
-    setMembers([...members, newMember]);
+    // In a real app, this would call an API endpoint to send an email invitation
+    // For now, we simulate success
     toast.success(`Invitation sent to ${inviteEmail}`);
     setIsInviteOpen(false);
     setInviteEmail('');
@@ -122,8 +80,8 @@ const TeamPage = () => {
   };
 
   const handleDeleteMember = (memberId) => {
-    setMembers(members.filter(m => m.id !== memberId));
-    toast.success('Member removed successfully');
+    // In a true app, deleting a member might be an admin only action
+    toast.error('Not allowed to delete users in this demo');
   };
 
   // Filter & Sort Logic
@@ -132,10 +90,14 @@ const TeamPage = () => {
     (activeFilter === 'All' || m.department === activeFilter)
   );
 
-  if (activeSort === 'Productivity') processedMembers.sort((a, b) => b.productivityScore - a.productivityScore);
-  else if (activeSort === 'Workload') processedMembers.sort((a, b) => b.workloadPercentage - a.workloadPercentage);
-  else if (activeSort === 'Tasks') processedMembers.sort((a, b) => b.assignedTasks - a.assignedTasks);
+  if (activeSort === 'Productivity') processedMembers.sort((a, b) => (b.productivityScore || 0) - (a.productivityScore || 0));
+  else if (activeSort === 'Workload') processedMembers.sort((a, b) => (b.workloadPercentage || 0) - (a.workloadPercentage || 0));
+  else if (activeSort === 'Tasks') processedMembers.sort((a, b) => (b.assignedTasks || 0) - (a.assignedTasks || 0));
   else processedMembers.sort((a, b) => a.name.localeCompare(b.name));
+
+  if (teamLoading || projectsLoading) {
+    return <div className="p-8 text-center text-text-secondary">Loading team data...</div>;
+  }
 
   return (
     <div className="space-y-6 animate-fade-in pb-12">

@@ -1,6 +1,51 @@
 import { HiOutlineTrophy, HiOutlineBolt, HiOutlineCheckCircle } from 'react-icons/hi2';
+import { useTeam } from '../../context/TeamContext';
+import { useTask } from '../../context/TaskContext';
 
-const TeamPerformance = ({ topPerformer, mostActive, completionRate }) => {
+const TeamPerformance = () => {
+  const { members, activities } = useTeam();
+  const { stats } = useTask();
+
+  // Calculate Top Performer based on completed tasks
+  const topPerformerMember = members?.length > 0 
+    ? members.reduce((prev, current) => ((prev.completedTasks || 0) > (current.completedTasks || 0)) ? prev : current, members[0])
+    : null;
+
+  // Calculate Most Active based on activity frequency
+  const activityCounts = {};
+  (activities || []).forEach(a => {
+    const uid = a.user?._id || a.user?.id;
+    if (uid) {
+      activityCounts[uid] = (activityCounts[uid] || 0) + 1;
+    }
+  });
+  
+  let mostActiveId = null;
+  let maxActs = 0;
+  for (const uid in activityCounts) {
+    if (activityCounts[uid] > maxActs) {
+      maxActs = activityCounts[uid];
+      mostActiveId = uid;
+    }
+  }
+  
+  const mostActiveMember = mostActiveId 
+    ? members.find(m => m._id === mostActiveId || m.id === mostActiveId)
+    : null;
+
+  const actualCompletionRate = stats?.total > 0 
+    ? Math.round((stats.completed / stats.total) * 100) 
+    : 0;
+
+  const displayTopPerformer = {
+    name: topPerformerMember?.name || 'No Data',
+    tasksCompleted: topPerformerMember?.completedTasks || 0
+  };
+
+  const displayMostActive = {
+    name: mostActiveMember?.name || 'No Data',
+    activityCount: maxActs
+  };
   return (
     <div className="glass-panel rounded-2xl overflow-hidden border border-border/50 h-full flex flex-col">
       <div className="p-5 border-b border-border/50 bg-surface-secondary/30">
@@ -16,8 +61,8 @@ const TeamPerformance = ({ topPerformer, mostActive, completionRate }) => {
           </div>
           <div>
             <p className="text-[10px] font-bold text-accent-600 uppercase tracking-wider mb-0.5">Top Performer</p>
-            <p className="text-sm font-extrabold text-text-primary">{topPerformer?.name || 'Sarah Jenkins'}</p>
-            <p className="text-xs text-text-tertiary font-medium">{topPerformer?.tasksCompleted || 42} tasks completed</p>
+            <p className="text-sm font-extrabold text-text-primary">{displayTopPerformer.name}</p>
+            <p className="text-xs text-text-tertiary font-medium">{displayTopPerformer.tasksCompleted} tasks completed</p>
           </div>
         </div>
 
@@ -28,8 +73,8 @@ const TeamPerformance = ({ topPerformer, mostActive, completionRate }) => {
           </div>
           <div>
             <p className="text-[10px] font-bold text-primary-600 uppercase tracking-wider mb-0.5">Most Active</p>
-            <p className="text-sm font-extrabold text-text-primary">{mostActive?.name || 'David Chen'}</p>
-            <p className="text-xs text-text-tertiary font-medium">{mostActive?.activityCount || 156} actions this week</p>
+            <p className="text-sm font-extrabold text-text-primary">{displayMostActive.name}</p>
+            <p className="text-xs text-text-tertiary font-medium">{displayMostActive.activityCount} actions this week</p>
           </div>
         </div>
 
@@ -40,10 +85,10 @@ const TeamPerformance = ({ topPerformer, mostActive, completionRate }) => {
               <HiOutlineCheckCircle className="w-5 h-5 text-success-500" />
               Completion Rate
             </p>
-            <span className="text-xl font-extrabold text-success-600">{completionRate || 88}%</span>
+            <span className="text-xl font-extrabold text-success-600">{actualCompletionRate}%</span>
           </div>
           <div className="w-full h-3 bg-surface-secondary rounded-full overflow-hidden">
-            <div className="h-full bg-success-500 rounded-full" style={{ width: `${completionRate || 88}%` }}></div>
+            <div className="h-full bg-success-500 rounded-full transition-all duration-1000" style={{ width: `${actualCompletionRate}%` }}></div>
           </div>
         </div>
       </div>

@@ -1,12 +1,17 @@
-const MOCK_SKILLS = [
-  { name: 'React.js', level: 'Expert', percentage: 95, color: 'bg-cyan-500' },
-  { name: 'Node.js', level: 'Advanced', percentage: 85, color: 'bg-green-500' },
-  { name: 'UI/UX Design', level: 'Intermediate', percentage: 65, color: 'bg-purple-500' },
-  { name: 'Project Management', level: 'Advanced', percentage: 80, color: 'bg-primary-500' },
-  { name: 'TailwindCSS', level: 'Expert', percentage: 90, color: 'bg-sky-500' },
-];
+import { useAuth } from '../../context/AuthContext';
 
 const SkillsExpertise = () => {
+  const { user } = useAuth();
+  
+  // Since skills is just an array of strings in the backend, we map them to a uniform visual style
+  const colors = ['bg-cyan-500', 'bg-green-500', 'bg-purple-500', 'bg-primary-500', 'bg-sky-500'];
+  const userSkills = (user?.skills || []).map((skill, index) => ({
+    name: skill,
+    level: 'Intermediate',
+    percentage: 75,
+    color: colors[index % colors.length]
+  }));
+
   return (
     <div className="bg-white border border-border/50 rounded-2xl overflow-hidden shadow-sm h-full">
       <div className="px-6 py-5 border-b border-border/50 bg-surface-secondary/30 flex justify-between items-center">
@@ -15,7 +20,8 @@ const SkillsExpertise = () => {
       </div>
       <div className="p-6">
         <div className="space-y-5">
-          {MOCK_SKILLS.map((skill) => (
+          {userSkills.length === 0 && <div className="text-sm text-text-secondary text-center py-4">No skills added yet.</div>}
+          {userSkills.map((skill) => (
             <div key={skill.name}>
               <div className="flex justify-between items-center mb-1.5">
                 <span className="text-sm font-medium text-text-secondary">{skill.name}</span>

@@ -1,6 +1,8 @@
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { TaskProvider } from './context/TaskContext';
+import { ProjectProvider } from './context/ProjectContext';
+import { TeamProvider } from './context/TeamContext';
 import { Toaster } from 'react-hot-toast';
 import AppRoutes from './routes/AppRoutes';
 import './App.css';
@@ -10,8 +12,10 @@ function App() {
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <TaskProvider>
-          <Toaster 
-            position="top-right" 
+          <ProjectProvider>
+            <TeamProvider>
+              <Toaster 
+                position="top-right" 
             toastOptions={{ 
               duration: 2000,
               style: {
@@ -46,7 +50,9 @@ function App() {
               },
             }} 
           />
-          <AppRoutes />
+              <AppRoutes />
+            </TeamProvider>
+          </ProjectProvider>
         </TaskProvider>
       </AuthProvider>
     </BrowserRouter>

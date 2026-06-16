@@ -7,31 +7,11 @@ import Modal from '../components/common/Modal';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import toast from 'react-hot-toast';
-import { mockProjects, projectMetrics } from '../utils/mockProjects';
+import { useProjects } from '../context/ProjectContext';
 
 const ProjectsPage = () => {
+  const { projects, loading } = useProjects();
   const [searchQuery, setSearchQuery] = useState('');
-  const [projects, setProjects] = useState(() => {
-    const saved = localStorage.getItem('taskora_projects');
-    const parsed = saved ? JSON.parse(saved) : mockProjects;
-    
-    // Backfill tasksList for projects that have tasks.total but no tasksList
-    return parsed.map(p => {
-      if (!p.tasksList && p.tasks && p.tasks.total > 0) {
-        const list = [];
-        for (let i = 0; i < p.tasks.total; i++) {
-          list.push({
-            id: `mock-task-${p.id}-${i}`,
-            name: `Project Task ${i + 1}`,
-            status: i < p.tasks.completed ? 'Done' : 'Todo'
-          });
-        }
-        return { ...p, tasksList: list };
-      }
-      return p;
-    });
-  });
-
   const [activeModal, setActiveModal] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [newProjectName, setNewProjectName] = useState('');
@@ -186,6 +166,17 @@ const ProjectsPage = () => {
       atRisk: projects.filter(p => p.status === 'At Risk').length,
     };
   }, [projects]);
+
+  const projectMetrics = {
+    total: projects.length,
+    active: projects.filter(p => p.status === 'Active').length,
+    completed: projects.filter(p => p.status === 'Completed').length,
+    atRisk: projects.filter(p => p.status === 'At Risk').length,
+  };
+
+  if (loading) {
+    return <div className="p-8 text-center text-text-secondary">Loading projects...</div>;
+  }
 
   return (
     <div className="space-y-8 animate-fade-in pb-8">
