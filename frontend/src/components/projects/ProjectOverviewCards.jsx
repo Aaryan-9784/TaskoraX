@@ -53,8 +53,8 @@ const ProjectOverviewCards = ({ metrics }) => {
             </span>
           </div>
           <div>
-            <h3 className="text-3xl font-extrabold text-text-primary tracking-tight mb-1">{card.value}</h3>
-            <p className="text-sm font-medium text-text-secondary">{card.title}</p>
+            <h3 className="text-2xl font-bold text-text-primary mb-1 group-hover:text-primary-600 transition-colors">{card.value}</h3>
+            <p className="text-sm font-medium text-text-tertiary">{card.title}</p>
           </div>
         </div>
       ))}

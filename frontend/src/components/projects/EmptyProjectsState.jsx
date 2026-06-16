@@ -1,6 +1,5 @@
 import { HiOutlineFolderPlus, HiOutlineArrowDownTray } from 'react-icons/hi2';
 import Button from '../common/Button';
-
 const EmptyProjectsState = () => {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center animate-fade-in">

@@ -26,13 +26,13 @@ const ProjectCard = ({ project }) => {
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="text-lg font-bold text-text-primary group-hover:text-primary-500 transition-colors line-clamp-1">{project.name}</h3>
+            <h3 className="text-base font-semibold text-text-primary group-hover:text-primary-500 transition-colors line-clamp-1">{project.name}</h3>
             <span className={`inline-block mt-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full border ${statusStyle}`}>
               {project.status}
             </span>
           </div>
           <button 
-            onClick={(e) => { e.stopPropagation(); /* handle menu */ }}
+            onClick={(e) => { e.stopPropagation(); }}
             className="p-1.5 text-text-tertiary hover:text-text-primary hover:bg-surface-secondary rounded-lg transition-colors opacity-0 group-hover:opacity-100"
           >
             <HiOutlineEllipsisVertical className="h-5 w-5" />
