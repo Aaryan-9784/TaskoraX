@@ -21,7 +21,7 @@ const getMenuItems = (stats) => [
   { label: 'Tasks', path: '/tasks', icon: HiOutlineClipboardDocumentList, badge: stats?.pending > 0 ? stats.pending : null },
   { label: 'Analytics', path: '/analytics', icon: HiOutlineChartBar, badge: null },
   { label: 'Projects', path: '/projects', icon: HiOutlineFolderOpen, badge: null },
-  { label: 'Team', path: '/team', icon: HiOutlineUsers, badge: 'New' },
+  { label: 'Team', path: '/team', icon: HiOutlineUsers, badge: null },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
