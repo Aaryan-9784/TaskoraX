@@ -145,8 +145,12 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
                 <span className="w-1.5 h-1.5 rounded-full bg-success-500"></span> Online
               </p>
             </div>
-            <div className={`w-9 h-9 rounded-full bg-gradient-premium text-white flex items-center justify-center text-sm font-bold transition-all duration-300 ring-2 ring-white ${activePopup === 'profile' ? 'shadow-glow-accent scale-105' : 'shadow-soft group-hover:shadow-glow-accent'}`}>
-              {getInitials(user?.name)}
+            <div className={`w-9 h-9 rounded-full bg-gradient-premium text-white flex items-center justify-center text-sm font-bold transition-all duration-300 ring-2 ring-white overflow-hidden ${activePopup === 'profile' ? 'shadow-glow-accent scale-105' : 'shadow-soft group-hover:shadow-glow-accent'}`}>
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user?.name || 'Profile'} className="w-full h-full object-cover" />
+              ) : (
+                getInitials(user?.name)
+              )}
             </div>
           </button>
           <UserProfilePopup isOpen={activePopup === 'profile'} onClose={closePopups} user={user} onLogout={logout} />

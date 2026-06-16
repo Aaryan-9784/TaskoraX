@@ -6,8 +6,6 @@ import SettingsSidebar from '../components/settings/SettingsSidebar';
 import AccountSettings from '../components/settings/AccountSettings';
 import SecurityCenter from '../components/settings/SecurityCenter';
 import NotificationPreferences from '../components/settings/NotificationPreferences';
-import AppearancePersonalization from '../components/settings/AppearancePersonalization';
-import WorkspacePreferences from '../components/settings/WorkspacePreferences';
 import DangerZone from '../components/settings/DangerZone';
 
 const SettingsPage = () => {
@@ -23,10 +21,6 @@ const SettingsPage = () => {
         return <SecurityCenter changePassword={changePassword} />;
       case 'notifications':
         return <NotificationPreferences user={user} updateProfile={updateProfile} />;
-      case 'appearance':
-        return <AppearancePersonalization user={user} updateProfile={updateProfile} />;
-      case 'workspace':
-        return <WorkspacePreferences user={user} updateProfile={updateProfile} />;
       case 'danger':
         return <DangerZone logout={logout} />;
       default:

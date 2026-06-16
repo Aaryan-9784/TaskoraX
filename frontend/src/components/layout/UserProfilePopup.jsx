@@ -18,8 +18,12 @@ const UserProfilePopup = ({ isOpen, onClose, user, domNode, onLogout }) => {
       <div className="p-4 bg-surface-primary/50 border-b border-border/40 relative">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-12 h-12 rounded-full bg-gradient-premium text-white flex items-center justify-center text-lg font-bold shadow-soft">
-              {getInitials(user?.name || 'User')}
+            <div className="w-12 h-12 rounded-full bg-gradient-premium text-white flex items-center justify-center text-lg font-bold shadow-soft overflow-hidden">
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user?.name || 'Profile'} className="w-full h-full object-cover" />
+              ) : (
+                getInitials(user?.name || 'User')
+              )}
             </div>
             <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-success-500 border-2 border-white rounded-full"></span>
           </div>

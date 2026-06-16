@@ -20,6 +20,14 @@ const userSchema = new mongoose.Schema(
         'Please provide a valid email address',
       ],
     },
+    username: {
+      type: String,
+      default: null,
+    },
+    phone: {
+      type: String,
+      default: null,
+    },
     password: {
       type: String,
       minlength: [6, 'Password must be at least 6 characters'],
