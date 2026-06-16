@@ -2,9 +2,9 @@ import {
   HiOutlineSquares2X2,
   HiOutlineChartBarSquare,
   HiOutlineUserGroup,
-  HiOutlineBoltSlash,
+  HiOutlineBellAlert,
   HiOutlineShieldCheck,
-  HiOutlineDevicePhoneMobile,
+  HiOutlineCog6Tooth,
 } from 'react-icons/hi2';
 
 const features = [
@@ -19,35 +19,35 @@ const features = [
     icon: HiOutlineChartBarSquare,
     title: 'Advanced Analytics',
     description:
-      'Track productivity trends, team performance, and project velocity with beautiful, actionable charts.',
+      'Track productivity trends, team performance, and project velocity with precise data accuracy.',
     color: 'bg-success-50 text-success-500',
   },
   {
     icon: HiOutlineUserGroup,
-    title: 'Team Collaboration',
+    title: 'Team & Project Management',
     description:
-      'Assign tasks, mention teammates, share files, and keep everyone aligned in real-time.',
+      'Create projects, manage team members, assign tasks, and securely delete outdated items.',
     color: 'bg-warning-50 text-warning-500',
   },
   {
-    icon: HiOutlineBoltSlash,
-    title: 'Lightning Fast',
+    icon: HiOutlineBellAlert,
+    title: 'Smart Notifications',
     description:
-      'Built for performance. Sub-second load times, instant search, and smooth interactions everywhere.',
+      'Stay updated without distractions using our auto-dismissing, intelligent notification system.',
     color: 'bg-danger-50 text-danger-500',
   },
   {
     icon: HiOutlineShieldCheck,
-    title: 'Enterprise Security',
+    title: 'Advanced Security Center',
     description:
-      'SOC 2 compliant, end-to-end encryption, SSO support, and role-based access controls.',
+      'Protect your data with dedicated security settings, role-based access, and account management.',
     color: 'bg-purple-50 text-purple-500',
   },
   {
-    icon: HiOutlineDevicePhoneMobile,
-    title: 'Mobile Optimized',
+    icon: HiOutlineCog6Tooth,
+    title: 'Customizable Settings',
     description:
-      'Fully responsive design that works perfectly on phones, tablets, and desktops.',
+      'Take complete control with streamlined profile configurations and personalized account settings.',
     color: 'bg-cyan-50 text-cyan-500',
   },
 ];
