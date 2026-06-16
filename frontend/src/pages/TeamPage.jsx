@@ -20,6 +20,7 @@ import TeamPerformance from '../components/team/TeamPerformance';
 import MemberProfileDrawer from '../components/team/MemberProfileDrawer';
 import TaskAssignmentPanel from '../components/team/TaskAssignmentPanel';
 import ProjectCollaboration from '../components/team/ProjectCollaboration';
+import { mockProjects } from '../utils/mockProjects';
 
 // Mock Data
 const MOCK_MEMBERS = [
@@ -37,10 +38,7 @@ const MOCK_ACTIVITIES = [
   { user: 'Jessica Wilson', avatar: '', action: 'uploaded file', target: 'Q3_Marketing_Plan.pdf', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString() },
 ];
 
-const MOCK_PROJECTS = [
-  { name: 'Website Redesign', status: 'On Track', progress: 75, dueDate: 'Oct 24', members: ['Sarah Jenkins', 'Emily Davis', 'David Chen'] },
-  { name: 'Q3 Marketing', status: 'At Risk', progress: 40, dueDate: 'Nov 12', members: ['Jessica Wilson', 'Sarah Jenkins'] },
-];
+
 
 const TeamPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,6 +52,10 @@ const TeamPage = () => {
       }
     }
     return MOCK_MEMBERS;
+  });
+  const [projects] = useState(() => {
+    const saved = localStorage.getItem('taskora_projects');
+    return saved ? JSON.parse(saved) : mockProjects;
   });
   const [selectedMember, setSelectedMember] = useState(null);
   const [isAssignmentOpen, setIsAssignmentOpen] = useState(false);
@@ -235,7 +237,7 @@ const TeamPage = () => {
 
       {/* Projects */}
       <div className="pt-4 animate-in animate-in-delay-4">
-        <ProjectCollaboration projects={MOCK_PROJECTS} />
+        <ProjectCollaboration projects={projects.filter(p => p.status !== 'Completed').slice(0, 2)} />
       </div>
 
       {/* Drawers and Modals */}
