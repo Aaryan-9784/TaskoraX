@@ -1,13 +1,12 @@
 import { getInitials } from '../../utils/helpers';
 import { 
   HiOutlinePencilSquare, 
-  HiOutlineKey, 
   HiOutlineCheckBadge, 
   HiOutlineEnvelope, 
   HiOutlineBriefcase 
 } from 'react-icons/hi2';
 
-const ProfileHeader = ({ user, onEditProfile, onChangePassword }) => {
+const ProfileHeader = ({ user, onEditProfile }) => {
   return (
     <div className="bg-white border border-border/50 rounded-2xl overflow-hidden shadow-sm relative">
       
@@ -72,13 +71,6 @@ const ProfileHeader = ({ user, onEditProfile, onChangePassword }) => {
             >
               <HiOutlinePencilSquare className="w-4.5 h-4.5" />
               Edit Profile
-            </button>
-            <button 
-              onClick={onChangePassword}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-surface-secondary text-text-primary text-sm font-semibold rounded-xl transition-all border border-border/60 shadow-sm"
-            >
-              <HiOutlineKey className="w-4.5 h-4.5 text-text-secondary" />
-              Security
             </button>
           </div>
 

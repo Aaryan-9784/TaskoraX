@@ -5,7 +5,6 @@ import {
   HiOutlineBellAlert,
   HiOutlinePaintBrush,
   HiOutlineBriefcase,
-  HiOutlinePuzzlePiece,
   HiOutlineLockClosed,
   HiOutlineExclamationTriangle,
 } from 'react-icons/hi2';
@@ -16,8 +15,6 @@ const tabs = [
   { id: 'notifications', label: 'Notification Preferences', icon: HiOutlineBellAlert },
   { id: 'appearance', label: 'Appearance & Personalization', icon: HiOutlinePaintBrush },
   { id: 'workspace', label: 'Workspace Preferences', icon: HiOutlineBriefcase },
-  { id: 'integrations', label: 'Integrations', icon: HiOutlinePuzzlePiece },
-  { id: 'privacy', label: 'Privacy & Data Controls', icon: HiOutlineShieldExclamation },
   { id: 'danger', label: 'Danger Zone', icon: HiOutlineExclamationTriangle, danger: true },
 ];
 
