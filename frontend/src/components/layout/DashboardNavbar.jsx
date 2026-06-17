@@ -19,17 +19,29 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
   const [activePopup, setActivePopup] = useState(null);
   const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
   const [lastReadTime, setLastReadTime] = useState(0);
+  const [readItems, setReadItems] = useState([]);
+  const [deletedItems, setDeletedItems] = useState([]);
 
   useEffect(() => {
-    const fetchReadTime = () => {
-      const saved = localStorage.getItem('taskora_last_read');
-      if (saved) {
-        try { setLastReadTime(parseInt(saved, 10)); } catch (e) {}
+    const fetchReadData = () => {
+      const savedTime = localStorage.getItem('taskora_last_read');
+      if (savedTime) {
+        try { setLastReadTime(parseInt(savedTime, 10)); } catch (e) {}
+      }
+      
+      const savedReadItems = localStorage.getItem('taskora_read_notifications');
+      if (savedReadItems) {
+        try { setReadItems(JSON.parse(savedReadItems)); } catch (e) {}
+      }
+
+      const savedDeletedItems = localStorage.getItem('taskora_deleted_notifications');
+      if (savedDeletedItems) {
+        try { setDeletedItems(JSON.parse(savedDeletedItems)); } catch (e) {}
       }
     };
-    fetchReadTime();
-    window.addEventListener('taskora_read_update', fetchReadTime);
-    return () => window.removeEventListener('taskora_read_update', fetchReadTime);
+    fetchReadData();
+    window.addEventListener('taskora_read_update', fetchReadData);
+    return () => window.removeEventListener('taskora_read_update', fetchReadData);
   }, []);
 
   const getRecentTasks = (tasks) => {
@@ -44,13 +56,17 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
       const idA = (a._id || a.id || '').toString();
       const idB = (b._id || b.id || '').toString();
       return idB.localeCompare(idA);
-    }).slice(0, 6);
+    });
   };
 
-  const hasUnread = getRecentTasks(allTasks).some(task => {
-    const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
-    return taskTime > lastReadTime;
-  });
+  const hasUnread = getRecentTasks(allTasks)
+    .filter(task => !deletedItems.includes(task._id || task.id))
+    .slice(0, 6)
+    .some(task => {
+      const taskId = task._id || task.id;
+      const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
+      return taskTime > lastReadTime && !readItems.includes(taskId);
+    });
   
   const todayStr = new Date().toDateString();
   const hasTasksToday = allTasks.some(t => t.dueDate && new Date(t.dueDate).toDateString() === todayStr);

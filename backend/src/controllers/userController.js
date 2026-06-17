@@ -36,7 +36,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated
   const filteredBody = {};
-  const allowedFields = ['name', 'username', 'phone', 'email', 'avatar', 'role', 'bio', 'preferences', 'is2FAEnabled'];
+  const allowedFields = ['name', 'username', 'phone', 'location', 'department', 'email', 'avatar', 'role', 'bio', 'preferences', 'is2FAEnabled'];
   Object.keys(req.body).forEach((el) => {
     if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
   });

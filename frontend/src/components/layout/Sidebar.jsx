@@ -92,7 +92,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               to={item.path}
               onClick={() => { if (window.innerWidth < 1024) onClose(); }}
               className={({ isActive }) =>
-                `relative flex items-center ${isCollapsed ? 'justify-center' : 'gap-3.5'} px-3.5 py-3 rounded-xl text-[14px] transition-all duration-300 group overflow-hidden ${
+                `relative flex items-center ${isCollapsed ? 'justify-center' : 'gap-3.5'} px-3.5 py-3 rounded-xl text-[14px] transition-all duration-300 group ${
                   isActive
                     ? 'text-primary-700 bg-gradient-to-r from-primary-50/90 to-transparent font-bold shadow-[0_2px_10px_rgba(239,68,68,0.05)]'
                     : 'text-text-secondary font-medium hover:text-text-primary hover:bg-surface-secondary/60 hover:-translate-y-[1px]'
@@ -103,7 +103,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               {({ isActive }) => (
                 <>
                   {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary-500 rounded-r-full shadow-[0_0_12px_rgba(239,68,68,0.6)]"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-500 rounded-r-full shadow-[2px_0_8px_rgba(239,68,68,0.4)]"></div>
                   )}
                   <item.icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-300 ${isActive ? 'scale-110 text-primary-600' : 'group-hover:scale-110 group-hover:text-text-primary'}`} />
                   {!isCollapsed && (
@@ -122,6 +122,47 @@ const Sidebar = ({ isOpen, onClose }) => {
               )}
             </NavLink>
           ))}
+          {/* Admin Menu (Only for admin/superadmin) */}
+          {(user?.role === 'admin' || user?.role === 'superadmin') && (
+            <>
+              {!isCollapsed && (
+                <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-text-tertiary mb-2 mt-4 pt-4 border-t border-border/20">Admin Panel</p>
+              )}
+              
+              {[
+                { label: 'Admin Dashboard', path: '/admin/dashboard', icon: HiOutlineSquares2X2 },
+                { label: 'User Management', path: '/admin/users', icon: HiOutlineUsers },
+                { label: 'Activity Logs', path: '/admin/activity-logs', icon: HiOutlineClipboardDocumentList },
+              ].map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => { if (window.innerWidth < 1024) onClose(); }}
+                  className={({ isActive }) =>
+                    `relative flex items-center ${isCollapsed ? 'justify-center' : 'gap-3.5'} px-3.5 py-3 rounded-xl text-[14px] transition-all duration-300 group ${
+                      isActive
+                        ? 'text-primary-700 bg-gradient-to-r from-primary-50/90 to-transparent font-bold shadow-[0_2px_10px_rgba(239,68,68,0.05)]'
+                        : 'text-text-secondary font-medium hover:text-text-primary hover:bg-surface-secondary/60 hover:-translate-y-[1px]'
+                    }`
+                  }
+                  title={isCollapsed ? item.label : undefined}
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-500 rounded-r-full shadow-[2px_0_8px_rgba(239,68,68,0.4)]"></div>
+                      )}
+                      <item.icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-300 ${isActive ? 'scale-110 text-primary-600' : 'group-hover:scale-110 group-hover:text-text-primary'}`} />
+                      {!isCollapsed && (
+                        <span className="flex-1 truncate tracking-wide">{item.label}</span>
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </>
+          )}
+
           {/* Workspace Summary Card */}
           {!isCollapsed && (
             <div className="mt-auto pt-6 pb-2 animate-fade-in">

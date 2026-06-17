@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    location: {
+      type: String,
+      default: null,
+    },
     password: {
       type: String,
       minlength: [6, 'Password must be at least 6 characters'],
@@ -47,8 +51,26 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin', 'Manager', 'Owner', 'Member'],
-      default: 'Member',
+      enum: ['user', 'admin', 'superadmin', 'Super Admin', 'Manager', 'Owner', 'Member'],
+      default: 'user',
+    },
+    lastLogin: {
+      type: Date,
+      default: null,
+    },
+    profileCompleted: {
+      type: Boolean,
+      default: false,
+    },
+    createdBy: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    updatedBy: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      default: null,
     },
     department: {
       type: String,

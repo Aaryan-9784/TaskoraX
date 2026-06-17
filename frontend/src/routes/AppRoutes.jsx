@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 // Layouts & Route Guards
 import AppLayout from '../components/layout/AppLayout';
 import ProtectedRoute from './ProtectedRoute';
+import AdminRoute from '../components/auth/AdminRoute';
 
 // Public Pages
 import LandingPage from '../pages/LandingPage';
@@ -24,6 +25,15 @@ import SettingsPage from '../pages/SettingsPage';
 import ProjectsPage from '../pages/ProjectsPage';
 import ProjectDetailsPage from '../pages/ProjectDetailsPage';
 import TeamPage from '../pages/TeamPage';
+
+// Admin Pages
+import AdminDashboard from '../pages/admin/AdminDashboard';
+import UserManagement from '../pages/admin/UserManagement';
+import TaskManagement from '../pages/admin/TaskManagement';
+import AdminAnalytics from '../pages/admin/Analytics';
+import ActivityLogs from '../pages/admin/ActivityLogs';
+import UserDetails from '../pages/admin/UserDetails';
+import SystemSettings from '../pages/admin/SystemSettings';
 
 const AppRoutes = () => {
   return (
@@ -49,6 +59,17 @@ const AppRoutes = () => {
           <Route path="/team" element={<TeamPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+
+          {/* Admin Routes */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<UserManagement />} />
+            <Route path="/admin/users/:id" element={<UserDetails />} />
+            <Route path="/admin/tasks" element={<TaskManagement />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
+            <Route path="/admin/activity-logs" element={<ActivityLogs />} />
+            <Route path="/admin/settings" element={<SystemSettings />} />
+          </Route>
         </Route>
       </Route>
 

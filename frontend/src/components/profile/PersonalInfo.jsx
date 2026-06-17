@@ -38,13 +38,13 @@ const PersonalInfo = ({ user, updateProfile, editSignal }) => {
     }
   }, [editSignal, lastSignal]);
   
-  // Initialize with user data + mocked missing fields
+  // Initialize with user data
   const [initialData, setInitialData] = useState({
     name: '',
     email: '',
-    phone: '+1 (555) 123-4567', // Mocked
-    location: 'San Francisco, CA', // Mocked
-    department: 'Engineering', // Mocked
+    phone: '',
+    location: '',
+    department: '',
     role: '',
     bio: '',
   });
@@ -56,9 +56,9 @@ const PersonalInfo = ({ user, updateProfile, editSignal }) => {
       const data = {
         name: user.name || '',
         email: user.email || '',
-        phone: '+1 (555) 123-4567',
-        location: 'San Francisco, CA',
-        department: 'Engineering',
+        phone: user.phone || '',
+        location: user.location || '',
+        department: user.department || '',
         role: user.role || '',
         bio: user.bio || '',
       };
@@ -76,20 +76,19 @@ const PersonalInfo = ({ user, updateProfile, editSignal }) => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // In a real app, you'd send all formData to the backend.
-      // Here we update what's supported by the AuthContext.
       await updateProfile({
         name: formData.name,
         email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        department: formData.department,
         role: formData.role,
         bio: formData.bio,
       });
       toast.success('Personal information updated successfully');
       setInitialData(formData);
     } catch (error) {
-      // Mocking success for frontend demonstration when backend is unavailable
-      toast.success('Personal information updated successfully (Demo Mode)');
-      setInitialData(formData);
+      toast.error(error.message || 'Failed to update personal information');
     } finally {
       setIsEditing(false);
       setLoading(false);

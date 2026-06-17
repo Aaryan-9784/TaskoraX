@@ -7,6 +7,7 @@ const CalendarPopup = ({ isOpen, onClose, domNode, onCreateTask }) => {
 
   const { allTasks = [] } = useTask();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState(null);
   
   const today = new Date();
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -19,10 +20,12 @@ const CalendarPopup = ({ isOpen, onClose, domNode, onCreateTask }) => {
 
   const prevMonth = () => {
     setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
+    setSelectedDay(null);
   };
 
   const nextMonth = () => {
     setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
+    setSelectedDay(null);
   };
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
@@ -112,13 +115,19 @@ const CalendarPopup = ({ isOpen, onClose, domNode, onCreateTask }) => {
         <div className="grid grid-cols-7 gap-1">
           {days.map((day, index) => {
             const dayTasks = getTasksForDay(day);
-            const todayClass = isToday(day) ? 'bg-primary-500 text-white font-bold shadow-glow-sm' : 'text-text-primary hover:bg-surface-tertiary font-medium';
+            const isSelected = selectedDay === day;
+            const dayClass = isToday(day) 
+              ? 'bg-primary-500 text-white font-bold shadow-glow-sm' 
+              : isSelected
+                ? 'bg-primary-50 text-primary-700 font-bold ring-1 ring-primary-200'
+                : 'text-text-primary hover:bg-surface-tertiary font-medium';
             const emptyClass = !day ? 'invisible' : '';
             
             return (
               <div 
                 key={index} 
-                className={`relative flex flex-col items-center justify-center h-9 w-full rounded-lg text-xs cursor-pointer transition-all ${emptyClass} ${!day ? '' : todayClass}`}
+                onClick={() => day && setSelectedDay(isSelected ? null : day)}
+                className={`relative flex flex-col items-center justify-center h-9 w-full rounded-lg text-xs cursor-pointer transition-all ${emptyClass} ${!day ? '' : dayClass}`}
               >
                 {day && <span>{day}</span>}
                 {dayTasks.length > 0 && (
@@ -132,6 +141,25 @@ const CalendarPopup = ({ isOpen, onClose, domNode, onCreateTask }) => {
             );
           })}
         </div>
+
+        {selectedDay && getTasksForDay(selectedDay).length > 0 && (
+          <div className="mt-3 pt-3 border-t border-border/40 animate-fade-in">
+            <p className="text-xs font-bold text-text-primary mb-2">
+              Tasks for {monthNames[currentMonth]} {selectedDay}
+            </p>
+            <div className="space-y-2 max-h-[140px] overflow-y-auto no-scrollbar custom-scrollbar">
+              {getTasksForDay(selectedDay).map((task) => (
+                <div key={task._id || task.id} className="flex items-start gap-2 p-2 bg-white rounded-lg border border-border/40 shadow-sm hover:border-primary-200 transition-colors cursor-default">
+                  <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${getTaskColor(task)}`} />
+                  <div>
+                    <p className="text-xs font-semibold text-text-primary line-clamp-1">{task.title}</p>
+                    <p className="text-[10px] text-text-secondary mt-0.5 font-medium">{task.status} • {task.priority}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

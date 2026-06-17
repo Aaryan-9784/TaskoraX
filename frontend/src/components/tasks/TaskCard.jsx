@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   HiOutlinePencilSquare,
   HiOutlineTrash,
@@ -12,26 +13,35 @@ import toast from 'react-hot-toast';
 
 const TaskCard = ({ task, onEdit }) => {
   const { deleteTask, toggleTaskStatus } = useTask();
+  const [isUpdating, setIsUpdating] = useState(false);
   const overdue = isOverdue(task.dueDate) && task.status !== 'Done';
 
   const handleDelete = async () => {
+    if (isUpdating) return;
     if (window.confirm('Are you sure you want to delete this task?')) {
+      setIsUpdating(true);
       try {
         await deleteTask(task._id || task.id);
-        toast.success('Task deleted successfully.');
+        toast.success('Task deleted successfully.', { id: 'task-action' });
       } catch (err) {
-        toast.error(err.message || 'Failed to delete task.');
+        toast.error(err.message || 'Failed to delete task.', { id: 'task-error' });
+      } finally {
+        setIsUpdating(false);
       }
     }
   };
 
   const handleToggle = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
     try {
       await toggleTaskStatus(task._id || task.id, task.status);
       const newStatus = task.status === 'Done' ? 'Todo' : 'Done';
-      toast.success(`Task marked as ${newStatus}.`);
+      toast.success(`Task marked as ${newStatus}.`, { id: 'task-action' });
     } catch (err) {
-      toast.error(err.message || 'Failed to update task status.');
+      toast.error(err.message || 'Failed to update task status.', { id: 'task-error' });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -95,25 +105,28 @@ const TaskCard = ({ task, onEdit }) => {
       <div className="flex items-center gap-2 pt-3 border-t border-border/50">
         <button
           onClick={handleToggle}
+          disabled={isUpdating}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             task.status === 'Done'
               ? 'text-warning-600 hover:bg-warning-50'
               : 'text-success-600 hover:bg-success-50'
-          }`}
+          } ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <HiOutlineCheckCircle className="h-4 w-4" />
           {task.status === 'Done' ? 'Undo' : 'Complete'}
         </button>
         <button
           onClick={() => onEdit(task)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-600 hover:bg-primary-50 transition-colors"
+          disabled={isUpdating}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-600 hover:bg-primary-50 transition-colors ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <HiOutlinePencilSquare className="h-4 w-4" />
           Edit
         </button>
         <button
           onClick={handleDelete}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-danger-500 hover:bg-danger-50 transition-colors ml-auto"
+          disabled={isUpdating}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-danger-500 hover:bg-danger-50 transition-colors ml-auto ${isUpdating ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           <HiOutlineTrash className="h-4 w-4" />
           Delete

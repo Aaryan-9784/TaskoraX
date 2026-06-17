@@ -5,9 +5,11 @@ const userRoutes = require('./userRoutes');
 const projectRoutes = require('./projectRoutes');
 const teamRoutes = require('./teamRoutes');
 const activityRoutes = require('./activityRoutes');
+const adminRoutes = require('./adminRoutes');
 
 const router = express.Router();
 
+router.use('/admin', adminRoutes);
 router.use('/auth', authRoutes);
 router.use('/tasks', taskRoutes);
 router.use('/users', userRoutes);

@@ -3,7 +3,8 @@ import {
   HiOutlineCheck, 
   HiOutlineDocumentText, 
   HiOutlineBellSlash,
-  HiOutlinePencilSquare
+  HiOutlinePencilSquare,
+  HiOutlineTrash
 } from 'react-icons/hi2';
 import { useTask } from '../../context/TaskContext';
 import { getRelativeTime } from '../../utils/helpers';
@@ -11,6 +12,14 @@ import { getRelativeTime } from '../../utils/helpers';
 const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
   const { allTasks = [] } = useTask();
   const [lastReadTime, setLastReadTime] = useState(0);
+  const [readItems, setReadItems] = useState(() => {
+    const saved = localStorage.getItem('taskora_read_notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [deletedItems, setDeletedItems] = useState(() => {
+    const saved = localStorage.getItem('taskora_deleted_notifications');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     const saved = localStorage.getItem('taskora_last_read');
@@ -39,7 +48,8 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
     return idB.localeCompare(idA);
   });
 
-  const recentTasks = sortedTasks.slice(0, 6);
+  const visibleTasks = sortedTasks.filter(task => !deletedItems.includes(task._id || task.id));
+  const recentTasks = visibleTasks.slice(0, 6);
 
   const notifications = recentTasks.map((task) => {
     const isDone = task.status === 'Done';
@@ -67,6 +77,7 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
 
     const taskId = task._id || task.id;
     const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
+    const isUnread = taskTime > lastReadTime && !readItems.includes(taskId);
 
     return {
       id: taskId,
@@ -76,7 +87,7 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
       icon,
       color,
       bg,
-      unread: taskTime > lastReadTime
+      unread: isUnread
     };
   });
 
@@ -90,6 +101,23 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
     });
     setLastReadTime(maxTime);
     localStorage.setItem('taskora_last_read', maxTime.toString());
+    window.dispatchEvent(new Event('taskora_read_update'));
+  };
+
+  const handleNotificationClick = (id) => {
+    if (!readItems.includes(id)) {
+      const updated = [...readItems, id];
+      setReadItems(updated);
+      localStorage.setItem('taskora_read_notifications', JSON.stringify(updated));
+      window.dispatchEvent(new Event('taskora_read_update'));
+    }
+  };
+
+  const handleDeleteNotification = (e, id) => {
+    e.stopPropagation();
+    const updated = [...deletedItems, id];
+    setDeletedItems(updated);
+    localStorage.setItem('taskora_deleted_notifications', JSON.stringify(updated));
     window.dispatchEvent(new Event('taskora_read_update'));
   };
 
@@ -113,7 +141,7 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
             className="text-xs font-medium text-text-tertiary hover:text-text-primary transition-colors flex items-center gap-1"
           >
             <HiOutlineCheck className="w-3.5 h-3.5" />
-            Mark read
+            Mark all read
           </button>
         )}
       </div>
@@ -126,7 +154,8 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
               return (
                 <div 
                   key={notif.id} 
-                  className={`p-3.5 flex gap-3 hover:bg-surface-secondary transition-colors cursor-pointer border-b border-border/30 last:border-0
+                  onClick={() => handleNotificationClick(notif.id)}
+                  className={`group p-3.5 flex gap-3 hover:bg-surface-secondary transition-colors cursor-pointer border-b border-border/30 last:border-0
                     ${notif.unread ? 'bg-primary-50/10' : ''}`}
                 >
                   <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${notif.bg} ${notif.color}`}>
@@ -135,13 +164,24 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-0.5">
                       <p className="text-sm font-semibold text-text-primary truncate pr-2">{notif.title}</p>
-                      <span className="text-[10px] font-medium text-text-tertiary whitespace-nowrap">{notif.time}</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => handleDeleteNotification(e, notif.id)}
+                          className="text-text-tertiary hover:text-error-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded-md hover:bg-error-50"
+                          title="Delete Notification"
+                        >
+                          <HiOutlineTrash className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-[10px] font-medium text-text-tertiary whitespace-nowrap">{notif.time}</span>
+                      </div>
                     </div>
                     <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">{notif.desc}</p>
                   </div>
-                  {notif.unread && (
-                    <div className="w-2 h-2 rounded-full bg-primary-500 mt-1.5 flex-shrink-0" />
-                  )}
+                  <div className="flex flex-col items-center justify-start pt-1.5 w-2">
+                    {notif.unread && (
+                      <div className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0" />
+                    )}
+                  </div>
                 </div>
               );
             })}
