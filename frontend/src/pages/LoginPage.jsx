@@ -14,7 +14,6 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
-  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -30,7 +29,7 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await login(form.email, form.password, rememberMe);
+      await login(form.email, form.password, true);
       setSuccess(true);
       toast.success('Welcome back! Redirecting...');
       setTimeout(() => {
@@ -121,26 +120,7 @@ const LoginPage = () => {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
               />
-              <div className="flex items-center justify-between mt-4">
-                <label className="flex items-center gap-2.5 cursor-pointer group">
-                  <div className="relative flex items-center justify-center w-5 h-5">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="peer appearance-none w-5 h-5 border-2 border-text-tertiary rounded-md checked:bg-primary-500 checked:border-primary-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:ring-offset-2"
-                    />
-                    <svg
-                      className="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                    >
-                      <path d="M2 7L5.5 10.5L12 3" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors">Remember me</span>
-                </label>
-                
+              <div className="flex items-center justify-end mt-4">
                 <Link
                   to="/forgot-password"
                   className="text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors relative group"
