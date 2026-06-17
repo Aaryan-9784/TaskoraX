@@ -32,6 +32,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    occupation: {
+      type: String,
+      default: null,
+    },
+    website: {
+      type: String,
+      default: null,
+    },
     password: {
       type: String,
       minlength: [6, 'Password must be at least 6 characters'],
@@ -128,6 +136,14 @@ const userSchema = new mongoose.Schema(
           enum: ['always', 'batched', 'quiet'],
           default: 'always',
         },
+      },
+      timezone: {
+        type: String,
+        default: 'UTC',
+      },
+      language: {
+        type: String,
+        default: 'en',
       },
     },
     is2FAEnabled: {
