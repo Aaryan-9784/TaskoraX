@@ -21,6 +21,7 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
   const [lastReadTime, setLastReadTime] = useState(0);
   const [readItems, setReadItems] = useState([]);
   const [deletedItems, setDeletedItems] = useState([]);
+  const [avatarError, setAvatarError] = useState(false);
 
   useEffect(() => {
     const fetchReadData = () => {
@@ -162,8 +163,13 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
               </p>
             </div>
             <div className={`w-9 h-9 rounded-full bg-gradient-premium text-white flex items-center justify-center text-sm font-bold transition-all duration-300 ring-2 ring-white overflow-hidden ${activePopup === 'profile' ? 'shadow-glow-accent scale-105' : 'shadow-soft group-hover:shadow-glow-accent'}`}>
-              {user?.avatar ? (
-                <img src={user.avatar} alt={user?.name || 'Profile'} className="w-full h-full object-cover" />
+              {user?.avatar && !avatarError ? (
+                <img 
+                  src={user.avatar} 
+                  alt={getInitials(user?.name)} 
+                  className="w-full h-full object-cover" 
+                  onError={() => setAvatarError(true)}
+                />
               ) : (
                 getInitials(user?.name)
               )}

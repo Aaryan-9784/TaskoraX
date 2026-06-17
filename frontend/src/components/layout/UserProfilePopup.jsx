@@ -5,8 +5,11 @@ import {
 } from 'react-icons/hi2';
 import { getInitials } from '../../utils/helpers';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 const UserProfilePopup = ({ isOpen, onClose, user, domNode, onLogout }) => {
+  const [avatarError, setAvatarError] = useState(false);
+
   if (!isOpen) return null;
 
   return (
@@ -19,8 +22,13 @@ const UserProfilePopup = ({ isOpen, onClose, user, domNode, onLogout }) => {
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-12 h-12 rounded-full bg-gradient-premium text-white flex items-center justify-center text-lg font-bold shadow-soft overflow-hidden">
-              {user?.avatar ? (
-                <img src={user.avatar} alt={user?.name || 'Profile'} className="w-full h-full object-cover" />
+              {user?.avatar && !avatarError ? (
+                <img 
+                  src={user.avatar} 
+                  alt={getInitials(user?.name || 'User')} 
+                  className="w-full h-full object-cover" 
+                  onError={() => setAvatarError(true)}
+                />
               ) : (
                 getInitials(user?.name || 'User')
               )}

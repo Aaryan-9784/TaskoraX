@@ -24,23 +24,26 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Enable CORS
+app.use(
+  cors({
+    origin: [
+      process.env.FRONTEND_URL,
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'https://taskorax.vercel.app'
+    ].filter(Boolean),
+    credentials: true,
+  })
+);
+
 // Limit requests from same API
 const limiter = rateLimit({
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  max: process.env.NODE_ENV === 'development' ? 5000 : 100, // Higher limit for development
   windowMs: 15 * 60 * 1000,
   message: 'Too many requests from this IP, please try again in 15 minutes!',
 });
 app.use('/api', limiter);
-
-// Enable CORS
-app.use(
-  cors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? [process.env.FRONTEND_URL, 'https://taskorax.vercel.app'] 
-      : 'http://localhost:5173',
-    credentials: true,
-  })
-);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '5mb' }));

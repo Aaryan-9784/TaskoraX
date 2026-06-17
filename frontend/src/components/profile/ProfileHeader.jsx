@@ -5,8 +5,11 @@ import {
   HiOutlineEnvelope, 
   HiOutlineBriefcase 
 } from 'react-icons/hi2';
+import { useState } from 'react';
 
 const ProfileHeader = ({ user, onEditProfile }) => {
+  const [avatarError, setAvatarError] = useState(false);
+
   return (
     <div className="bg-white border border-border/50 rounded-2xl overflow-hidden shadow-sm relative">
       
@@ -27,8 +30,13 @@ const ProfileHeader = ({ user, onEditProfile }) => {
             {/* Avatar */}
             <div className="-mt-12 sm:-mt-16 relative w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 mx-auto sm:mx-0">
               <div className="w-full h-full rounded-full border-4 border-white shadow-md flex items-center justify-center text-primary-600 text-3xl sm:text-4xl font-bold overflow-hidden bg-gradient-to-br from-primary-50 to-primary-100">
-                {user?.avatar ? (
-                  <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                {user?.avatar && !avatarError ? (
+                  <img 
+                    src={user.avatar} 
+                    alt={getInitials(user?.name)} 
+                    className="w-full h-full object-cover" 
+                    onError={() => setAvatarError(true)}
+                  />
                 ) : (
                   getInitials(user?.name)
                 )}

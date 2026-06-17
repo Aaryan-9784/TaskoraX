@@ -14,17 +14,17 @@ router.post('/reset-password/:token', authController.resetPassword);
 const passport = require('passport');
 const oauthController = require('../controllers/oauthController');
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], prompt: 'select_account' }));
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login', session: false }),
+  passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=OAuthFailed`, session: false }),
   oauthController.oauthCallback
 );
 
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
 router.get(
   '/github/callback',
-  passport.authenticate('github', { failureRedirect: '/login', session: false }),
+  passport.authenticate('github', { failureRedirect: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=OAuthFailed`, session: false }),
   oauthController.oauthCallback
 );
 

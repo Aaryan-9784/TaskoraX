@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import AuthSidebar from '../components/auth/AuthSidebar';
@@ -13,8 +13,9 @@ import toast from 'react-hot-toast';
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [error, setError] = useState(searchParams.get('error') === 'OAuthFailed' ? 'Google/GitHub login failed. Please ensure your account has a public email address.' : (searchParams.get('error') || ''));
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 

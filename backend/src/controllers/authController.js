@@ -26,9 +26,21 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   // 2) Check if user exists && password is correct
-  const user = await User.findOne({ email }).select('+password +isActive');
+  const user = await User.findOne({ email }).select('+password +isActive +googleId +githubId');
 
-  if (!user || !(await user.correctPassword(password, user.password))) {
+  if (!user) {
+    return next(new AppError('Incorrect email or password', 401));
+  }
+
+  if (!user.password && user.googleId) {
+    return next(new AppError('This account was created using Google. Please sign in with Google.', 401));
+  }
+
+  if (!user.password && user.githubId) {
+    return next(new AppError('This account was created using GitHub. Please sign in with GitHub.', 401));
+  }
+
+  if (!(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
 

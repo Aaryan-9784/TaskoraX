@@ -189,6 +189,7 @@ userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
 ) {
+  if (!userPassword) return false;
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 

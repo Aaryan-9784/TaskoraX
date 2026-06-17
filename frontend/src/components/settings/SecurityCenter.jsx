@@ -16,7 +16,6 @@ const SecurityCenter = ({ user, updateProfile, changePassword, getSessions, revo
     newPassword: '',
     confirm: '',
   });
-  const [is2FAEnabled, setIs2FAEnabled] = useState(user?.is2FAEnabled || false);
   const [isSaving, setIsSaving] = useState(false);
 
   const [activeSessions, setActiveSessions] = useState([]);
@@ -65,17 +64,6 @@ const SecurityCenter = ({ user, updateProfile, changePassword, getSessions, revo
     }
   };
 
-  const handle2FAToggle = async (checked) => {
-    setIs2FAEnabled(checked);
-    try {
-      await updateProfile({ is2FAEnabled: checked });
-      toast.success(checked ? '2FA enabled successfully' : '2FA disabled successfully');
-    } catch (error) {
-      setIs2FAEnabled(!checked);
-      toast.error('Failed to update 2FA settings');
-    }
-  };
-
   const handleRevokeSession = async (sessionId) => {
     try {
       await revokeSession(sessionId);
@@ -97,7 +85,7 @@ const SecurityCenter = ({ user, updateProfile, changePassword, getSessions, revo
             Security Center
           </h2>
           <p className="text-sm text-text-secondary">
-            Manage your password, 2FA, and active sessions
+            Manage your password and active sessions
           </p>
         </div>
       </div>
@@ -165,32 +153,6 @@ const SecurityCenter = ({ user, updateProfile, changePassword, getSessions, revo
               </Button>
             </div>
           </form>
-        </div>
-
-        <div className="pt-6 border-t border-border/50">
-          <h3 className="text-base font-medium text-text-primary mb-4">
-            Two-Factor Authentication (2FA)
-          </h3>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl border border-border/50">
-            <div className="flex items-start gap-3 mb-4 sm:mb-0">
-              <div className="p-2 bg-white rounded-lg shadow-sm">
-                <HiOutlineKey className="w-5 h-5 text-gray-500" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-text-primary">
-                  Authenticator App
-                </p>
-                <p className="text-xs text-text-secondary mt-0.5">
-                  Use an app like Google Authenticator or 1Password to generate verification codes.
-                </p>
-              </div>
-            </div>
-            <Switch
-              checked={is2FAEnabled}
-              onChange={handle2FAToggle}
-              aria-label="Toggle 2FA"
-            />
-          </div>
         </div>
 
         <div className="pt-6 border-t border-border/50">

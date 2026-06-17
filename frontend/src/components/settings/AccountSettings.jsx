@@ -10,6 +10,7 @@ import {
   LuCloudUpload
 } from 'react-icons/lu';
 import toast from 'react-hot-toast';
+import { getInitials } from '../../utils/helpers';
 
 const PremiumInput = ({ label, icon: Icon, error, className = '', ...props }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -134,6 +135,7 @@ const AccountSettings = ({ user, updateProfile }) => {
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -154,6 +156,7 @@ const AccountSettings = ({ user, updateProfile }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setForm(prev => ({ ...prev, avatar: reader.result }));
+        setAvatarError(false);
       };
       reader.readAsDataURL(file);
     }
@@ -161,6 +164,7 @@ const AccountSettings = ({ user, updateProfile }) => {
 
   const handleRemovePicture = () => {
     setForm(prev => ({ ...prev, avatar: '' }));
+    setAvatarError(false);
   };
 
   const handleCancel = () => {
@@ -240,11 +244,16 @@ const AccountSettings = ({ user, updateProfile }) => {
           <div className="relative group">
             <div className="w-[120px] h-[120px] rounded-full p-1 bg-gradient-to-tr from-primary-500 via-purple-500 to-primary-300 shadow-xl group-hover:shadow-[0_0_30px_rgba(var(--color-primary-500),0.3)] transition-all duration-500">
               <div className="w-full h-full rounded-full bg-surface-primary border-4 border-surface-primary flex items-center justify-center overflow-hidden relative">
-                {form.avatar ? (
-                  <img src={form.avatar} alt="Profile" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                {form.avatar && !avatarError ? (
+                  <img 
+                    src={form.avatar} 
+                    alt={getInitials(form.name || user?.name || 'User')} 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    onError={() => setAvatarError(true)}
+                  />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center text-primary-600 text-4xl font-bold">
-                    {form.name ? form.name.charAt(0).toUpperCase() : 'U'}
+                    {getInitials(form.name || user?.name || 'User')}
                   </div>
                 )}
                 {/* Online Status Indicator */}
@@ -434,7 +443,7 @@ const AccountSettings = ({ user, updateProfile }) => {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-text-primary">Security Information</h2>
-                <p className="text-sm text-text-secondary mt-1">Manage your password, 2FA, and sessions.</p>
+                <p className="text-sm text-text-secondary mt-1">Manage your password and sessions.</p>
               </div>
             </div>
 
@@ -450,19 +459,6 @@ const AccountSettings = ({ user, updateProfile }) => {
                   </div>
                 </div>
                 <Button variant="secondary" size="sm" className="rounded-lg">Change Password</Button>
-              </div>
-
-              <div className="flex items-center justify-between p-4 rounded-2xl border border-border/40 bg-surface-secondary/20 hover:bg-surface-secondary/40 transition-colors">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-success-500/10 flex items-center justify-center">
-                    <LuSmartphone className="w-5 h-5 text-success-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-text-primary">Two-Factor Authentication</h4>
-                    <p className="text-xs text-success-600 font-medium mt-0.5">Enabled</p>
-                  </div>
-                </div>
-                <Button variant="secondary" size="sm" className="rounded-lg">Manage 2FA</Button>
               </div>
 
               <div className="flex items-center justify-between p-4 rounded-2xl border border-border/40 bg-surface-secondary/20 hover:bg-surface-secondary/40 transition-colors">
