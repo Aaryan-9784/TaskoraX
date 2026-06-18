@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { HiXMark } from 'react-icons/hi2';
 
-const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
+const Modal = ({ isOpen, onClose, title, children, size = 'md', overflowVisible = false }) => {
   const overlayRef = useRef(null);
 
   const sizeClasses = {
@@ -43,7 +43,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
 
       {/* Modal */}
       <div
-        className={`relative bg-white rounded-2xl shadow-overlay w-full ${sizeClasses[size]} animate-scale-in max-h-[90vh] overflow-hidden flex flex-col`}
+        className={`relative bg-white rounded-2xl shadow-overlay w-full ${sizeClasses[size]} animate-scale-in max-h-[90vh] ${overflowVisible ? '' : 'overflow-hidden'} flex flex-col`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
@@ -58,7 +58,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 overflow-y-auto">{children}</div>
+        <div className={`px-6 py-5 ${overflowVisible ? 'overflow-visible' : 'overflow-y-auto'}`}>{children}</div>
       </div>
     </div>,
     document.body

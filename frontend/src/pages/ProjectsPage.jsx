@@ -6,11 +6,13 @@ import EmptyProjectsState from '../components/projects/EmptyProjectsState';
 import Modal from '../components/common/Modal';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
+import Select from '../components/common/Select';
+import Switch from '../components/common/Switch';
 import toast from 'react-hot-toast';
 import { useProjects } from '../context/ProjectContext';
 
 const ProjectsPage = () => {
-  const { projects, loading } = useProjects();
+  const { projects, loading, addProject, updateProject, deleteProject } = useProjects();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeModal, setActiveModal] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -27,6 +29,11 @@ const ProjectsPage = () => {
     ];
   });
 
+  const [filterActive, setFilterActive] = useState(false);
+  const [filterCompleted, setFilterCompleted] = useState(false);
+
+  const [sortOption, setSortOption] = useState('Date Created (Newest First)');
+
   useEffect(() => {
     localStorage.setItem('taskora_projects', JSON.stringify(projects));
   }, [projects]);
@@ -36,12 +43,36 @@ const ProjectsPage = () => {
   }, [archivedProjects]);
   
   const filteredProjects = useMemo(() => {
-    return projects.filter((project) => 
-      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.status.toLowerCase().includes(searchQuery.toLowerCase())
+    let result = projects.filter((project) => 
+      project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.status?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [projects, searchQuery]);
+
+    if (filterActive || filterCompleted) {
+      result = result.filter(project => {
+        if (filterActive && (project.status === 'Active' || project.status === 'Planning')) return true;
+        if (filterCompleted && project.status === 'Completed') return true;
+        return false;
+      });
+    }
+
+    result.sort((a, b) => {
+      const nameA = a.name || '';
+      const nameB = b.name || '';
+      if (sortOption === 'Name (A-Z)') return nameA.localeCompare(nameB);
+      if (sortOption === 'Name (Z-A)') return nameB.localeCompare(nameA);
+      
+      const dateA = new Date(a.createdAt || a.dueDate || 0).getTime();
+      const dateB = new Date(b.createdAt || b.dueDate || 0).getTime();
+      
+      if (sortOption === 'Date Created (Newest First)') return dateB - dateA;
+      if (sortOption === 'Date Created (Oldest First)') return dateA - dateB;
+      return 0;
+    });
+
+    return result;
+  }, [projects, searchQuery, filterActive, filterCompleted, sortOption]);
 
   const handleCloseModal = () => {
     setActiveModal(null);
@@ -63,100 +94,67 @@ const ProjectsPage = () => {
     }
   };
 
-
-  const handleRestore = (id) => {
+  const handleRestore = async (id) => {
     const projectToRestore = archivedProjects.find(p => p.id === id);
     if (projectToRestore) {
       setArchivedProjects(prev => prev.filter(p => p.id !== id));
       
       const restoredProject = {
-        id: projectToRestore.id,
         name: projectToRestore.name,
         description: 'Restored from archive',
         status: 'Active',
-        progress: 0,
-        dueDate: new Date().toISOString().split('T')[0],
-        priority: 'Medium',
-        coverColor: 'bg-primary-500',
-        team: [],
-        tasks: { total: 0, completed: 0 },
-        tasksList: []
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       };
       
-      setProjects([restoredProject, ...projects]);
-      toast.success('Project restored successfully');
+      await addProject(restoredProject);
     }
   };
 
-  const handleDeleteProject = (id) => {
-    setProjects(prev => prev.filter(p => p.id !== id));
-    toast.success('Project deleted permanently');
+  const handleDeleteProject = async (id) => {
+    await deleteProject(id);
   };
 
-  const handleArchiveProject = (project) => {
-    setProjects(prev => prev.filter(p => p.id !== project.id));
-    setArchivedProjects(prev => [{ id: project.id, name: project.name, date: new Date().toISOString().split('T')[0] }, ...prev]);
+  const handleArchiveProject = async (project) => {
+    const pId = project._id || project.id;
+    await deleteProject(pId);
+    setArchivedProjects(prev => [{ id: pId, name: project.name, date: new Date().toISOString().split('T')[0] }, ...prev]);
     toast.success('Project moved to archive');
   };
 
   const handleEditClick = (project) => {
-    setEditingProjectId(project.id);
+    setEditingProjectId(project._id || project.id);
     setEditProjectName(project.name);
     setEditProjectDescription(project.description);
     setActiveModal('edit');
   };
 
-  const handleSaveEdit = () => {
-    if (!editProjectName.trim()) {
-      toast.error('Project name is required');
-      return;
+  const handleSaveEdit = async () => {
+    const finalName = editProjectName.trim() || 'Untitled Project';
+    try {
+      await updateProject(editingProjectId, { name: finalName, description: editProjectDescription });
+      handleCloseModal();
+    } catch (err) {
+      console.error('Failed to update project:', err);
     }
-    
-    setProjects(prev => prev.map(p => {
-      if (p.id === editingProjectId) {
-        return { ...p, name: editProjectName, description: editProjectDescription };
-      }
-      return p;
-    }));
-    
-    toast.success('Project updated successfully!');
-    handleCloseModal();
   };
 
-  const handleCreateProject = () => {
-    if (!newProjectName.trim()) {
-      toast.error('Project name is required');
-      return;
-    }
-    
+  const handleCreateProject = async () => {
+    const finalName = newProjectName.trim() || 'Untitled Project';
     const newProject = {
-      id: `proj-${Date.now()}`,
-      name: newProjectName,
+      name: finalName,
       description: newProjectDescription || 'No description provided.',
       status: 'Planning',
-      progress: 0,
-      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      priority: 'Medium',
-      coverColor: ['bg-primary-500', 'bg-secondary-500', 'bg-accent-500', 'bg-warning-500'][Math.floor(Math.random() * 4)],
-      team: [],
-      tasks: { total: 0, completed: 0 },
-      tasksList: []
+      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      priority: 'Medium'
     };
-    
-    setProjects([newProject, ...projects]);
-    toast.success('Project created successfully!');
-    handleCloseModal();
+    try {
+      await addProject(newProject);
+      handleCloseModal();
+    } catch (err) {
+      console.error('Failed to create project:', err);
+    }
   };
 
-  const handleApplyFilters = () => {
-    toast.success('Filters applied successfully');
-    handleCloseModal();
-  };
-
-  const handleApplySort = () => {
-    toast.success('Sorting applied successfully');
-    handleCloseModal();
-  };
 
   const currentMetrics = useMemo(() => {
     return {
@@ -166,13 +164,6 @@ const ProjectsPage = () => {
       atRisk: projects.filter(p => p.status === 'At Risk').length,
     };
   }, [projects]);
-
-  const projectMetrics = {
-    total: projects.length,
-    active: projects.filter(p => p.status === 'Active').length,
-    completed: projects.filter(p => p.status === 'Completed').length,
-    atRisk: projects.filter(p => p.status === 'At Risk').length,
-  };
 
   if (loading) {
     return <div className="p-8 text-center text-text-secondary">Loading projects...</div>;
@@ -184,7 +175,6 @@ const ProjectsPage = () => {
         projectCount={filteredProjects.length} 
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        onImport={() => setActiveModal('import')}
         onArchive={() => setActiveModal('archive')}
         onNew={() => setActiveModal('new')}
         onFilter={() => setActiveModal('filter')}
@@ -195,7 +185,7 @@ const ProjectsPage = () => {
       
       {filteredProjects.length > 0 ? (
         <ProjectsGrid 
-          projects={filteredProjects} 
+          projects={filteredProjects.map(p => ({...p, id: p._id || p.id}))} 
           onDelete={handleDeleteProject} 
           onArchive={handleArchiveProject} 
           onEdit={handleEditClick}
@@ -206,7 +196,9 @@ const ProjectsPage = () => {
             No projects found matching "{searchQuery}"
           </div>
         ) : (
-          <EmptyProjectsState />
+          <EmptyProjectsState 
+            onNew={() => setActiveModal('new')}
+          />
         )
       )}
 
@@ -299,33 +291,37 @@ const ProjectsPage = () => {
         <div className="space-y-4">
           <p className="text-sm text-text-secondary">Filter by status or priority.</p>
           <div className="space-y-2">
-             <label className="flex items-center gap-2 text-sm text-text-primary">
-                <input type="checkbox" className="rounded border-border text-primary-500 focus:ring-primary-500" /> Active
-             </label>
-             <label className="flex items-center gap-2 text-sm text-text-primary">
-                <input type="checkbox" className="rounded border-border text-primary-500 focus:ring-primary-500" /> Completed
-             </label>
-          </div>
-          <div className="flex justify-end gap-3 mt-6">
-            <Button variant="secondary" onClick={handleCloseModal}>Clear</Button>
-            <Button onClick={handleApplyFilters}>Apply Filters</Button>
+            <Switch
+              label="Active Projects"
+              checked={filterActive}
+              onChange={setFilterActive}
+            />
+            <Switch
+              label="Completed Projects"
+              checked={filterCompleted}
+              onChange={setFilterCompleted}
+            />
           </div>
         </div>
       </Modal>
 
-      <Modal isOpen={activeModal === 'sort'} onClose={handleCloseModal} title="Sort Projects">
+      <Modal isOpen={activeModal === 'sort'} onClose={handleCloseModal} title="Sort Projects" overflowVisible={true}>
         <div className="space-y-4">
           <p className="text-sm text-text-secondary">Sort projects by:</p>
-          <select className="w-full bg-surface-primary border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary-500">
-            <option>Name (A-Z)</option>
-            <option>Name (Z-A)</option>
-            <option>Date Created (Newest First)</option>
-            <option>Date Created (Oldest First)</option>
-          </select>
-          <div className="flex justify-end gap-3 mt-6">
-            <Button variant="secondary" onClick={handleCloseModal}>Cancel</Button>
-            <Button onClick={handleApplySort}>Apply Sort</Button>
-          </div>
+          <Select 
+            value={sortOption} 
+            onChange={(e) => {
+              setSortOption(e.target.value);
+              toast.success('Sorting applied successfully');
+              handleCloseModal();
+            }} 
+            options={[
+              { label: 'Name (A-Z)', value: 'Name (A-Z)' },
+              { label: 'Name (Z-A)', value: 'Name (Z-A)' },
+              { label: 'Date Created (Newest First)', value: 'Date Created (Newest First)' },
+              { label: 'Date Created (Oldest First)', value: 'Date Created (Oldest First)' }
+            ]}
+          />
         </div>
       </Modal>
     </div>

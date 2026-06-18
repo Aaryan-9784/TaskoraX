@@ -1,6 +1,6 @@
-import { HiOutlineFolderPlus, HiOutlineArrowDownTray } from 'react-icons/hi2';
+import { HiOutlineFolderPlus } from 'react-icons/hi2';
 import Button from '../common/Button';
-const EmptyProjectsState = () => {
+const EmptyProjectsState = ({ onNew }) => {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center animate-fade-in">
       <div className="w-24 h-24 mb-6 relative">
@@ -13,11 +13,8 @@ const EmptyProjectsState = () => {
       <p className="text-sm text-text-secondary max-w-sm mb-8">
         Create your first project and start organizing your work professionally.
       </p>
-      <div className="flex items-center gap-3">
-        <Button variant="secondary" icon={HiOutlineArrowDownTray}>
-          Import Project
-        </Button>
-        <Button icon={HiOutlineFolderPlus}>
+      <div className="flex items-center justify-center gap-3">
+        <Button icon={HiOutlineFolderPlus} onClick={onNew}>
           Create Project
         </Button>
       </div>

@@ -39,6 +39,8 @@ exports.createProject = catchAsync(async (req, res, next) => {
     team: req.body.team ? [...new Set([...req.body.team, req.user.id])] : [req.user.id]
   });
 
+  await newProject.populate('team', 'name avatar role department email');
+
   res.status(201).json({
     status: 'success',
     data: {
@@ -51,7 +53,7 @@ exports.updateProject = catchAsync(async (req, res, next) => {
   const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
-  });
+  }).populate('team', 'name avatar role department email');
 
   if (!project) {
     return next(new AppError('No project found with that ID', 404));

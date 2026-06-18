@@ -80,13 +80,13 @@ const ProjectCard = ({ project, onDelete, onArchive, onEdit }) => {
           <div className="flex justify-between text-xs mb-1.5">
             <span className="font-semibold text-text-secondary">Progress</span>
             <span className="font-bold text-text-primary">
-              {project.tasks?.total > 0 ? Math.round((project.tasks.completed / project.tasks.total) * 100) : 0}%
+              {project.tasks?.total > 0 ? Math.round(((project.tasks?.completed || 0) / project.tasks.total) * 100) : 0}%
             </span>
           </div>
           <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
             <div 
-              className={`h-full rounded-full transition-all duration-1000 ${project.coverColor}`}
-              style={{ width: `${project.tasks?.total > 0 ? Math.round((project.tasks.completed / project.tasks.total) * 100) : 0}%` }}
+              className={`h-full rounded-full transition-all duration-1000 ${project.coverColor || 'bg-primary-500'}`}
+              style={{ width: `${project.tasks?.total > 0 ? Math.round(((project.tasks?.completed || 0) / project.tasks.total) * 100) : 0}%` }}
             />
           </div>
         </div>
@@ -95,18 +95,18 @@ const ProjectCard = ({ project, onDelete, onArchive, onEdit }) => {
         <div className="flex items-center justify-between pt-4 border-t border-border/40 mt-auto">
           {/* Team Avatars */}
           <div className="flex -space-x-2">
-            {project.team.slice(0, 3).map((member, idx) => (
+            {(project.team || []).slice(0, 3).map((member, idx) => (
               <div 
                 key={idx}
                 className="w-7 h-7 rounded-full border-2 border-surface-primary bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-[10px]"
-                title={member.name}
+                title={member?.name || 'Unknown'}
               >
-                {member.name ? member.name.charAt(0).toUpperCase() : '?'}
+                {member?.name ? member.name.charAt(0).toUpperCase() : '?'}
               </div>
             ))}
-            {project.team.length > 3 && (
+            {(project.team || []).length > 3 && (
               <div className="w-7 h-7 rounded-full border-2 border-surface-primary bg-surface-secondary flex items-center justify-center text-[10px] font-bold text-text-secondary">
-                +{project.team.length - 3}
+                +{(project.team || []).length - 3}
               </div>
             )}
           </div>
@@ -114,11 +114,11 @@ const ProjectCard = ({ project, onDelete, onArchive, onEdit }) => {
           <div className="flex items-center gap-3 text-xs font-medium text-text-tertiary">
             <div className="flex items-center gap-1">
               <HiOutlineClipboardDocumentList className="h-4 w-4" />
-              <span>{project.tasks.completed}/{project.tasks.total}</span>
+              <span>{project.tasks?.completed || 0}/{project.tasks?.total || 0}</span>
             </div>
             <div className="flex items-center gap-1">
               <HiOutlineCalendar className="h-4 w-4" />
-              <span>{new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+              <span>{project.dueDate ? new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date'}</span>
             </div>
           </div>
         </div>

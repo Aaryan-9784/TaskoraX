@@ -41,7 +41,7 @@ const Select = ({ label, options, value, onChange, error, className = '' }) => {
         </button>
 
         {isOpen && (
-          <div className="absolute z-50 mt-2 max-h-60 w-full overflow-auto bg-surface-primary/90 backdrop-blur-xl border border-border/50 rounded-2xl shadow-xl shadow-black/5 p-1.5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-full left-0 z-50 mt-2 max-h-60 w-full overflow-auto bg-surface-primary/90 backdrop-blur-xl border border-border/50 rounded-2xl shadow-xl shadow-black/5 p-1.5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col gap-0.5">
               {options.map((opt) => (
                 <button
