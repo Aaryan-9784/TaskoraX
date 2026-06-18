@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
+import Select from '../components/common/Select';
 
 // Team Components
 import TeamOverviewCards from '../components/team/TeamOverviewCards';
@@ -24,7 +25,7 @@ import { useTeam } from '../context/TeamContext';
 import { useProjects } from '../context/ProjectContext';
 
 const TeamPage = () => {
-  const { members, loading: teamLoading, updateMember } = useTeam();
+  const { members, loading: teamLoading, updateMember, deleteMember } = useTeam();
   const { projects, loading: projectsLoading } = useProjects();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState(null);
@@ -33,6 +34,7 @@ const TeamPage = () => {
   
   // New States for Buttons
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [inviteName, setInviteName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('Member');
   
@@ -59,6 +61,10 @@ const TeamPage = () => {
   };
 
   const handleSendInvite = () => {
+    if (!inviteName.trim()) {
+      toast.error('Please enter a name');
+      return;
+    }
     if (!inviteEmail || !inviteEmail.includes('@')) {
       toast.error('Please enter a valid email');
       return;
@@ -67,6 +73,7 @@ const TeamPage = () => {
     // For now, we simulate success
     toast.success(`Invitation sent to ${inviteEmail}`);
     setIsInviteOpen(false);
+    setInviteName('');
     setInviteEmail('');
   };
 
@@ -79,9 +86,10 @@ const TeamPage = () => {
     window.location.href = `mailto:${member.email || ''}?subject=TaskoraX: Direct Message`;
   };
 
-  const handleDeleteMember = (memberId) => {
-    // In a true app, deleting a member might be an admin only action
-    toast.error('Not allowed to delete users in this demo');
+  const handleDeleteMember = async (memberId) => {
+    if (window.confirm('Are you sure you want to permanently delete this team member? This action cannot be undone.')) {
+      await deleteMember(memberId);
+    }
   };
 
   // Filter & Sort Logic
@@ -188,11 +196,11 @@ const TeamPage = () => {
       </div>
 
       {/* Analytics & Workload (Balanced 50/50 Grid) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4 animate-in animate-in-delay-3">
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4 animate-in animate-in-delay-3 items-stretch">
+        <div className="h-full">
           <TeamWorkloadBoard members={members} />
         </div>
-        <div className="h-[400px]">
+        <div className="h-full">
           <TeamPerformance />
         </div>
       </div>
@@ -216,27 +224,32 @@ const TeamPage = () => {
         initialAssignee={assigningMember?.id || ''}
       />
 
-      <Modal isOpen={isInviteOpen} onClose={() => setIsInviteOpen(false)} title="Invite Team Member">
+      <Modal isOpen={isInviteOpen} onClose={() => setIsInviteOpen(false)} title="Invite Team Member" overflowVisible={true}>
         <div className="space-y-4">
           <Input 
+            label="Name" 
+            placeholder="John Doe" 
+            type="text"
+            value={inviteName}
+            onChange={(e) => setInviteName(e.target.value)}
+          />
+          <Input 
             label="Email Address" 
-            placeholder="colleague@taskorax.com" 
+            placeholder="colleague@example.com" 
             type="email"
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
           />
-          <div>
-            <label className="block text-sm font-bold text-text-primary mb-1.5">Role</label>
-            <select 
-              className="w-full bg-surface-primary border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500 text-text-primary"
-              value={inviteRole}
-              onChange={(e) => setInviteRole(e.target.value)}
-            >
-              <option value="Member">Member</option>
-              <option value="Manager">Manager</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </div>
+          <Select 
+            label="Access Rights / Role"
+            options={[
+              { value: 'Member', label: 'Member (Standard Access)' },
+              { value: 'Admin', label: 'Admin (Full Access)' },
+              { value: 'Viewer', label: 'Viewer (Read-only)' }
+            ]}
+            value={inviteRole}
+            onChange={(e) => setInviteRole(e.target.value)}
+          />
           <div className="flex justify-end gap-3 mt-6 border-t border-border/40 pt-6">
             <Button variant="secondary" onClick={() => setIsInviteOpen(false)}>Cancel</Button>
             <Button onClick={handleSendInvite}>Send Invitation</Button>

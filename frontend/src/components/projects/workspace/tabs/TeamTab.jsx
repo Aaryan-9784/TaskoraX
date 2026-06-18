@@ -162,8 +162,8 @@ const TeamTab = ({ project, onUpdateProject }) => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1.5 text-sm text-text-secondary">
-                      {(member.role === 'Admin' || member.id === 'u1') && <HiOutlineShieldCheck className="h-4 w-4 text-primary-500" />}
-                      {member.role || (member.id === 'u1' ? 'Admin' : 'Member')}
+                      {(member.role === 'Admin' || member.role === 'superadmin' || member.role === 'Super Admin' || member.id === 'u1') && <HiOutlineShieldCheck className="h-4 w-4 text-primary-500" />}
+                      {member.role === 'superadmin' ? 'Super Admin' : (member.role || (member.id === 'u1' ? 'Admin' : 'Member'))}
                     </div>
                   </td>
                   <td className="px-6 py-4">

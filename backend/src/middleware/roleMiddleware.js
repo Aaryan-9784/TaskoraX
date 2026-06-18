@@ -11,5 +11,5 @@ exports.requireRoles = (...roles) => {
   };
 };
 
-exports.isAdmin = exports.requireRoles('superadmin', 'admin');
-exports.isSuperAdmin = exports.requireRoles('superadmin');
+exports.isAdmin = exports.requireRoles('Super Admin', 'superadmin', 'admin');
+exports.isSuperAdmin = exports.requireRoles('Super Admin', 'superadmin');

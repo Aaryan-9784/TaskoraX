@@ -44,6 +44,16 @@ export const TeamProvider = ({ children }) => {
     }
   };
 
+  const deleteMember = async (id) => {
+    try {
+      await api.delete(`/admin/users/${id}`);
+      setMembers((prev) => prev.filter((m) => m._id !== id && m.id !== id));
+      toast.success('Member deleted successfully');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete member (Admin only)');
+    }
+  };
+
   const addActivity = async (activityData) => {
     try {
       const res = await api.post('/activities', activityData);
@@ -59,6 +69,7 @@ export const TeamProvider = ({ children }) => {
     loading,
     fetchTeamData,
     updateMember,
+    deleteMember,
     addActivity,
   };
 

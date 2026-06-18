@@ -4,17 +4,33 @@ import { useTask } from '../../context/TaskContext';
 
 const TeamPerformance = () => {
   const { members, activities } = useTeam();
-  const { stats } = useTask();
+  const { stats, allTasks } = useTask();
 
   // Calculate Top Performer based on completed tasks
-  const topPerformerMember = members?.length > 0 
-    ? members.reduce((prev, current) => ((prev.completedTasks || 0) > (current.completedTasks || 0)) ? prev : current, members[0])
-    : null;
+  const getMemberCompletedTasks = (memberId) => {
+    return (allTasks || []).filter(t => {
+      const assigneeId = t.assignee?._id || t.assignee;
+      return assigneeId === memberId && t.status === 'Done';
+    }).length;
+  };
+
+  let topPerformerMember = null;
+  let maxCompletedTasks = -1;
+
+  if (members && members.length > 0) {
+    members.forEach(member => {
+      const completed = getMemberCompletedTasks(member._id || member.id);
+      if (completed > maxCompletedTasks) {
+        maxCompletedTasks = completed;
+        topPerformerMember = member;
+      }
+    });
+  }
 
   // Calculate Most Active based on activity frequency
   const activityCounts = {};
   (activities || []).forEach(a => {
-    const uid = a.user?._id || a.user?.id;
+    const uid = a.user?._id || a.user?.id || a.user;
     if (uid) {
       activityCounts[uid] = (activityCounts[uid] || 0) + 1;
     }
@@ -38,8 +54,8 @@ const TeamPerformance = () => {
     : 0;
 
   const displayTopPerformer = {
-    name: topPerformerMember?.name || 'No Data',
-    tasksCompleted: topPerformerMember?.completedTasks || 0
+    name: maxCompletedTasks > 0 ? topPerformerMember?.name : (topPerformerMember?.name || 'No Data'),
+    tasksCompleted: maxCompletedTasks >= 0 ? maxCompletedTasks : 0
   };
 
   const displayMostActive = {

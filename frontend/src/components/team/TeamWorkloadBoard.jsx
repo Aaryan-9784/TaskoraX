@@ -1,14 +1,30 @@
+import { useTask } from '../../context/TaskContext';
+
+const getRoleDisplay = (role) => {
+  if (role === 'superadmin' || role === 'Super Admin') return 'Super Admin';
+  if (role === 'user') return 'Member';
+  return role || 'Member';
+};
+
 const TeamWorkloadBoard = ({ members }) => {
+  const { allTasks } = useTask();
   return (
-    <div className="glass-panel rounded-2xl overflow-hidden border border-border/50">
-      <div className="p-5 border-b border-border/50 bg-surface-secondary/30">
+    <div className="glass-panel rounded-2xl overflow-hidden border border-border/50 h-full flex flex-col">
+      <div className="p-5 border-b border-border/50 bg-surface-secondary/30 shrink-0">
         <h3 className="text-lg font-bold text-text-primary">Team Workload</h3>
         <p className="text-xs text-text-tertiary mt-1">Monitor capacity and distribute tasks fairly.</p>
       </div>
-      <div className="p-5">
+      <div className="p-5 flex-1 overflow-y-auto custom-scrollbar">
         <div className="space-y-6">
           {members.map((member) => {
-            const workloadPct = member.workloadPercentage || 0;
+            const memberId = member._id || member.id;
+            const memberTasks = (allTasks || []).filter(t => {
+              const assigneeId = t.assignee?._id || t.assignee;
+              return assigneeId === memberId;
+            });
+            const pendingCount = memberTasks.filter(t => t.status !== 'Done').length;
+            const workloadPct = Math.min((pendingCount / 10) * 100, 100); // Base 100% on 10 tasks
+
             let statusColor = 'bg-success-500';
             let barColor = 'bg-success-500';
             let statusText = 'Balanced';
@@ -32,7 +48,7 @@ const TeamWorkloadBoard = ({ members }) => {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-text-primary">{member.name}</p>
-                      <p className="text-[10px] text-text-tertiary font-medium">{member.role}</p>
+                      <p className="text-[10px] text-text-tertiary font-medium">{getRoleDisplay(member.role)}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -40,7 +56,7 @@ const TeamWorkloadBoard = ({ members }) => {
                       <span className={`w-2 h-2 rounded-full ${statusColor}`}></span>
                       <span className="text-xs font-bold text-text-primary">{statusText}</span>
                     </div>
-                    <p className="text-[10px] text-text-tertiary font-medium">{member.pendingTasks} pending tasks</p>
+                    <p className="text-[10px] text-text-tertiary font-medium">{pendingCount} pending tasks</p>
                   </div>
                 </div>
                 <div className="w-full h-2.5 bg-surface-secondary rounded-full overflow-hidden">

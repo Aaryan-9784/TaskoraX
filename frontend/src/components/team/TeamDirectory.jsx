@@ -19,6 +19,20 @@ const statusColors = {
   Offline: 'bg-text-tertiary',
 };
 
+const getRoleDisplay = (role) => {
+  if (role === 'superadmin' || role === 'Super Admin') return 'Super Admin';
+  if (role === 'user') return 'Member';
+  return role || 'Member';
+};
+
+const getRoleColor = (role) => {
+  const displayRole = getRoleDisplay(role);
+  if (displayRole === 'Owner' || displayRole === 'Super Admin') return 'bg-accent-100/50 text-accent-700 border-accent-200';
+  if (displayRole === 'Admin') return 'bg-primary-100/50 text-primary-700 border-primary-200';
+  if (displayRole === 'Manager') return 'bg-secondary-100/50 text-secondary-700 border-secondary-200';
+  return 'bg-surface-tertiary text-text-secondary border-border';
+};
+
 const TeamDirectory = ({ members, onMemberClick, onAssignClick, onMessageClick, onDeleteClick }) => {
   if (!members || members.length === 0) {
     return (
@@ -45,7 +59,7 @@ const TeamDirectory = ({ members, onMemberClick, onAssignClick, onMessageClick, 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {members.map((member) => (
               <div 
-                key={member.id} 
+                key={member._id || member.id} 
                 className="glass-panel p-5 rounded-2xl hover:shadow-card-hover transition-all duration-300 cursor-pointer group relative"
                 onClick={() => onMemberClick(member)}
               >
@@ -60,12 +74,12 @@ const TeamDirectory = ({ members, onMemberClick, onAssignClick, onMessageClick, 
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${roleColors[member.role]}`}>
-                      {member.role}
+                    <span className={`px-2.5 py-1 text-[10px] font-bold rounded-full border ${getRoleColor(member.role)}`}>
+                      {getRoleDisplay(member.role)}
                     </span>
                     {onDeleteClick && (
                       <button 
-                        onClick={(e) => { e.stopPropagation(); onDeleteClick(member.id); }}
+                        onClick={(e) => { e.stopPropagation(); onDeleteClick(member._id || member.id); }}
                         className="text-text-tertiary hover:text-danger-500 hover:bg-danger-50 p-1.5 rounded-full transition-colors"
                         title="Remove Member"
                       >

@@ -9,11 +9,12 @@ import {
 } from 'react-icons/hi2';
 
 import { useTask } from '../../context/TaskContext';
+import { useTeam } from '../../context/TeamContext';
 
-const getCards = (stats) => [
+const getCards = (stats, members = []) => [
   {
     title: 'Total Members',
-    value: '24',
+    value: members.length.toString(),
     trend: '+2',
     trendUp: true,
     icon: HiOutlineUsers,
@@ -22,7 +23,7 @@ const getCards = (stats) => [
   },
   {
     title: 'Active Now',
-    value: '18',
+    value: members.filter(m => m.status === 'Online').length.toString(),
     trend: 'Stable',
     trendUp: true,
     icon: HiOutlineUserGroup,
@@ -60,9 +61,11 @@ const getCards = (stats) => [
 
 const TeamOverviewCards = () => {
   const { stats } = useTask();
+  const { members } = useTeam();
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-      {getCards(stats).map((card, idx) => (
+      {getCards(stats, members).map((card, idx) => (
         <div key={idx} className="glass-panel p-5 rounded-2xl hover:shadow-card-hover transition-all duration-300 group">
           <div className="flex justify-between items-start mb-4">
             <div className={`p-3 rounded-xl ${card.bg} ${card.color} group-hover:scale-110 transition-transform`}>

@@ -26,7 +26,7 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
   const [totalUsers, activeUsers, admins, newUsersThisMonth] = await Promise.all([
     User.countDocuments(),
     User.countDocuments({ isActive: true }),
-    User.countDocuments({ role: { $in: ['admin', 'superadmin'] } }),
+    User.countDocuments({ role: { $in: ['admin', 'superadmin', 'Super Admin'] } }),
     User.countDocuments({
       createdAt: {
         $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
@@ -169,7 +169,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
   const { name, email, password, role } = req.body;
 
   // Role validation
-  if (role === 'superadmin' && req.user.role !== 'superadmin') {
+  if ((role === 'superadmin' || role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
     return next(new AppError('Only Super Admin can create another Super Admin', 403));
   }
 
@@ -194,7 +194,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
 exports.updateUser = catchAsync(async (req, res, next) => {
   const { role, isActive, ...otherUpdates } = req.body;
   
-  if (role === 'superadmin' && req.user.role !== 'superadmin') {
+  if ((role === 'superadmin' || role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
     return next(new AppError('Only Super Admin can assign Super Admin role', 403));
   }
 
@@ -202,7 +202,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   if (!user) return next(new AppError('User not found', 404));
 
   // If trying to modify a superadmin, only superadmin can do it
-  if (user.role === 'superadmin' && req.user.role !== 'superadmin') {
+  if ((user.role === 'superadmin' || user.role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
     return next(new AppError('You cannot modify a Super Admin', 403));
   }
 
@@ -233,7 +233,7 @@ exports.deactivateUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) return next(new AppError('User not found', 404));
 
-  if (user.role === 'superadmin' && req.user.role !== 'superadmin') {
+  if ((user.role === 'superadmin' || user.role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
     return next(new AppError('You cannot deactivate a Super Admin', 403));
   }
 
@@ -249,7 +249,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) return next(new AppError('User not found', 404));
 
-  if (user.role === 'superadmin' && req.user.role !== 'superadmin') {
+  if ((user.role === 'superadmin' || user.role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
     return next(new AppError('You cannot delete a Super Admin', 403));
   }
 
