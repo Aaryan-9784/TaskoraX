@@ -41,9 +41,42 @@ const projectSchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
+    pendingTeam: [
+      {
+        id: String,
+        name: String,
+        email: String,
+        role: String,
+        status: String,
+        avatar: String,
+      }
+    ],
     tasks: {
       total: { type: Number, default: 0 },
       completed: { type: Number, default: 0 },
+    },
+    tasksList: [
+      {
+        id: String,
+        name: String,
+        status: String,
+        startDay: Number,
+        durationDays: Number,
+      }
+    ],
+    files: [
+      {
+        id: mongoose.Schema.Types.Mixed,
+        name: String,
+        size: String,
+        date: String,
+        url: String,
+        isImage: Boolean,
+      }
+    ],
+    quickNote: {
+      type: String,
+      default: '',
     },
     owner: {
       type: mongoose.Schema.ObjectId,

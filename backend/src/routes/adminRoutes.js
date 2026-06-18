@@ -28,6 +28,15 @@ router
 router.patch('/users/:id/activate', adminController.activateUser);
 router.patch('/users/:id/deactivate', adminController.deactivateUser);
 
+// Project Management
+router
+  .route('/projects')
+  .get(adminController.getProjects);
+
+router
+  .route('/projects/:id')
+  .delete(adminController.deleteProject);
+
 // Task Management
 router
   .route('/tasks')

@@ -58,6 +58,7 @@ const AdminDashboard = () => {
         <StatCard title="Total Admins" value={stats?.totalAdmins || 0} icon={HiOutlineUsers} colorClass="bg-accent-50 text-accent-600" />
         <StatCard title="New Users (Month)" value={stats?.newUsersThisMonth || 0} icon={HiOutlineUsers} colorClass="bg-info-50 text-info-600 dark:bg-info-900/30 dark:text-info-400" />
         
+        <StatCard title="Total Projects" value={stats?.totalProjects || 0} icon={HiOutlineClipboardDocumentList} colorClass="bg-primary-50 text-primary-600" />
         <StatCard title="Total Tasks" value={stats?.totalTasks || 0} icon={HiOutlineClipboardDocumentList} colorClass="bg-primary-50 text-primary-600" />
         <StatCard title="Completed Tasks" value={stats?.completedTasks || 0} icon={HiOutlineCheckCircle} colorClass="bg-success-50 text-success-600" />
         <StatCard title="Pending Tasks" value={stats?.pendingTasks || 0} icon={HiOutlineClipboardDocumentList} colorClass="bg-warning-50 text-warning-600" />
@@ -69,6 +70,9 @@ const AdminDashboard = () => {
         <div className="flex flex-wrap gap-4">
           <Link to="/admin/users" className="px-5 py-2.5 bg-primary-600 text-white font-medium rounded-xl shadow-sm hover:bg-primary-700 hover:-translate-y-0.5 transition-all">
             Manage Users
+          </Link>
+          <Link to="/admin/projects" className="px-5 py-2.5 bg-surface-secondary text-text-primary font-medium rounded-xl shadow-sm hover:bg-surface-tertiary border border-border/50 hover:-translate-y-0.5 transition-all">
+            Manage Projects
           </Link>
           <Link to="/admin/tasks" className="px-5 py-2.5 bg-surface-secondary text-text-primary font-medium rounded-xl shadow-sm hover:bg-surface-tertiary border border-border/50 hover:-translate-y-0.5 transition-all">
             Manage Tasks

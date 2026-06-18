@@ -132,6 +132,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               {[
                 { label: 'Admin Dashboard', path: '/admin/dashboard', icon: HiOutlineSquares2X2 },
                 { label: 'User Management', path: '/admin/users', icon: HiOutlineUsers },
+                { label: 'Project Management', path: '/admin/projects', icon: HiOutlineFolderOpen },
                 { label: 'Activity Logs', path: '/admin/activity-logs', icon: HiOutlineClipboardDocumentList },
               ].map((item) => (
                 <NavLink

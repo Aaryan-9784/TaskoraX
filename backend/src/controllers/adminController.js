@@ -41,6 +41,8 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
     Task.countDocuments({ dueDate: { $lt: new Date() }, status: { $ne: 'Done' } })
   ]);
 
+  const totalProjects = await require('../models/Project').countDocuments();
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -52,7 +54,8 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
         pendingTasks,
         overdueTasks,
         totalAdmins: admins,
-        newUsersThisMonth
+        newUsersThisMonth,
+        totalProjects
       }
     }
   });
@@ -255,6 +258,45 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   await logActivity(req.user._id, 'User Delete', req, { targetUser: user._id, action: 'Soft Delete' });
+
+  res.status(204).json({ status: 'success', data: null });
+});
+
+// --------------------------------------------------------------------------
+// PROJECT MANAGEMENT
+// --------------------------------------------------------------------------
+
+exports.getProjects = catchAsync(async (req, res, next) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const skip = (page - 1) * limit;
+
+  const Project = require('../models/Project');
+
+  const projects = await Project.find()
+    .populate('owner', 'name email avatar')
+    .sort('-createdAt')
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Project.countDocuments();
+
+  res.status(200).json({
+    status: 'success',
+    results: projects.length,
+    total,
+    page,
+    pages: Math.ceil(total / limit),
+    data: { projects }
+  });
+});
+
+exports.deleteProject = catchAsync(async (req, res, next) => {
+  const Project = require('../models/Project');
+  const project = await Project.findByIdAndDelete(req.params.id);
+  if (!project) return next(new AppError('Project not found', 404));
+
+  await logActivity(req.user._id, 'Project Delete', req, { projectId: project._id });
 
   res.status(204).json({ status: 'success', data: null });
 });

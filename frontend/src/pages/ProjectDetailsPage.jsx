@@ -42,7 +42,8 @@ const ProjectDetailsPage = () => {
   }, [project]);
 
   const handleUpdateProject = (updatedProject) => {
-    updateProject(updatedProject);
+    const projectId = project._id || project.id;
+    updateProject(projectId, updatedProject);
   };
 
   const handleSaveSettings = () => {

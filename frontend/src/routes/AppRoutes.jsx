@@ -30,6 +30,7 @@ import TeamPage from '../pages/TeamPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import UserManagement from '../pages/admin/UserManagement';
 import TaskManagement from '../pages/admin/TaskManagement';
+import ProjectManagement from '../pages/admin/ProjectManagement';
 import AdminAnalytics from '../pages/admin/Analytics';
 import ActivityLogs from '../pages/admin/ActivityLogs';
 import UserDetails from '../pages/admin/UserDetails';
@@ -66,6 +67,7 @@ const AppRoutes = () => {
             <Route path="/admin/users" element={<UserManagement />} />
             <Route path="/admin/users/:id" element={<UserDetails />} />
             <Route path="/admin/tasks" element={<TaskManagement />} />
+            <Route path="/admin/projects" element={<ProjectManagement />} />
             <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route path="/admin/activity-logs" element={<ActivityLogs />} />
             <Route path="/admin/settings" element={<SystemSettings />} />

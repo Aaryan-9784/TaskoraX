@@ -85,7 +85,7 @@ const TimelineTab = ({ project }) => {
                   const isDone = task.status === 'Done';
                   
                   return (
-                    <div key={task.id} className="flex border-b border-border/20 group hover:bg-surface-secondary/30 transition-colors">
+                    <div key={task.taskId || task.id} className="flex border-b border-border/20 group hover:bg-surface-secondary/30 transition-colors">
                       <div className="w-64 shrink-0 p-4 border-r border-border/40 flex items-center bg-surface-primary/80 backdrop-blur-sm sticky left-0 z-20 group-hover:bg-surface-secondary/80 transition-colors">
                         <div className="flex items-center gap-2 overflow-hidden">
                           <span className={`w-2 h-2 rounded-full shrink-0 ${isDone ? 'bg-success-500' : 'bg-warning-500'}`}></span>

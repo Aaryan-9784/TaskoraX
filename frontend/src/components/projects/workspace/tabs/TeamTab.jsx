@@ -3,9 +3,13 @@ import { HiOutlineUserPlus, HiOutlineShieldCheck, HiOutlineTrash, HiOutlinePenci
 import toast from 'react-hot-toast';
 import Button from '../../../common/Button';
 import Input from '../../../common/Input';
+import Select from '../../../common/Select';
 import Modal from '../../../common/Modal';
+import api from '../../../../services/api';
+import { useAuth } from '../../../../context/AuthContext';
 
 const TeamTab = ({ project, onUpdateProject }) => {
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingMemberId, setEditingMemberId] = useState(null);
@@ -35,26 +39,26 @@ const TeamTab = ({ project, onUpdateProject }) => {
 
     onUpdateProject({
       ...project,
-      team: [...project.team, newMember]
+      pendingTeam: [...(project.pendingTeam || []), newMember]
     });
 
-    // Actually trigger an email draft to the user
-    const subject = encodeURIComponent(`Invitation to join project: ${project?.name || 'TaskoraX'}`);
-    const body = encodeURIComponent(`Hi ${name.trim()},\n\nYou have been invited to join the project "${project?.name || 'TaskoraX'}" as a ${role}.\n\nPlease click the link below or log in to TaskoraX to approve your invitation and join the team.\n\nThanks!`);
-    window.location.href = `mailto:${email.trim()}?subject=${subject}&body=${body}`;
-
-    toast.success(`Invitation email draft opened for ${email}. Waiting for approval.`);
+    // Trigger backend to send email
+    api.post('/team/invite', {
+      email: email.trim(),
+      name: name.trim(),
+      role: role,
+      projectName: project?.name || 'TaskoraX',
+      projectId: project._id || project.id,
+      memberId: newMember.id
+    }).then(() => {
+      toast.success(`Invitation email sent to ${email}. Waiting for approval.`);
+    }).catch((err) => {
+      toast.error('Failed to send invitation email');
+      console.error(err);
+    });
     closeModal();
   };
 
-  const handleSimulateApproval = (memberId) => {
-    onUpdateProject({
-      ...project,
-      team: project.team.map(m => m.id === memberId ? { ...m, status: 'Online' } : m)
-    });
-    const approvedMember = project.team.find(m => m.id === memberId);
-    toast.success(`${approvedMember?.name || 'Member'} has approved the invitation and joined!`, { icon: '🎉' });
-  };
 
   const handleSaveEdit = () => {
     if (!name.trim()) {
@@ -62,20 +66,24 @@ const TeamTab = ({ project, onUpdateProject }) => {
       return;
     }
 
-    const updatedTeam = project.team.map(m => {
-      if (m.id === editingMemberId) {
-        return {
-          ...m,
-          name: name.trim(),
-          role: role
-        };
+    const updatedTeam = (project.team || []).map(m => {
+      if ((m._id || m.id) === editingMemberId) {
+        return { ...m, name: name.trim(), role: role };
+      }
+      return m;
+    });
+
+    const updatedPending = (project.pendingTeam || []).map(m => {
+      if ((m._id || m.id) === editingMemberId) {
+        return { ...m, name: name.trim(), role: role };
       }
       return m;
     });
 
     onUpdateProject({
       ...project,
-      team: updatedTeam
+      team: updatedTeam,
+      pendingTeam: updatedPending
     });
 
     toast.success('Team member updated');
@@ -83,7 +91,7 @@ const TeamTab = ({ project, onUpdateProject }) => {
   };
 
   const handleEditClick = (member) => {
-    setEditingMemberId(member.id);
+    setEditingMemberId(member._id || member.id);
     setName(member.name || '');
     setRole(member.role || (member.id === 'u1' ? 'Admin' : 'Member'));
     setIsEditMode(true);
@@ -93,7 +101,8 @@ const TeamTab = ({ project, onUpdateProject }) => {
   const handleRemoveMember = (memberId) => {
     onUpdateProject({
       ...project,
-      team: project.team.filter(m => m.id !== memberId)
+      team: (project.team || []).filter(m => (m._id || m.id) !== memberId),
+      pendingTeam: (project.pendingTeam || []).filter(m => (m._id || m.id) !== memberId)
     });
     toast.success('Team member removed');
   };
@@ -106,6 +115,8 @@ const TeamTab = ({ project, onUpdateProject }) => {
     setEditingMemberId(null);
     setIsModalOpen(false);
   };
+
+  const allMembers = [...(project.team || []), ...(project.pendingTeam || [])];
 
   return (
     <div className="p-6 animate-fade-in">
@@ -126,9 +137,9 @@ const TeamTab = ({ project, onUpdateProject }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-border/40">
-            {project.team && project.team.length > 0 ? (
-              project.team.map((member) => (
-                <tr key={member.id} className="hover:bg-surface-secondary/30 transition-colors group">
+            {allMembers && allMembers.length > 0 ? (
+              allMembers.map((member) => (
+                <tr key={member._id || member.id} className="hover:bg-surface-secondary/30 transition-colors group">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${
@@ -157,12 +168,13 @@ const TeamTab = ({ project, onUpdateProject }) => {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm text-text-secondary">
-                      {project.tasksList ? project.tasksList.filter(t => t.assigneeId === member.id).length : 0} Assigned
+                      {project.tasksList ? project.tasksList.filter(t => t.assigneeId === (member._id || member.id)).length : 0} Assigned
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     {(() => {
-                      const status = member.status || 'Offline';
+                      const isCurrentUser = user && (member._id || member.id) === user._id;
+                      const status = isCurrentUser ? 'Online' : (member.status || 'Offline');
                       const isOnline = status === 'Online';
                       return (
                         <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium ${isOnline ? 'bg-success-500/10 text-success-500' : 'bg-surface-secondary text-text-secondary'}`}>
@@ -173,15 +185,6 @@ const TeamTab = ({ project, onUpdateProject }) => {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {member.status === 'Pending Approval' && (
-                        <button 
-                          onClick={() => handleSimulateApproval(member.id)}
-                          className="p-2 text-text-tertiary hover:text-success-600 hover:bg-success-50 rounded-lg transition-colors"
-                          title="Simulate Member Approval"
-                        >
-                          <HiOutlineCheckCircle className="w-5 h-5" />
-                        </button>
-                      )}
                       <button 
                         onClick={() => handleEditClick(member)}
                         className="p-2 text-text-tertiary hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
@@ -190,7 +193,7 @@ const TeamTab = ({ project, onUpdateProject }) => {
                         <HiOutlinePencilSquare className="w-5 h-5" />
                       </button>
                       <button 
-                        onClick={() => handleRemoveMember(member.id)}
+                        onClick={() => handleRemoveMember(member._id || member.id)}
                         className="p-2 text-text-tertiary hover:text-error-600 hover:bg-error-50 rounded-lg transition-colors"
                         title="Remove Member"
                       >
@@ -211,7 +214,7 @@ const TeamTab = ({ project, onUpdateProject }) => {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal} title={isEditMode ? "Edit Team Member" : "Invite Team Member"}>
+      <Modal isOpen={isModalOpen} onClose={closeModal} title={isEditMode ? "Edit Team Member" : "Invite Team Member"} overflowVisible={true}>
         <div className="space-y-4">
           <Input 
             label="Name" 
@@ -230,18 +233,16 @@ const TeamTab = ({ project, onUpdateProject }) => {
               onKeyDown={(e) => e.key === 'Enter' && handleInvite()}
             />
           )}
-          <div>
-            <label className="block text-sm font-bold text-text-primary mb-1.5">Access Rights / Role</label>
-            <select 
-              className="w-full bg-surface-primary border border-border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500 text-text-primary transition-colors"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="Member">Member (Standard Access)</option>
-              <option value="Admin">Admin (Full Access)</option>
-              <option value="Viewer">Viewer (Read-only)</option>
-            </select>
-          </div>
+          <Select 
+            label="Access Rights / Role"
+            options={[
+              { value: 'Member', label: 'Member (Standard Access)' },
+              { value: 'Admin', label: 'Admin (Full Access)' },
+              { value: 'Viewer', label: 'Viewer (Read-only)' }
+            ]}
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          />
           <div className="flex justify-end gap-3 mt-6 border-t border-border/40 pt-6">
             <Button variant="secondary" onClick={closeModal}>Cancel</Button>
             <Button onClick={isEditMode ? handleSaveEdit : handleInvite}>
