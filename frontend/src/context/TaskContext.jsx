@@ -112,6 +112,20 @@ export const TaskProvider = ({ children }) => {
 
   const deleteTask = async (id) => {
     try {
+      const taskToDelete = allTasks.find(t => (t._id || t.id) === id);
+      if (taskToDelete) {
+        const deletedHistory = JSON.parse(localStorage.getItem('taskora_deleted_tasks_history') || '[]');
+        deletedHistory.push({
+          id: `del_${Date.now()}`,
+          taskId: id,
+          title: taskToDelete.title,
+          deletedAt: new Date().toISOString()
+        });
+        if (deletedHistory.length > 10) deletedHistory.shift();
+        localStorage.setItem('taskora_deleted_tasks_history', JSON.stringify(deletedHistory));
+        window.dispatchEvent(new Event('taskora_read_update'));
+      }
+
       await api.delete(`/tasks/${id}`);
       // If we delete the last item on a page, we might need to go back a page
       if (tasks.length === 1 && currentPage > 1) {

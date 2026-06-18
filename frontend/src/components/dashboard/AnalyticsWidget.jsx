@@ -1,17 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { HiOutlineChartPie } from 'react-icons/hi2';
 import Select from '../common/Select';
-
-const data = [
-  { name: 'Mon', tasks: 12, productivity: 65 },
-  { name: 'Tue', tasks: 19, productivity: 85 },
-  { name: 'Wed', tasks: 15, productivity: 75 },
-  { name: 'Thu', tasks: 22, productivity: 95 },
-  { name: 'Fri', tasks: 18, productivity: 80 },
-  { name: 'Sat', tasks: 5, productivity: 40 },
-  { name: 'Sun', tasks: 8, productivity: 55 },
-];
+import { useTask } from '../../context/TaskContext';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -37,6 +28,66 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const AnalyticsWidget = () => {
   const [timeframe, setTimeframe] = useState('This Week');
+  const { allTasks = [] } = useTask();
+
+  const chartData = useMemo(() => {
+    const now = new Date();
+    
+    if (timeframe === 'This Month') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+      return ['Week 1', 'Week 2', 'Week 3', 'Week 4'].map((weekName, index) => {
+        const start = new Date(firstDay);
+        start.setDate(firstDay.getDate() + (index * 7));
+        const end = new Date(start);
+        end.setDate(start.getDate() + 7);
+        
+        const completedTasks = allTasks.filter(t => {
+          if (t.status !== 'Done') return false;
+          const updatedTime = new Date(t.updatedAt || t.createdAt || 0).getTime();
+          return updatedTime >= start.getTime() && (index === 3 ? true : updatedTime < end.getTime());
+        });
+        
+        const tasksCompleted = completedTasks.length;
+        return {
+          name: weekName,
+          tasks: tasksCompleted,
+          productivity: tasksCompleted > 0 ? Math.min(100, 40 + (tasksCompleted * 10)) : 0
+        };
+      });
+    }
+
+    // Default to a 7-day view (This Week or Last Week)
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
+    
+    const monday = new Date(now);
+    if (timeframe === 'Last Week') {
+      monday.setDate(now.getDate() - currentDayOfWeek - 6);
+    } else {
+      monday.setDate(now.getDate() - currentDayOfWeek + 1);
+    }
+    monday.setHours(0, 0, 0, 0);
+
+    return days.map((dayName, index) => {
+      const targetDate = new Date(monday);
+      targetDate.setDate(monday.getDate() + index);
+      const nextDate = new Date(targetDate);
+      nextDate.setDate(targetDate.getDate() + 1);
+
+      const completedTasks = allTasks.filter(t => {
+        if (t.status !== 'Done') return false;
+        const updatedTime = new Date(t.updatedAt || t.createdAt || 0).getTime();
+        return updatedTime >= targetDate.getTime() && updatedTime < nextDate.getTime();
+      });
+      
+      const tasksCompleted = completedTasks.length;
+      return {
+        name: dayName,
+        tasks: tasksCompleted,
+        productivity: tasksCompleted > 0 ? Math.min(100, 40 + (tasksCompleted * 20)) : 0
+      };
+    });
+  }, [timeframe, allTasks]);
 
   return (
     <div className="card-premium h-full flex flex-col group p-6">
@@ -73,9 +124,9 @@ const AnalyticsWidget = () => {
         </div>
       </div>
 
-      <div className="flex-1 w-full min-h-[220px] relative">
+      <div className="flex-1 w-full min-h-[220px] relative mt-4">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 20, left: 20, bottom: 25 }}>
             <defs>
               <linearGradient id="colorProd" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#6366F1" stopOpacity={0.25}/>
@@ -90,8 +141,9 @@ const AnalyticsWidget = () => {
               dataKey="name" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fontSize: 11, fill: '#64748B', fontWeight: 600 }} 
+              tick={{ fontSize: 12, fill: '#64748B', fontWeight: 600 }} 
               dy={15}
+              padding={{ left: 10, right: 10 }}
             />
             <YAxis hide={true} />
             <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }} />

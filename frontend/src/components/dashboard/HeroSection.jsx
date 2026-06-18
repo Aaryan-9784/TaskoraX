@@ -1,12 +1,64 @@
+import { useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTask } from '../../context/TaskContext';
 import { HiOutlineSparkles, HiOutlineArrowRight } from 'react-icons/hi2';
 import { getGreeting } from '../../utils/helpers';
 import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
   const { user } = useAuth();
+  const { allTasks = [] } = useTask();
   const navigate = useNavigate();
   
+  const { completedThisWeek, weeklyGoalProgress, streak } = useMemo(() => {
+    const now = new Date();
+    
+    // 1. Tasks completed this week
+    const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - currentDayOfWeek + 1);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const completedThisWeek = allTasks.filter(t => {
+      if (t.status !== 'Done') return false;
+      const updatedTime = new Date(t.updatedAt || t.createdAt || 0).getTime();
+      return updatedTime >= startOfWeek.getTime();
+    }).length;
+
+    // 2. Weekly Goal (Target: 10 tasks)
+    const target = 10;
+    const weeklyGoalProgress = Math.min(100, Math.round((completedThisWeek / target) * 100));
+
+    // 3. Day Streak
+    let streak = 0;
+    const today = new Date(now);
+    today.setHours(0, 0, 0, 0);
+    
+    const completedDates = new Set();
+    allTasks.forEach(t => {
+      if (t.status === 'Done') {
+        const d = new Date(t.updatedAt || t.createdAt || 0);
+        d.setHours(0, 0, 0, 0);
+        completedDates.add(d.getTime());
+      }
+    });
+
+    let checkDate = new Date(today);
+    if (!completedDates.has(checkDate.getTime())) {
+      checkDate.setDate(checkDate.getDate() - 1);
+      if (!completedDates.has(checkDate.getTime())) {
+        return { completedThisWeek, weeklyGoalProgress, streak: 0 };
+      }
+    }
+
+    while (completedDates.has(checkDate.getTime())) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    }
+
+    return { completedThisWeek, weeklyGoalProgress, streak };
+  }, [allTasks]);
+
   return (
     <div className="card-premium overflow-hidden border-0 bg-white relative animate-in mb-6">
       {/* Dynamic Background */}
@@ -29,7 +81,7 @@ const HeroSection = () => {
           </h1>
           
           <p className="text-text-secondary text-sm md:text-base max-w-xl leading-relaxed">
-            "The secret of getting ahead is getting started." You've completed <span className="font-bold text-success-600">12 tasks</span> this week. Keep up the great work!
+            "The secret of getting ahead is getting started." You've completed <span className="font-bold text-success-600">{completedThisWeek} tasks</span> this week. Keep up the great work!
           </p>
           
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -53,7 +105,7 @@ const HeroSection = () => {
           {/* Streak Counter */}
           <div className="flex flex-col items-center justify-center p-4 bg-white/60 backdrop-blur-md border border-white rounded-2xl shadow-sm min-w-[100px]">
             <span className="text-3xl mb-1" role="img" aria-label="fire">🔥</span>
-            <span className="text-2xl font-extrabold font-display text-text-primary leading-none">5</span>
+            <span className="text-2xl font-extrabold font-display text-text-primary leading-none">{streak}</span>
             <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider mt-1">Day Streak</span>
           </div>
           
@@ -71,14 +123,14 @@ const HeroSection = () => {
                 <path
                   className="text-success-500 transition-all duration-1000 ease-out"
                   strokeWidth="4"
-                  strokeDasharray="75, 100"
+                  strokeDasharray={`${weeklyGoalProgress}, 100`}
                   strokeLinecap="round"
                   stroke="currentColor"
                   fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
               </svg>
-              <span className="absolute text-sm font-bold text-text-primary">75%</span>
+              <span className="absolute text-sm font-bold text-text-primary">{weeklyGoalProgress}%</span>
             </div>
             <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider mt-1">Weekly Goal</span>
           </div>

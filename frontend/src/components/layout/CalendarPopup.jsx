@@ -115,22 +115,30 @@ const CalendarPopup = ({ isOpen, onClose, domNode, onCreateTask }) => {
         <div className="grid grid-cols-7 gap-1">
           {days.map((day, index) => {
             const dayTasks = getTasksForDay(day);
-            const isSelected = selectedDay === day;
+            const hasTasks = dayTasks.length > 0;
+            const isSelected = selectedDay === day && hasTasks;
             const dayClass = isToday(day) 
               ? 'bg-primary-500 text-white font-bold shadow-glow-sm' 
               : isSelected
                 ? 'bg-primary-50 text-primary-700 font-bold ring-1 ring-primary-200'
-                : 'text-text-primary hover:bg-surface-tertiary font-medium';
+                : hasTasks 
+                  ? 'text-text-primary hover:bg-surface-tertiary font-medium cursor-pointer' 
+                  : 'text-text-primary font-medium cursor-default';
             const emptyClass = !day ? 'invisible' : '';
             
             return (
               <div 
                 key={index} 
-                onClick={() => day && setSelectedDay(isSelected ? null : day)}
-                className={`relative flex flex-col items-center justify-center h-9 w-full rounded-lg text-xs cursor-pointer transition-all ${emptyClass} ${!day ? '' : dayClass}`}
+                onClick={() => {
+                  if (day) {
+                    if (hasTasks) setSelectedDay(isSelected ? null : day);
+                    else setSelectedDay(null);
+                  }
+                }}
+                className={`relative flex flex-col items-center justify-center h-9 w-full rounded-lg text-xs transition-all ${emptyClass} ${!day ? '' : dayClass}`}
               >
                 {day && <span>{day}</span>}
-                {dayTasks.length > 0 && (
+                {hasTasks && (
                   <div className="absolute bottom-1 flex gap-0.5">
                     {dayTasks.slice(0, 3).map((task, i) => (
                       <div key={i} className={`w-1.5 h-1.5 rounded-full ${getTaskColor(task)} ${isToday(day) ? 'ring-1 ring-white/50' : 'ring-1 ring-white'}`} />

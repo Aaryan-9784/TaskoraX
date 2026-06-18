@@ -60,14 +60,34 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
     });
   };
 
-  const hasUnread = getRecentTasks(allTasks)
-    .filter(task => !deletedItems.includes(task._id || task.id))
-    .slice(0, 6)
+  const hasUnreadLive = getRecentTasks(allTasks)
+    .filter(task => {
+      const taskId = task._id || task.id;
+      const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
+      const createdAtTime = new Date(task.createdAt || 0).getTime();
+      const readKey = `${taskId}_${taskTime}`;
+      
+      // If deleted using old bare taskId format, only hide if it hasn't been updated
+      if (deletedItems.includes(taskId) && taskTime <= createdAtTime) return false;
+      
+      return !deletedItems.includes(readKey);
+    })
     .some(task => {
       const taskId = task._id || task.id;
       const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
-      return taskTime > lastReadTime && !readItems.includes(taskId);
+      const readKey = `${taskId}_${taskTime}`;
+      return taskTime > lastReadTime && !readItems.includes(readKey);
     });
+
+  const deletedHistoryStr = localStorage.getItem('taskora_deleted_tasks_history');
+  const deletedHistory = deletedHistoryStr ? JSON.parse(deletedHistoryStr) : [];
+  const hasUnreadDeleted = deletedHistory.some(delTask => {
+    if (deletedItems.includes(delTask.id)) return false;
+    const taskTime = new Date(delTask.deletedAt).getTime();
+    return taskTime > lastReadTime && !readItems.includes(delTask.id);
+  });
+
+  const hasUnread = hasUnreadLive || hasUnreadDeleted;
   
   const todayStr = new Date().toDateString();
   const hasTasksToday = allTasks.some(t => t.dueDate && new Date(t.dueDate).toDateString() === todayStr);

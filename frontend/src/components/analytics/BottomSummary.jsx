@@ -1,12 +1,30 @@
 import { HiOutlineDocumentText, HiOutlineArrowDownTray, HiOutlineExclamationTriangle, HiOutlineSparkles } from 'react-icons/hi2';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useTask } from '../../context/TaskContext';
+import { useProjects } from '../../context/ProjectContext';
+import { useMemo } from 'react';
 
 const BottomSummary = () => {
   const navigate = useNavigate();
+  const { allTasks = [] } = useTask();
+  const { projects = [] } = useProjects();
 
   const handleExportCSV = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Project,Tasks,Progress\nWebsite Redesign,12,65%\nMobile App V2,8,45%\nMarketing Q4,5,30%";
+    let csvContent = "data:text/csv;charset=utf-8,Project,Tasks,Progress\n";
+    if (projects.length === 0) {
+      csvContent += "No projects available,0,0%\n";
+    } else {
+      projects.forEach(p => {
+        const total = p.tasks?.total || 0;
+        const completed = p.tasks?.completed || 0;
+        const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+        // Escape commas in project names
+        const name = p.name.includes(',') ? `"${p.name}"` : p.name;
+        csvContent += `${name},${total},${progress}%\n`;
+      });
+    }
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -14,6 +32,48 @@ const BottomSummary = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast.success('Exported successfully');
+  };
+
+  const topProjects = useMemo(() => {
+    return [...projects]
+      .sort((a, b) => (b.tasks?.total || 0) - (a.tasks?.total || 0))
+      .slice(0, 3);
+  }, [projects]);
+
+  const { thisMonthCompleted, lastMonthCompleted } = useMemo(() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonth = lastMonthDate.getMonth();
+    const lastMonthYear = lastMonthDate.getFullYear();
+
+    let thisMonth = 0;
+    let lastMonthCount = 0;
+
+    allTasks.forEach(t => {
+      if (t.status === 'Done') {
+        const d = new Date(t.updatedAt || t.createdAt || 0);
+        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+          thisMonth++;
+        } else if (d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear) {
+          lastMonthCount++;
+        }
+      }
+    });
+
+    return { thisMonthCompleted: thisMonth, lastMonthCompleted: lastMonthCount };
+  }, [allTasks]);
+
+  const getProjectColors = (index) => {
+    const colors = [
+      { text: 'group-hover/item:text-primary-600', bg: 'bg-primary-500', shadow: 'shadow-[0_0_8px_rgba(var(--color-primary-500),0.4)]', from: 'from-primary-400', to: 'to-primary-600' },
+      { text: 'group-hover/item:text-accent-600', bg: 'bg-accent-500', shadow: 'shadow-[0_0_8px_rgba(var(--color-accent-500),0.4)]', from: 'from-accent-400', to: 'to-accent-600' },
+      { text: 'group-hover/item:text-success-600', bg: 'bg-success-500', shadow: 'shadow-[0_0_8px_rgba(var(--color-success-500),0.4)]', from: 'from-success-400', to: 'to-success-600' },
+    ];
+    return colors[index % colors.length];
   };
 
   return (
@@ -32,52 +92,31 @@ const BottomSummary = () => {
         </div>
         
         <div className="space-y-5">
-          
-          <div className="group/item">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-text-primary flex items-center gap-2 group-hover/item:text-primary-600 transition-colors">
-                <span className="w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(var(--color-primary-500),0.4)]"></span>
-                Website Redesign
-              </span>
-              <span className="text-sm font-bold text-text-secondary">12 tasks</span>
-            </div>
-            <div className="w-full bg-surface-secondary rounded-full h-2 overflow-hidden border border-border/40 shadow-inner">
-              <div className="bg-gradient-to-r from-primary-400 to-primary-600 h-2 rounded-full relative" style={{ width: '65%' }}>
-                <div className="absolute top-0 right-0 bottom-0 w-2 bg-white/30 blur-[1px]"></div>
-              </div>
-            </div>
-          </div>
+          {topProjects.length > 0 ? topProjects.map((project, index) => {
+            const colors = getProjectColors(index);
+            const total = project.tasks?.total || 0;
+            const completed = project.tasks?.completed || 0;
+            const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-          <div className="group/item">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-text-primary flex items-center gap-2 group-hover/item:text-accent-600 transition-colors">
-                <span className="w-2 h-2 rounded-full bg-accent-500 shadow-[0_0_8px_rgba(var(--color-accent-500),0.4)]"></span>
-                Mobile App V2
-              </span>
-              <span className="text-sm font-bold text-text-secondary">8 tasks</span>
-            </div>
-            <div className="w-full bg-surface-secondary rounded-full h-2 overflow-hidden border border-border/40 shadow-inner">
-              <div className="bg-gradient-to-r from-accent-400 to-accent-600 h-2 rounded-full relative" style={{ width: '45%' }}>
-                <div className="absolute top-0 right-0 bottom-0 w-2 bg-white/30 blur-[1px]"></div>
+            return (
+              <div key={project.id || index} className="group/item">
+                <div className="flex justify-between items-center mb-2">
+                  <span className={`text-sm font-bold text-text-primary flex items-center gap-2 ${colors.text} transition-colors`}>
+                    <span className={`w-2 h-2 rounded-full ${colors.bg} ${colors.shadow}`}></span>
+                    {project.name}
+                  </span>
+                  <span className="text-sm font-bold text-text-secondary">{total} tasks</span>
+                </div>
+                <div className="w-full bg-surface-secondary rounded-full h-2 overflow-hidden border border-border/40 shadow-inner">
+                  <div className={`bg-gradient-to-r ${colors.from} ${colors.to} h-2 rounded-full relative`} style={{ width: `${progress}%` }}>
+                    <div className="absolute top-0 right-0 bottom-0 w-2 bg-white/30 blur-[1px]"></div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div className="group/item">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-text-primary flex items-center gap-2 group-hover/item:text-success-600 transition-colors">
-                <span className="w-2 h-2 rounded-full bg-success-500 shadow-[0_0_8px_rgba(var(--color-success-500),0.4)]"></span>
-                Marketing Q4
-              </span>
-              <span className="text-sm font-bold text-text-secondary">5 tasks</span>
-            </div>
-            <div className="w-full bg-surface-secondary rounded-full h-2 overflow-hidden border border-border/40 shadow-inner">
-              <div className="bg-gradient-to-r from-success-400 to-success-600 h-2 rounded-full relative" style={{ width: '30%' }}>
-                <div className="absolute top-0 right-0 bottom-0 w-2 bg-white/30 blur-[1px]"></div>
-              </div>
-            </div>
-          </div>
-
+            );
+          }) : (
+            <div className="text-sm text-text-tertiary">No projects available.</div>
+          )}
         </div>
       </div>
 
@@ -94,14 +133,14 @@ const BottomSummary = () => {
                 <span className="w-2 h-2 rounded-full bg-accent-500"></span>
                 This Month
               </p>
-              <p className="text-3xl font-extrabold text-text-primary group-hover:text-accent-600 transition-colors">124</p>
+              <p className="text-3xl font-extrabold text-text-primary group-hover:text-accent-600 transition-colors">{thisMonthCompleted}</p>
             </div>
             <div className="p-4 rounded-xl bg-surface-secondary/50 border border-border/40 hover:bg-white transition-colors hover:shadow-sm cursor-default">
               <p className="text-xs text-text-tertiary font-bold uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-border"></span>
                 Last Month
               </p>
-              <p className="text-3xl font-extrabold text-text-primary">98</p>
+              <p className="text-3xl font-extrabold text-text-primary">{lastMonthCompleted}</p>
             </div>
           </div>
         </div>
@@ -128,3 +167,4 @@ const BottomSummary = () => {
 };
 
 export default BottomSummary;
+

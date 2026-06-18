@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HiOutlineTrophy, HiOutlineTrash, HiOutlinePlus, HiOutlineMinus } from 'react-icons/hi2';
 import Modal from '../common/Modal';
 import Input from '../common/Input';
@@ -6,11 +6,25 @@ import Button from '../common/Button';
 import toast from 'react-hot-toast';
 
 const GoalTracker = () => {
-  const [goals, setGoals] = useState([
-    { id: 1, title: 'Launch MVP', progress: 85, color: 'primary' },
-    { id: 2, title: 'Acquire 100 Users', progress: 40, color: 'secondary' },
-    { id: 3, title: 'Publish 5 Blog Posts', progress: 60, color: 'accent' },
-  ]);
+  const [goals, setGoals] = useState(() => {
+    const saved = localStorage.getItem('taskora_goals');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse goals', e);
+      }
+    }
+    return [
+      { id: 1, title: 'Launch MVP', progress: 85, color: 'primary' },
+      { id: 2, title: 'Acquire 100 Users', progress: 40, color: 'secondary' },
+      { id: 3, title: 'Publish 5 Blog Posts', progress: 60, color: 'accent' },
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('taskora_goals', JSON.stringify(goals));
+  }, [goals]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState('');

@@ -1,11 +1,6 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-
-const data = [
-  { name: 'To Do', value: 12, color: '#94a3b8' },
-  { name: 'In Progress', value: 8, color: '#3b82f6' },
-  { name: 'In Review', value: 4, color: '#f59e0b' },
-  { name: 'Completed', value: 18, color: '#22c55e' },
-];
+import { useTask } from '../../context/TaskContext';
+import { useMemo } from 'react';
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -39,6 +34,20 @@ const renderLegend = (props) => {
 };
 
 const StatusDistributionChart = () => {
+  const { stats } = useTask();
+
+  const chartData = useMemo(() => {
+    // Only include statuses that have > 0 tasks to avoid overlapping zero-width slices,
+    // or just include them all, Recharts handles 0 values well.
+    return [
+      { name: 'To Do', value: stats.pending || 0, color: '#94a3b8' },
+      { name: 'In Progress', value: stats.inProgress || 0, color: '#3b82f6' },
+      { name: 'Completed', value: stats.completed || 0, color: '#22c55e' },
+    ].filter(item => item.value > 0);
+  }, [stats]);
+
+  const totalTasks = chartData.reduce((acc, curr) => acc + curr.value, 0);
+
   return (
     <div className="card-premium h-full flex flex-col group relative overflow-hidden">
       {/* Background Glow */}
@@ -58,7 +67,7 @@ const StatusDistributionChart = () => {
               </filter>
             </defs>
             <Pie
-              data={data}
+              data={chartData}
               cx="50%"
               cy="50%"
               innerRadius={80}
@@ -68,7 +77,7 @@ const StatusDistributionChart = () => {
               stroke="none"
               cornerRadius={8}
             >
-              {data.map((entry, index) => (
+              {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} style={{ filter: 'url(#shadow)' }} className="hover:opacity-80 transition-opacity cursor-pointer focus:outline-none" />
               ))}
             </Pie>
@@ -80,7 +89,7 @@ const StatusDistributionChart = () => {
         {/* Center Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-[-20px]">
           <div className="bg-surface/50 backdrop-blur-sm w-28 h-28 rounded-full flex flex-col items-center justify-center border border-border/40 shadow-sm group-hover:border-primary-200/50 transition-colors">
-            <span className="text-3xl font-extrabold text-text-primary group-hover:text-primary-600 transition-colors">42</span>
+            <span className="text-3xl font-extrabold text-text-primary group-hover:text-primary-600 transition-colors">{totalTasks}</span>
             <span className="text-xs font-bold text-text-tertiary uppercase tracking-wider mt-0.5">Tasks</span>
           </div>
         </div>

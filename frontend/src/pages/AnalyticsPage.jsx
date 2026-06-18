@@ -19,35 +19,71 @@ import {
 } from 'react-icons/hi2';
 
 const AnalyticsPage = () => {
-  const { stats } = useTask();
+  const { allTasks = [], refreshTasks } = useTask();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const [dateRange, setDateRange] = useState('Last 30 Days');
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  // Fallback stats if TaskContext is empty
-  const defaultStats = {
-    total: 42,
-    completed: 18,
-    pending: 20,
-    overdue: 4
+  const getFilteredTasks = () => {
+    if (!allTasks.length) return [];
+    return allTasks.filter(task => {
+      const taskDate = new Date(task.createdAt || new Date());
+      const now = new Date();
+      if (dateRange === 'Last 7 Days') {
+        const limit = new Date(now.setDate(now.getDate() - 7));
+        return taskDate >= limit;
+      }
+      if (dateRange === 'Last 30 Days') {
+        const limit = new Date(now.setDate(now.getDate() - 30));
+        return taskDate >= limit;
+      }
+      if (dateRange === 'This Month') {
+        return taskDate.getMonth() === now.getMonth() && taskDate.getFullYear() === now.getFullYear();
+      }
+      if (dateRange === 'This Year') {
+        return taskDate.getFullYear() === now.getFullYear();
+      }
+      return true;
+    });
   };
 
-  const displayStats = stats?.total !== undefined ? stats : defaultStats;
+  const filteredTasks = getFilteredTasks();
+  
+  const displayStats = {
+    total: filteredTasks.length,
+    completed: filteredTasks.filter(t => t.status === 'Done').length,
+    pending: filteredTasks.filter(t => t.status === 'Todo').length,
+    inProgress: filteredTasks.filter(t => t.status === 'In Progress').length,
+    overdue: filteredTasks.filter(t => t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'Done').length,
+  };
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-    }, 1000);
+    try {
+      if (refreshTasks) await refreshTasks();
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500); // Artificial delay so the user sees it spinning
+    }
   };
 
   const handleExport = () => {
-    const csvContent = "data:text/csv;charset=utf-8,Metric,Value\nTotal Tasks,42\nCompleted,18\nPending,20\nOverdue,4\nProductivity,92\nCompletion Rate,85%";
+    const productivity = displayStats.total ? Math.max(0, Math.min(100, Math.round(((displayStats.completed * 100) + (displayStats.inProgress * 50) - (displayStats.overdue * 20)) / displayStats.total))) : 0;
+    const completionRate = displayStats.total ? Math.round((displayStats.completed / displayStats.total) * 100) : 0;
+
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + "Metric,Value\n"
+      + `Total Tasks,${displayStats.total}\n`
+      + `Completed,${displayStats.completed}\n`
+      + `Pending,${displayStats.pending}\n`
+      + `Overdue,${displayStats.overdue}\n`
+      + `Productivity,${productivity}\n`
+      + `Completion Rate,${completionRate}%`;
+      
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "analytics_report.csv");
+    link.setAttribute("download", `task_analytics_${dateRange.replace(/ /g, '_').toLowerCase()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -166,7 +202,7 @@ const AnalyticsPage = () => {
         />
         <StatCard
           title="Productivity"
-          value="92"
+          value={displayStats.total ? Math.max(0, Math.min(100, Math.round(((displayStats.completed * 100) + (displayStats.inProgress * 50) - (displayStats.overdue * 20)) / displayStats.total))) : 0}
           icon={HiOutlineSparkles}
           color="accent"
           trend={15}
@@ -174,7 +210,7 @@ const AnalyticsPage = () => {
         />
         <StatCard
           title="Completion Rate"
-          value="85%"
+          value={`${displayStats.total ? Math.round((displayStats.completed / displayStats.total) * 100) : 0}%`}
           icon={HiOutlineChartPie}
           color="primary"
           trend={5}

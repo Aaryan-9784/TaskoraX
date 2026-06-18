@@ -12,46 +12,51 @@ import { getRelativeTime } from '../../utils/helpers';
 const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
   const { allTasks = [] } = useTask();
   const [lastReadTime, setLastReadTime] = useState(0);
-  const [readItems, setReadItems] = useState(() => {
-    const saved = localStorage.getItem('taskora_read_notifications');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [deletedItems, setDeletedItems] = useState(() => {
-    const saved = localStorage.getItem('taskora_deleted_notifications');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [readItems, setReadItems] = useState([]);
+  const [deletedItems, setDeletedItems] = useState([]);
+  const [deletedTasksHistory, setDeletedTasksHistory] = useState([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('taskora_last_read');
-    if (saved) {
-      try {
-        setLastReadTime(parseInt(saved, 10));
-      } catch (e) {
-        // ignore
+    const fetchData = () => {
+      const savedTime = localStorage.getItem('taskora_last_read');
+      if (savedTime) {
+        try { setLastReadTime(parseInt(savedTime, 10)); } catch (e) {}
       }
-    }
+      
+      const savedReadItems = localStorage.getItem('taskora_read_notifications');
+      if (savedReadItems) {
+        try { setReadItems(JSON.parse(savedReadItems)); } catch (e) {}
+      }
+
+      const savedDeletedItems = localStorage.getItem('taskora_deleted_notifications');
+      if (savedDeletedItems) {
+        try { setDeletedItems(JSON.parse(savedDeletedItems)); } catch (e) {}
+      }
+      
+      const savedHistory = localStorage.getItem('taskora_deleted_tasks_history');
+      if (savedHistory) {
+        try { setDeletedTasksHistory(JSON.parse(savedHistory)); } catch (e) {}
+      }
+    };
+    
+    fetchData(); // initial fetch
+    window.addEventListener('taskora_read_update', fetchData);
+    return () => window.removeEventListener('taskora_read_update', fetchData);
   }, []);
 
   if (!isOpen) return null;
 
   // Generate dynamic notifications from tasks
-  const sortedTasks = [...allTasks].sort((a, b) => {
-    const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime();
-    const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+  const liveTaskNotifications = allTasks.map((task) => {
+    const taskId = task._id || task.id;
+    const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
+    const createdAtTime = new Date(task.createdAt || 0).getTime();
+    const readKey = `${taskId}_${taskTime}`;
     
-    if (timeA !== timeB) {
-      return timeB - timeA;
-    }
-    
-    const idA = (a._id || a.id || '').toString();
-    const idB = (b._id || b.id || '').toString();
-    return idB.localeCompare(idA);
-  });
+    // Skip if user explicitly deleted this notification
+    if (deletedItems.includes(readKey)) return null;
+    if (deletedItems.includes(taskId) && taskTime <= createdAtTime) return null;
 
-  const visibleTasks = sortedTasks.filter(task => !deletedItems.includes(task._id || task.id));
-  const recentTasks = visibleTasks.slice(0, 6);
-
-  const notifications = recentTasks.map((task) => {
     const isDone = task.status === 'Done';
     const isNew = task.createdAt === task.updatedAt || !task.updatedAt;
     
@@ -75,47 +80,72 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
       bg = 'bg-primary-50';
     }
 
-    const taskId = task._id || task.id;
-    const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
-    const isUnread = taskTime > lastReadTime && !readItems.includes(taskId);
+    const isUnread = taskTime > lastReadTime && !readItems.includes(readKey);
 
     return {
       id: taskId,
+      readKey: readKey,
       title,
       desc,
-      time: getRelativeTime(task.updatedAt || task.createdAt || new Date()),
+      timestamp: taskTime,
+      time: getRelativeTime(new Date(taskTime)),
       icon,
       color,
       bg,
       unread: isUnread
     };
-  });
+  }).filter(Boolean);
+
+  const deletedTaskNotifications = deletedTasksHistory.map(delTask => {
+    // skip if user deleted this specific notification
+    if (deletedItems.includes(delTask.id)) return null;
+    
+    const taskTime = new Date(delTask.deletedAt).getTime();
+    const isUnread = taskTime > lastReadTime && !readItems.includes(delTask.id);
+    
+    return {
+      id: delTask.taskId,
+      readKey: delTask.id,
+      title: 'Task Deleted',
+      desc: `"${delTask.title}" has been removed.`,
+      timestamp: taskTime,
+      time: getRelativeTime(new Date(taskTime)),
+      icon: HiOutlineTrash,
+      color: 'text-error-500',
+      bg: 'bg-error-50',
+      unread: isUnread
+    };
+  }).filter(Boolean);
+
+  // Combine, sort, and slice to top 6
+  const notifications = [...liveTaskNotifications, ...deletedTaskNotifications]
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .slice(0, 6);
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const markAllRead = () => {
     let maxTime = lastReadTime;
-    recentTasks.forEach(task => {
-      const taskTime = new Date(task.updatedAt || task.createdAt || 0).getTime();
-      if (taskTime > maxTime) maxTime = taskTime;
+    notifications.forEach(notif => {
+      if (notif.timestamp > maxTime) maxTime = notif.timestamp;
     });
     setLastReadTime(maxTime);
     localStorage.setItem('taskora_last_read', maxTime.toString());
     window.dispatchEvent(new Event('taskora_read_update'));
   };
 
-  const handleNotificationClick = (id) => {
-    if (!readItems.includes(id)) {
-      const updated = [...readItems, id];
+  const handleNotificationClick = (readKey) => {
+    if (!readItems.includes(readKey)) {
+      const updated = [...readItems, readKey];
       setReadItems(updated);
       localStorage.setItem('taskora_read_notifications', JSON.stringify(updated));
       window.dispatchEvent(new Event('taskora_read_update'));
     }
   };
 
-  const handleDeleteNotification = (e, id) => {
+  const handleDeleteNotification = (e, readKey) => {
     e.stopPropagation();
-    const updated = [...deletedItems, id];
+    const updated = [...deletedItems, readKey];
     setDeletedItems(updated);
     localStorage.setItem('taskora_deleted_notifications', JSON.stringify(updated));
     window.dispatchEvent(new Event('taskora_read_update'));
@@ -153,8 +183,8 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
               const Icon = notif.icon;
               return (
                 <div 
-                  key={notif.id} 
-                  onClick={() => handleNotificationClick(notif.id)}
+                  key={notif.readKey} 
+                  onClick={() => handleNotificationClick(notif.readKey)}
                   className={`group p-3.5 flex gap-3 hover:bg-surface-secondary transition-colors cursor-pointer border-b border-border/30 last:border-0
                     ${notif.unread ? 'bg-primary-50/10' : ''}`}
                 >
@@ -166,7 +196,7 @@ const NotificationsPopup = ({ isOpen, onClose, domNode }) => {
                       <p className="text-sm font-semibold text-text-primary truncate pr-2">{notif.title}</p>
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={(e) => handleDeleteNotification(e, notif.id)}
+                          onClick={(e) => handleDeleteNotification(e, notif.readKey)}
                           className="text-text-tertiary hover:text-error-500 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded-md hover:bg-error-50"
                           title="Delete Notification"
                         >
