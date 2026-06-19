@@ -12,6 +12,7 @@ import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
 import Select from '../components/common/Select';
+import api from '../services/api';
 
 // Team Components
 import TeamOverviewCards from '../components/team/TeamOverviewCards';
@@ -23,9 +24,11 @@ import TaskAssignmentPanel from '../components/team/TaskAssignmentPanel';
 import ProjectCollaboration from '../components/team/ProjectCollaboration';
 import { useTeam } from '../context/TeamContext';
 import { useProjects } from '../context/ProjectContext';
+import { useAuth } from '../context/AuthContext';
 
 const TeamPage = () => {
-  const { members, loading: teamLoading, updateMember, deleteMember } = useTeam();
+  const { user } = useAuth();
+  const { members, loading: teamLoading, updateMember, deleteMember, fetchTeamData } = useTeam();
   const { projects, loading: projectsLoading } = useProjects();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState(null);
@@ -37,6 +40,9 @@ const TeamPage = () => {
   const [inviteName, setInviteName] = useState('');
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('Member');
+  
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState(null);
   
   const [showFilterDrop, setShowFilterDrop] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
@@ -60,8 +66,8 @@ const TeamPage = () => {
     toast.success('Report exported successfully');
   };
 
-  const handleSendInvite = () => {
-    if (!inviteName.trim()) {
+  const handleSendInvite = async () => {
+    if (!inviteName) {
       toast.error('Please enter a name');
       return;
     }
@@ -69,12 +75,29 @@ const TeamPage = () => {
       toast.error('Please enter a valid email');
       return;
     }
-    // In a real app, this would call an API endpoint to send an email invitation
-    // For now, we simulate success
-    toast.success(`Invitation sent to ${inviteEmail}`);
-    setIsInviteOpen(false);
-    setInviteName('');
-    setInviteEmail('');
+    
+    try {
+      // Actually create the user in the database
+      await api.post('/admin/users', {
+        name: inviteName,
+        email: inviteEmail,
+        password: 'Password123!', // Default temporary password
+        role: inviteRole.toLowerCase().split(' ')[0] // e.g., "Admin (Full Access)" -> "admin"
+      });
+      
+      toast.success(`User ${inviteName} created successfully!`);
+      setIsInviteOpen(false);
+      setInviteName('');
+      setInviteEmail('');
+      setInviteRole('Member');
+      
+      // Refresh team data so the new user appears
+      if (fetchTeamData) {
+        await fetchTeamData();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to invite team member (Admin only)');
+    }
   };
 
   const handleAssignClick = (member) => {
@@ -86,9 +109,16 @@ const TeamPage = () => {
     window.location.href = `mailto:${member.email || ''}?subject=TaskoraX: Direct Message`;
   };
 
-  const handleDeleteMember = async (memberId) => {
-    if (window.confirm('Are you sure you want to permanently delete this team member? This action cannot be undone.')) {
-      await deleteMember(memberId);
+  const handleDeleteMemberClick = (memberId) => {
+    setMemberToDelete(memberId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (memberToDelete) {
+      await deleteMember(memberToDelete);
+      setDeleteConfirmOpen(false);
+      setMemberToDelete(null);
     }
   };
 
@@ -191,7 +221,7 @@ const TeamPage = () => {
           onMemberClick={(member) => setSelectedMember(member)} 
           onAssignClick={handleAssignClick}
           onMessageClick={handleMessageClick}
-          onDeleteClick={handleDeleteMember}
+          onDeleteClick={(user?.role === 'admin' || user?.role === 'superadmin' || user?.role === 'Super Admin') ? handleDeleteMemberClick : null}
         />
       </div>
 
@@ -253,6 +283,18 @@ const TeamPage = () => {
           <div className="flex justify-end gap-3 mt-6 border-t border-border/40 pt-6">
             <Button variant="secondary" onClick={() => setIsInviteOpen(false)}>Cancel</Button>
             <Button onClick={handleSendInvite}>Send Invitation</Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={deleteConfirmOpen} onClose={() => setDeleteConfirmOpen(false)} title="Confirm Deletion">
+        <div className="space-y-4">
+          <p className="text-text-secondary">
+            Are you sure you want to delete this team member? This action will deactivate their account.
+          </p>
+          <div className="flex justify-end gap-3 mt-6 border-t border-border/40 pt-6">
+            <Button variant="secondary" onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
+            <Button onClick={confirmDelete} className="bg-danger-500 hover:bg-danger-600 text-white border-transparent">Delete Member</Button>
           </div>
         </div>
       </Modal>

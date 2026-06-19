@@ -5,8 +5,8 @@ const sendEmail = require('../services/emailService');
 
 exports.getAllTeamMembers = catchAsync(async (req, res, next) => {
   // In a real app, this might be restricted to a specific organization or workspace.
-  // For now, we return all users as "team members".
-  const members = await User.find().select('-__v -passwordResetExpires -passwordResetToken');
+  // For now, we return active users as "team members".
+  const members = await User.find({ isActive: { $ne: false } }).select('-__v -passwordResetExpires -passwordResetToken');
 
   res.status(200).json({
     status: 'success',

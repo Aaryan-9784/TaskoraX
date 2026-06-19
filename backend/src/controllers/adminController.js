@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Task = require('../models/Task');
 const ActivityLog = require('../models/ActivityLog');
+const Project = require('../models/Project');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 
@@ -41,7 +42,12 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
     Task.countDocuments({ dueDate: { $lt: new Date() }, status: { $ne: 'Done' } })
   ]);
 
-  const totalProjects = await require('../models/Project').countDocuments();
+  const [totalProjects, activeProjects, completedProjects, atRiskProjects] = await Promise.all([
+    Project.countDocuments(),
+    Project.countDocuments({ status: 'Active' }),
+    Project.countDocuments({ status: 'Completed' }),
+    Project.countDocuments({ status: 'At Risk' })
+  ]);
 
   res.status(200).json({
     status: 'success',
@@ -55,7 +61,10 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
         overdueTasks,
         totalAdmins: admins,
         newUsersThisMonth,
-        totalProjects
+        totalProjects,
+        activeProjects,
+        completedProjects,
+        atRiskProjects
       }
     }
   });
@@ -98,13 +107,46 @@ exports.getAnalytics = catchAsync(async (req, res, next) => {
       }
     }
   ]);
+  // Project Status
+  const projectStats = await Project.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 }
+      }
+    }
+  ]);
+
+  // User Roles
+  const userRoleStats = await User.aggregate([
+    {
+      $group: {
+        _id: "$role",
+        count: { $sum: 1 }
+      }
+    }
+  ]);
+  // Activity Growth
+  const activityGrowth = await ActivityLog.aggregate([
+    { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+        count: { $sum: 1 }
+      }
+    },
+    { $sort: { _id: 1 } }
+  ]);
 
   res.status(200).json({
     status: 'success',
     data: {
       userGrowth,
       taskGrowth,
-      taskStats
+      activityGrowth,
+      taskStats,
+      projectStats,
+      userRoleStats
     }
   });
 });

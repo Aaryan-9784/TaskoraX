@@ -30,11 +30,16 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      await login(form.email, form.password, true);
+      const response = await login(form.email, form.password, true);
+      const userRole = response?.data?.user?.role;
       setSuccess(true);
       toast.success('Welcome back! Redirecting...');
       setTimeout(() => {
-        navigate('/dashboard');
+        if (userRole === 'admin' || userRole === 'superadmin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       }, 800);
     } catch (err) {
       setError(err.message || 'Failed to login');
