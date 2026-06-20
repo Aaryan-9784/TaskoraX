@@ -101,11 +101,11 @@ const AnalyticsWidget = () => {
           </h3>
           <div className="flex items-center gap-4 mt-3">
              <div className="flex items-center gap-1.5">
-               <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
+               <div className="w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(128, 0, 32,0.6)]"></div>
                <span className="text-xs font-semibold text-text-secondary">Productivity</span>
              </div>
              <div className="flex items-center gap-1.5">
-               <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
+               <div className="w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(200, 43, 81,0.6)]"></div>
                <span className="text-xs font-semibold text-text-secondary">Tasks Completed</span>
              </div>
           </div>
@@ -129,12 +129,12 @@ const AnalyticsWidget = () => {
           <AreaChart data={chartData} margin={{ top: 10, right: 20, left: 20, bottom: 25 }}>
             <defs>
               <linearGradient id="colorProd" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#6366F1" stopOpacity={0.25}/>
-                <stop offset="100%" stopColor="#6366F1" stopOpacity={0}/>
+                <stop offset="0%" stopColor="#800020" stopOpacity={0.25}/>
+                <stop offset="100%" stopColor="#800020" stopOpacity={0}/>
               </linearGradient>
               <linearGradient id="colorTasks" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#06B6D4" stopOpacity={0.25}/>
-                <stop offset="100%" stopColor="#06B6D4" stopOpacity={0}/>
+                <stop offset="0%" stopColor="#C82B51" stopOpacity={0.25}/>
+                <stop offset="100%" stopColor="#C82B51" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <XAxis 
@@ -152,21 +152,21 @@ const AnalyticsWidget = () => {
               type="natural" 
               dataKey="productivity" 
               name="Productivity"
-              stroke="#6366F1" 
+              stroke="#800020" 
               strokeWidth={3}
               fillOpacity={1} 
               fill="url(#colorProd)" 
-              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF', fill: '#6366F1' }}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF', fill: '#800020' }}
             />
             <Area 
               type="natural" 
               dataKey="tasks" 
               name="Tasks"
-              stroke="#06B6D4" 
+              stroke="#C82B51" 
               strokeWidth={3}
               fillOpacity={1} 
               fill="url(#colorTasks)" 
-              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF', fill: '#06B6D4' }}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF', fill: '#C82B51' }}
             />
           </AreaChart>
         </ResponsiveContainer>

@@ -8,7 +8,7 @@ const Hero = () => {
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
         <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-primary-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
-        <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-purple-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
+        <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-accent-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
       </div>
 
       <div className="page-container">
@@ -91,7 +91,7 @@ const Hero = () => {
             <div className="p-6 bg-surface-primary min-h-[300px] lg:min-h-[400px] rounded-b-xl relative overflow-hidden">
               {/* Decorative background gradients */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl" />
 
               {/* Sidebar + Main Content layout illusion */}
               <div className="flex gap-6 h-full relative z-10">
@@ -121,9 +121,9 @@ const Hero = () => {
                   {/* Stats Grid */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                      { label: 'Active Projects', value: '12', trend: '+2', color: 'from-blue-500 to-indigo-600', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-                      { label: 'Tasks Completed', value: '84', trend: '+14%', color: 'from-emerald-400 to-emerald-600', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-                      { label: 'Team Members', value: '24', trend: '+3', color: 'from-orange-400 to-orange-600', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
+                      { label: 'Active Projects', value: '12', trend: '+2', color: 'from-primary-500 to-primary-600', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                      { label: 'Tasks Completed', value: '84', trend: '+14%', color: 'from-success-400 to-success-600', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+                      { label: 'Team Members', value: '24', trend: '+3', color: 'from-accent-400 to-accent-600', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
                       { label: 'Productivity', value: '92%', trend: '+5%', color: 'from-primary-500 to-primary-700', icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' },
                     ].map((stat) => (
                       <div key={stat.label} className="bg-white rounded-2xl p-4 border border-border/60 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
@@ -169,7 +169,7 @@ const Hero = () => {
                           { color: 'bg-primary-500', w: 'w-3/4' },
                           { color: 'bg-success-500', w: 'w-1/2' },
                           { color: 'bg-warning-500', w: 'w-5/6' },
-                          { color: 'bg-blue-500', w: 'w-2/3' },
+                          { color: 'bg-primary-500', w: 'w-2/3' },
                         ].map((task, i) => (
                           <div key={i} className="flex items-center gap-3 p-2 hover:bg-surface-secondary rounded-lg transition-colors cursor-default">
                             <div className={`w-2.5 h-2.5 rounded-full ${task.color} shadow-sm`} />

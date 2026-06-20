@@ -41,7 +41,7 @@ const StatusDistributionChart = () => {
     // or just include them all, Recharts handles 0 values well.
     return [
       { name: 'To Do', value: stats.pending || 0, color: '#94a3b8' },
-      { name: 'In Progress', value: stats.inProgress || 0, color: '#3b82f6' },
+      { name: 'In Progress', value: stats.inProgress || 0, color: '#A52A44' },
       { name: 'Completed', value: stats.completed || 0, color: '#22c55e' },
     ].filter(item => item.value > 0);
   }, [stats]);

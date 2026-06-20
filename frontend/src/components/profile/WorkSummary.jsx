@@ -62,7 +62,7 @@ const WorkSummary = ({ stats }) => {
         <div className="space-y-5">
           <ProgressBar label="Task Completion Rate" value={completionRate} colorClass="bg-success-500" />
           <ProgressBar label="Assigned Tasks" value={stats?.total || 0} max={100} colorClass="bg-primary-500" />
-          <ProgressBar label="Weekly Activity Goal" value={85} colorClass="bg-indigo-500" />
+          <ProgressBar label="Weekly Activity Goal" value={85} colorClass="bg-primary-500" />
           <ProgressBar label="Projects Contributed" value={5} max={10} colorClass="bg-warning-500" />
         </div>
       </div>

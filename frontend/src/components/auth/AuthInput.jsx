@@ -38,7 +38,7 @@ const AuthInput = forwardRef(({
       <div 
         className={cn(
           "relative flex items-center w-full min-h-[56px] rounded-2xl border bg-surface-primary transition-all duration-300",
-          isFocused ? "border-primary-500 shadow-[0_0_0_4px_rgba(59,130,246,0.1)]" : "border-border hover:border-text-tertiary",
+          isFocused ? "border-primary-500 shadow-[0_0_0_4px_rgba(165, 42, 68,0.1)]" : "border-border hover:border-text-tertiary",
           error && "border-danger-500 shadow-[0_0_0_4px_rgba(239,68,68,0.1)] hover:border-danger-500",
           success && !error && "border-success-500 hover:border-success-500"
         )}
@@ -80,7 +80,7 @@ const AuthInput = forwardRef(({
           animate={{
             y: isActive ? -12 : 0,
             scale: isActive ? 0.85 : 1,
-            color: error ? '#EF4444' : isFocused ? '#3B82F6' : '#6B7280'
+            color: error ? '#EF4444' : isFocused ? '#A52A44' : '#6B7280'
           }}
           transition={{ duration: 0.2, ease: "easeOut" }}
           className={cn(

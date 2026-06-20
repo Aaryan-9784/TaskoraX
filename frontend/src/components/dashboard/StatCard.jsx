@@ -41,7 +41,7 @@ const StatCard = ({ title, value, icon: Icon, trend, color = 'primary', sparklin
       trend: 'text-accent-600',
       border: 'group-hover:border-accent-300',
       glow: 'group-hover:shadow-glow-accent',
-      stroke: '#8b5cf6'
+      stroke: '#A5183A'
     }
   };
 

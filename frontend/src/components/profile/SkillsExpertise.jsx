@@ -4,7 +4,7 @@ const SkillsExpertise = () => {
   const { user } = useAuth();
   
   // Since skills is just an array of strings in the backend, we map them to a uniform visual style
-  const colors = ['bg-cyan-500', 'bg-green-500', 'bg-purple-500', 'bg-primary-500', 'bg-sky-500'];
+  const colors = ['bg-primary-500', 'bg-green-500', 'bg-accent-500', 'bg-primary-500', 'bg-primary-500'];
   const userSkills = (user?.skills || []).map((skill, index) => ({
     name: skill,
     level: 'Intermediate',

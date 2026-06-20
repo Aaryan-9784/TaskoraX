@@ -41,14 +41,14 @@ const features = [
     title: 'Advanced Security Center',
     description:
       'Protect your data with dedicated security settings, role-based access, and account management.',
-    color: 'bg-purple-50 text-purple-500',
+    color: 'bg-accent-50 text-accent-500',
   },
   {
     icon: HiOutlineCog6Tooth,
     title: 'Customizable Settings',
     description:
       'Take complete control with streamlined profile configurations and personalized account settings.',
-    color: 'bg-cyan-50 text-cyan-500',
+    color: 'bg-primary-50 text-primary-500',
   },
 ];
 

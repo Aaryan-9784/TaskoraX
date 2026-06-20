@@ -20,7 +20,7 @@ const Analytics = () => {
     fetchAnalytics();
   }, []);
 
-  const COLORS = ['#ef4444', '#f59e0b', '#22c55e', '#3b82f6'];
+  const COLORS = ['#ef4444', '#f59e0b', '#22c55e', '#A52A44'];
 
   if (loading) return <div className="p-8 text-center">Loading analytics...</div>;
 

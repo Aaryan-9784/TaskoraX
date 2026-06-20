@@ -218,9 +218,9 @@ const AccountSettings = ({ user, updateProfile }) => {
       case 'SUPER ADMIN':
         return { text: 'SUPER ADMIN', color: 'from-danger-500 to-danger-600', icon: LuShieldAlert };
       case 'ADMIN':
-        return { text: 'ADMIN', color: 'from-primary-500 to-purple-600', icon: LuShieldCheck };
+        return { text: 'ADMIN', color: 'from-primary-500 to-accent-600', icon: LuShieldCheck };
       default:
-        return { text: 'USER', color: 'from-blue-500 to-primary-500', icon: LuShield };
+        return { text: 'USER', color: 'from-primary-500 to-primary-500', icon: LuShield };
     }
   };
   const badge = getRoleBadge();
@@ -237,12 +237,12 @@ const AccountSettings = ({ user, updateProfile }) => {
         transition={{ duration: 0.5 }}
         className="relative overflow-hidden rounded-[2rem] bg-surface-secondary/40 backdrop-blur-xl border border-border/50 shadow-sm p-8 lg:p-10"
       >
-        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-primary-500/10 via-purple-500/5 to-transparent pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-primary-500/10 via-accent-500/5 to-transparent pointer-events-none" />
         
         <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8">
           {/* Avatar Section */}
           <div className="relative group">
-            <div className="w-[120px] h-[120px] rounded-full p-1 bg-gradient-to-tr from-primary-500 via-purple-500 to-primary-300 shadow-xl group-hover:shadow-[0_0_30px_rgba(var(--color-primary-500),0.3)] transition-all duration-500">
+            <div className="w-[120px] h-[120px] rounded-full p-1 bg-gradient-to-tr from-primary-500 via-accent-500 to-primary-300 shadow-xl group-hover:shadow-[0_0_30px_rgba(var(--color-primary-500),0.3)] transition-all duration-500">
               <div className="w-full h-full rounded-full bg-surface-primary border-4 border-surface-primary flex items-center justify-center overflow-hidden relative">
                 {form.avatar && !avatarError ? (
                   <img 
@@ -438,7 +438,7 @@ const AccountSettings = ({ user, updateProfile }) => {
             className="bg-surface-primary rounded-[2rem] p-8 border border-border/40 shadow-sm"
           >
             <div className="mb-8 flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-600">
+              <div className="p-2.5 rounded-xl bg-accent-500/10 text-accent-600">
                 <LuLock className="w-6 h-6" />
               </div>
               <div>
@@ -485,7 +485,7 @@ const AccountSettings = ({ user, updateProfile }) => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-gradient-to-br from-primary-600 to-purple-700 rounded-[2rem] p-8 text-white shadow-lg relative overflow-hidden"
+            className="bg-gradient-to-br from-primary-600 to-accent-700 rounded-[2rem] p-8 text-white shadow-lg relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full -ml-8 -mb-8 blur-xl" />
@@ -532,7 +532,7 @@ const AccountSettings = ({ user, updateProfile }) => {
             <div className="space-y-5">
               <div className="flex items-center justify-between group cursor-default">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
+                  <div className="p-2 rounded-lg bg-primary-500/10 text-primary-500 group-hover:scale-110 transition-transform">
                     <LuCircleCheck className="w-5 h-5" />
                   </div>
                   <span className="text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors">Tasks Created</span>
@@ -542,7 +542,7 @@ const AccountSettings = ({ user, updateProfile }) => {
 
               <div className="flex items-center justify-between group cursor-default">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500 group-hover:scale-110 transition-transform">
+                  <div className="p-2 rounded-lg bg-accent-500/10 text-accent-500 group-hover:scale-110 transition-transform">
                     <LuFolder className="w-5 h-5" />
                   </div>
                   <span className="text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors">Projects Joined</span>
@@ -552,7 +552,7 @@ const AccountSettings = ({ user, updateProfile }) => {
 
               <div className="flex items-center justify-between group cursor-default">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500 group-hover:scale-110 transition-transform">
+                  <div className="p-2 rounded-lg bg-accent-500/10 text-accent-500 group-hover:scale-110 transition-transform">
                     <LuUsers className="w-5 h-5" />
                   </div>
                   <span className="text-sm font-medium text-text-secondary group-hover:text-text-primary transition-colors">Team Members</span>

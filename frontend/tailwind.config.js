@@ -6,43 +6,43 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#eef2ff',
-          100: '#e0e7ff',
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
-          950: '#1e1b4b',
+          50: '#F8ECEF', // Soft Maroon Background
+          100: '#F1D8DE',
+          200: '#E5B8C2',
+          300: '#D58E9E',
+          400: '#C35E74',
+          500: '#A52A44', // Light Maroon
+          600: '#800020', // Primary Maroon
+          700: '#6E001B',
+          800: '#5C0014', // Dark Maroon
+          900: '#4A0010',
+          950: '#2D000A',
         },
         secondary: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
-          950: '#431407',
+          50: '#FFFFFF', // Pure White
+          100: '#FAFAFA', // Off White
+          200: '#F3F4F6',
+          300: '#E5E7EB', // Border
+          400: '#D1D5DB',
+          500: '#9CA3AF',
+          600: '#6B7280', // Text Secondary
+          700: '#4B5563',
+          800: '#374151',
+          900: '#1F2937', // Text Dark
+          950: '#111827',
         },
         accent: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
-          950: '#2e1065',
+          50: '#FCF0F3',
+          100: '#F9DFE6',
+          200: '#F0B8C7',
+          300: '#E68CA2',
+          400: '#D95878',
+          500: '#C82B51', // Brighter highlight
+          600: '#A5183A',
+          700: '#830C29',
+          800: '#6E0821',
+          900: '#5C0A1E',
+          950: '#36020E',
         },
         success: {
           50: '#f0fdf4',
@@ -85,13 +85,13 @@ export default {
         },
         surface: {
           primary: '#FFFFFF',
-          secondary: '#F8FAFC',
-          tertiary: '#F1F5F9',
+          secondary: '#FAFAFA',
+          tertiary: '#F8ECEF',
         },
-        border: '#E2E8F0',
-        'text-primary': '#0F172A',
-        'text-secondary': '#475569',
-        'text-tertiary': '#94A3B8',
+        border: '#E5E7EB',
+        'text-primary': '#1F2937',
+        'text-secondary': '#6B7280',
+        'text-tertiary': '#9CA3AF',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
@@ -104,8 +104,8 @@ export default {
         'overlay': '0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
         'card': '0 4px 20px -2px rgba(0,0,0,0.05), 0 0 3px rgba(0,0,0,0.02)',
         'card-hover': '0 12px 30px -4px rgba(0,0,0,0.08), 0 0 4px rgba(0,0,0,0.03)',
-        'glow': '0 0 20px rgba(99, 102, 241, 0.5)',
-        'glow-accent': '0 0 20px rgba(139, 92, 246, 0.5)',
+        'glow': '0 0 20px rgba(128, 0, 32, 0.5)',
+        'glow-accent': '0 0 20px rgba(200, 43, 81, 0.5)',
         'inner-light': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.6)',
       },
       borderRadius: {

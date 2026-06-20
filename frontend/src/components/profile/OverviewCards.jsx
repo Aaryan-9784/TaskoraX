@@ -69,8 +69,8 @@ const OverviewCards = ({ stats }) => {
         icon={HiOutlineUserGroup} 
         trend="up" 
         trendValue="24%"
-        colorClass="text-indigo-600"
-        bgColorClass="bg-indigo-100"
+        colorClass="text-primary-600"
+        bgColorClass="bg-primary-100"
       />
     </div>
   );

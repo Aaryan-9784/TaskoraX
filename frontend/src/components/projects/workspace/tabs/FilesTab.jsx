@@ -46,7 +46,7 @@ const getFileTypeInfo = (filename) => {
     case 'html':
     case 'css':
     case 'json':
-      return { icon: HiOutlineCodeBracket, color: 'text-blue-500', bg: 'bg-blue-500/10', label: 'CODE' };
+      return { icon: HiOutlineCodeBracket, color: 'text-primary-500', bg: 'bg-primary-500/10', label: 'CODE' };
     default:
       return { icon: HiOutlineDocumentText, color: 'text-text-tertiary', bg: 'bg-surface-secondary', label: ext.substring(0, 4).toUpperCase() || 'FILE' };
   }

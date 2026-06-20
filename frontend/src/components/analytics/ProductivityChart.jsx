@@ -84,7 +84,7 @@ const ProductivityChart = () => {
           <p className="text-sm text-text-tertiary">Based on tasks completed on time</p>
         </div>
         <div className="bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-sm border border-accent-100/50">
-          <span className="w-2 h-2 rounded-full bg-accent-500 animate-pulse-soft shadow-[0_0_8px_rgba(139,92,246,0.5)]"></span>
+          <span className="w-2 h-2 rounded-full bg-accent-500 animate-pulse-soft shadow-[0_0_8px_rgba(200, 43, 81,0.5)]"></span>
           Avg: {avgScore}%
         </div>
       </div>
@@ -98,8 +98,8 @@ const ProductivityChart = () => {
                 <stop offset="95%" stopColor="#22c55e" stopOpacity={0.6}/>
               </linearGradient>
               <linearGradient id="colorScoreMed" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={1}/>
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.6}/>
+                <stop offset="5%" stopColor="#A5183A" stopOpacity={1}/>
+                <stop offset="95%" stopColor="#A5183A" stopOpacity={0.6}/>
               </linearGradient>
               <linearGradient id="colorScoreLow" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#94a3b8" stopOpacity={1}/>
@@ -120,7 +120,7 @@ const ProductivityChart = () => {
               tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }}
               dx={-10}
             />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(139, 92, 246, 0.05)', radius: 4 }} />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(200, 43, 81, 0.05)', radius: 4 }} />
             <Bar dataKey="score" radius={[6, 6, 0, 0]}>
               {chartData.map((entry, index) => (
                 <Cell 

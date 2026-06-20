@@ -2,8 +2,8 @@
   <rect width="64" height="64" rx="16" fill="url(#grad)"/>
   <defs>
     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#d93b3b" />
-      <stop offset="100%" stop-color="#a31919" />
+      <stop offset="0%" stop-color="#A52A44" />
+      <stop offset="100%" stop-color="#5C0014" />
     </linearGradient>
   </defs>
   <g transform="translate(12, 12) scale(1.666)">

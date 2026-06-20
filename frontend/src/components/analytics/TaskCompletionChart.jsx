@@ -77,8 +77,8 @@ const TaskCompletionChart = () => {
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 15 }}>
             <defs>
               <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4}/>
-                <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#800020" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="#800020" stopOpacity={0}/>
               </linearGradient>
               <linearGradient id="colorAdded" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.3}/>
@@ -104,11 +104,11 @@ const TaskCompletionChart = () => {
               type="monotone" 
               dataKey="completed" 
               name="Completed"
-              stroke="#6366f1" 
+              stroke="#800020" 
               strokeWidth={3}
               fillOpacity={1} 
               fill="url(#colorCompleted)" 
-              activeDot={{ r: 6, fill: '#6366f1', stroke: '#fff', strokeWidth: 2 }}
+              activeDot={{ r: 6, fill: '#800020', stroke: '#fff', strokeWidth: 2 }}
             />
             <Area 
               type="monotone" 
