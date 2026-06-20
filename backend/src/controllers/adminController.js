@@ -215,6 +215,27 @@ exports.createUser = catchAsync(async (req, res, next) => {
     return next(new AppError('Only Super Admin can create another Super Admin', 403));
   }
 
+  // Check if user already exists
+  const existingUser = await User.findOne({ email }).select('+isActive');
+  if (existingUser) {
+    if (!existingUser.isActive) {
+      existingUser.isActive = true;
+      existingUser.role = role || 'user';
+      existingUser.name = name;
+      await existingUser.save({ validateBeforeSave: false });
+      
+      await logActivity(req.user._id, 'User Reactivation', req, { targetUser: existingUser._id, role: existingUser.role });
+      
+      return res.status(200).json({
+        status: 'success',
+        message: 'User was previously deactivated and has now been reactivated.',
+        data: { user: existingUser }
+      });
+    } else {
+      return next(new AppError('A user with this email address already exists in the system.', 400));
+    }
+  }
+
   const newUser = await User.create({
     name,
     email,
@@ -313,15 +334,18 @@ exports.getProjects = catchAsync(async (req, res, next) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
+  const queryObj = {};
+  if (req.query.status) queryObj.status = req.query.status;
+
   const Project = require('../models/Project');
 
-  const projects = await Project.find()
+  const projects = await Project.find(queryObj)
     .populate('owner', 'name email avatar')
     .sort('-createdAt')
     .skip(skip)
     .limit(limit);
 
-  const total = await Project.countDocuments();
+  const total = await Project.countDocuments(queryObj);
 
   res.status(200).json({
     status: 'success',
@@ -352,13 +376,16 @@ exports.getTasks = catchAsync(async (req, res, next) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
-  const tasks = await Task.find()
+  const queryObj = {};
+  if (req.query.status) queryObj.status = req.query.status;
+
+  const tasks = await Task.find(queryObj)
     .populate('createdBy', 'name email avatar')
     .sort('-createdAt')
     .skip(skip)
     .limit(limit);
 
-  const total = await Task.countDocuments();
+  const total = await Task.countDocuments(queryObj);
 
   res.status(200).json({
     status: 'success',
