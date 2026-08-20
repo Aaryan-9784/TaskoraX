@@ -35,7 +35,7 @@ const LoginPage = () => {
       setSuccess(true);
       toast.success('Welcome back! Redirecting...');
       setTimeout(() => {
-        if (userRole === 'admin' || userRole === 'superadmin') {
+        if (userRole?.toLowerCase() === 'admin') {
           navigate('/admin/dashboard');
         } else {
           navigate('/dashboard');
