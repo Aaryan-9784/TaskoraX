@@ -6,6 +6,7 @@ import {
   HiOutlineBars3,
   HiOutlineBell,
   HiOutlineCalendar,
+  HiChevronDown,
 } from 'react-icons/hi2';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import CalendarPopup from './CalendarPopup';
@@ -172,17 +173,14 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
         <div className="relative">
           <button 
             onClick={() => togglePopup('profile')}
-            className={`flex items-center gap-2 pl-2 pr-1 py-1 rounded-full transition-all duration-200 group ${activePopup === 'profile' ? 'bg-surface-secondary border-border/50 shadow-sm' : 'hover:bg-surface-secondary border-transparent hover:border-border/50'} border`}
+            className={`flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-full transition-all duration-200 group ${
+              activePopup === 'profile' 
+                ? 'bg-surface-secondary border-border/80 shadow-sm ring-2 ring-primary-500/10' 
+                : 'hover:bg-surface-secondary/80 border-border/40 hover:border-border/80'
+            } border bg-white/50 dark:bg-surface-secondary/30 backdrop-blur-sm`}
           >
-            <div className="hidden sm:block text-right">
-              <p className={`text-xs font-bold transition-colors ${activePopup === 'profile' ? 'text-primary-600' : 'text-text-primary group-hover:text-primary-600'}`}>
-                {user?.name || 'User'}
-              </p>
-              <p className="text-[10px] font-medium text-success-600 flex items-center justify-end gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-success-500"></span> Online
-              </p>
-            </div>
-            <div className={`w-9 h-9 rounded-full bg-gradient-premium text-white flex items-center justify-center text-sm font-bold transition-all duration-300 ring-2 ring-white overflow-hidden ${activePopup === 'profile' ? 'shadow-glow-accent scale-105' : 'shadow-soft group-hover:shadow-glow-accent'}`}>
+            {/* Avatar Logo on Left */}
+            <div className={`w-8 h-8 rounded-full bg-gradient-premium text-white flex items-center justify-center text-xs font-bold transition-all duration-300 ring-2 ring-white overflow-hidden flex-shrink-0 ${activePopup === 'profile' ? 'shadow-glow-accent scale-105' : 'shadow-soft group-hover:shadow-glow-accent'}`}>
               {user?.avatar && !avatarError ? (
                 <img 
                   src={user.avatar} 
@@ -194,6 +192,25 @@ const DashboardNavbar = ({ onOpenSidebar }) => {
                 getInitials(user?.name)
               )}
             </div>
+
+            {/* Name & Role Text on Right */}
+            <div className="hidden sm:flex flex-col items-start text-left leading-tight">
+              <p className={`text-xs font-bold transition-colors ${activePopup === 'profile' ? 'text-primary-600' : 'text-text-primary group-hover:text-primary-600'}`}>
+                {user?.name || 'User'}
+              </p>
+              <span className={`text-[10px] font-semibold tracking-wide capitalize ${
+                user?.role?.toLowerCase() === 'admin' 
+                  ? 'text-danger-600 font-bold' 
+                  : user?.role?.toLowerCase() === 'manager' 
+                  ? 'text-primary-600 font-bold' 
+                  : 'text-text-tertiary'
+              }`}>
+                {user?.role || 'User'}
+              </span>
+            </div>
+
+            {/* Chevron dropdown indicator */}
+            <HiChevronDown className={`w-3.5 h-3.5 text-text-tertiary transition-transform duration-200 ${activePopup === 'profile' ? 'rotate-180 text-primary-600' : 'group-hover:text-text-secondary'}`} />
           </button>
           <UserProfilePopup isOpen={activePopup === 'profile'} onClose={closePopups} user={user} onLogout={logout} />
         </div>

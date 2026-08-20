@@ -36,8 +36,19 @@ const UserProfilePopup = ({ isOpen, onClose, user, domNode, onLogout }) => {
             <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-success-500 border-2 border-white rounded-full"></span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-text-primary truncate">{user?.name || 'Jane Doe'}</p>
-            <p className="text-xs text-text-tertiary truncate">{user?.email || 'jane@example.com'}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold text-text-primary truncate">{user?.name || 'User'}</p>
+              <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded capitalize ${
+                user?.role?.toLowerCase() === 'admin' 
+                  ? 'bg-danger-100 text-danger-700' 
+                  : user?.role?.toLowerCase() === 'manager' 
+                  ? 'bg-primary-100 text-primary-700' 
+                  : 'bg-surface-secondary text-text-secondary border border-border/50'
+              }`}>
+                {user?.role || 'User'}
+              </span>
+            </div>
+            <p className="text-xs text-text-tertiary truncate mt-0.5">{user?.email || 'user@example.com'}</p>
           </div>
         </div>
       </div>

@@ -164,67 +164,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             </>
           )}
 
-          {/* Workspace Summary Card */}
-          {!isCollapsed && (
-            <div className="mt-auto pt-6 pb-2 animate-fade-in">
-              <div className="bg-white/40 dark:bg-surface-secondary/20 backdrop-blur-md border border-border/30 rounded-2xl p-3 shadow-sm hover:shadow-md transition-shadow duration-300 group/card relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
-                
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">Workspace Summary</h4>
-                  </div>
-                  
-                  <div className="space-y-0.5">
-                    <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-1.5 -mx-1.5 rounded-lg transition-colors cursor-default">
-                      <div className="flex items-center gap-2 text-text-secondary">
-                        <div className="p-1 bg-success-50 rounded-md group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
-                          <HiOutlineCheckCircle className="h-3.5 w-3.5 text-success-600" />
-                        </div>
-                        <span className="text-xs font-medium group-hover/row:text-text-primary transition-colors">Total Tasks</span>
-                      </div>
-                      <span className="text-xs font-bold text-text-primary">{stats?.total || 0}</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-1.5 -mx-1.5 rounded-lg transition-colors cursor-default">
-                      <div className="flex items-center gap-2 text-text-secondary">
-                        <div className="p-1 bg-primary-50 rounded-md group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
-                          <HiOutlineBriefcase className="h-3.5 w-3.5 text-primary-600" />
-                        </div>
-                        <span className="text-xs font-medium group-hover/row:text-text-primary transition-colors">Active Projects</span>
-                      </div>
-                      <span className="text-xs font-bold text-text-primary">12</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between group/row hover:bg-surface-secondary/50 p-1.5 -mx-1.5 rounded-lg transition-colors cursor-default">
-                      <div className="flex items-center gap-2 text-text-secondary">
-                        <div className="p-1 bg-accent-50 rounded-md group-hover/row:bg-white group-hover/row:shadow-sm transition-all">
-                          <HiOutlineUsers className="h-3.5 w-3.5 text-accent-600" />
-                        </div>
-                        <span className="text-xs font-medium group-hover/row:text-text-primary transition-colors">Team Members</span>
-                      </div>
-                      <span className="text-xs font-bold text-text-primary">8</span>
-                    </div>
-                  </div>
 
-                  <div className="mt-3 pt-3 border-t border-border/30">
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-[10px] font-semibold text-text-secondary">Productivity</span>
-                      <span className="text-[10px] font-bold text-success-600">
-                        {stats?.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-success-400 to-success-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.4)]"
-                        style={{ width: `${stats?.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </nav>
 
         {/* User section + logout */}
