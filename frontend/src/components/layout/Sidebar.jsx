@@ -122,8 +122,8 @@ const Sidebar = ({ isOpen, onClose }) => {
               )}
             </NavLink>
           ))}
-          {/* Admin Menu (Only for admin/superadmin) */}
-          {(user?.role === 'admin' || user?.role === 'superadmin') && (
+          {/* Admin Menu (Only for Admin) */}
+          {(user?.role?.toLowerCase() === 'admin') && (
             <>
               {!isCollapsed && (
                 <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-text-tertiary mb-2 mt-4 pt-4 border-t border-border/20">Admin Panel</p>

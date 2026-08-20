@@ -2,7 +2,7 @@ const AppError = require('../utils/AppError');
 
 exports.requireRoles = (...roles) => {
   return (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
+    if (!req.user || !roles.map(r => r.toLowerCase()).includes((req.user.role || '').toLowerCase())) {
       return next(
         new AppError('You do not have permission to perform this action', 403)
       );
@@ -11,5 +11,6 @@ exports.requireRoles = (...roles) => {
   };
 };
 
-exports.isAdmin = exports.requireRoles('Super Admin', 'superadmin', 'admin');
-exports.isSuperAdmin = exports.requireRoles('Super Admin', 'superadmin');
+exports.isAdmin = exports.requireRoles('admin', 'Admin');
+exports.isManager = exports.requireRoles('admin', 'Admin', 'manager', 'Manager');
+

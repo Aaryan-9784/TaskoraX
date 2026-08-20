@@ -22,17 +22,17 @@ exports.getAllTasks = catchAsync(async (req, res, next) => {
   const excludedFields = ['page', 'sort', 'limit', 'fields', 'search'];
   excludedFields.forEach((el) => delete queryObj[el]);
 
-  let query = Task.find({ createdBy: req.user.id, ...queryObj });
+  const filter = { createdBy: req.user.id, ...queryObj };
 
   // 2) Searching
   if (req.query.search) {
-    query = query.find({
-      $or: [
-        { title: { $regex: req.query.search, $options: 'i' } },
-        { description: { $regex: req.query.search, $options: 'i' } },
-      ],
-    });
+    filter.$or = [
+      { title: { $regex: req.query.search, $options: 'i' } },
+      { description: { $regex: req.query.search, $options: 'i' } },
+    ];
   }
+
+  let query = Task.find(filter);
 
   // 3) Sorting
   if (req.query.sort) {
@@ -53,8 +53,8 @@ exports.getAllTasks = catchAsync(async (req, res, next) => {
   const tasks = await query;
   
   // Get total count for pagination metadata
-  const totalTasks = await Task.countDocuments({ createdBy: req.user.id, ...queryObj });
-  const totalPages = Math.ceil(totalTasks / limit);
+  const totalTasks = await Task.countDocuments(filter);
+  const totalPages = Math.ceil(totalTasks / limit) || 1;
 
   res.status(200).json({
     status: 'success',
@@ -115,8 +115,5 @@ exports.deleteTask = catchAsync(async (req, res, next) => {
     return next(new AppError('No task found with that ID', 404));
   }
 
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+  res.status(204).send();
 });

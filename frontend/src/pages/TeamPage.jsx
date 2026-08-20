@@ -76,27 +76,40 @@ const TeamPage = () => {
       return;
     }
     
+    const isAdmin = user && ['admin', 'Admin'].includes(user.role);
+
     try {
-      // Actually create the user in the database
-      await api.post('/admin/users', {
-        name: inviteName,
-        email: inviteEmail,
-        password: 'Password123!', // Default temporary password
-        role: inviteRole.toLowerCase().split(' ')[0] // e.g., "Admin (Full Access)" -> "admin"
-      });
+      if (isAdmin) {
+        // Create user directly in database if admin
+        await api.post('/admin/users', {
+          name: inviteName,
+          email: inviteEmail,
+          password: 'Password123!', // Default temporary password
+          role: inviteRole.toLowerCase()
+        });
+        toast.success(`User ${inviteName} added successfully!`);
+      } else {
+        // Send email invitation if non-admin
+        await api.post('/team/invite', {
+          name: inviteName,
+          email: inviteEmail,
+          role: inviteRole,
+          projectName: 'TaskoraX Workspace'
+        });
+        toast.success(`Invitation sent to ${inviteEmail}!`);
+      }
       
-      toast.success(`User ${inviteName} created successfully!`);
       setIsInviteOpen(false);
       setInviteName('');
       setInviteEmail('');
-      setInviteRole('Member');
+      setInviteRole('User');
       
       // Refresh team data so the new user appears
       if (fetchTeamData) {
         await fetchTeamData();
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to invite team member (Admin only)');
+      toast.error(error.response?.data?.message || 'Failed to send invite');
     }
   };
 
@@ -273,9 +286,9 @@ const TeamPage = () => {
           <Select 
             label="Access Rights / Role"
             options={[
-              { value: 'Member', label: 'Member (Standard Access)' },
-              { value: 'Admin', label: 'Admin (Full Access)' },
-              { value: 'Viewer', label: 'Viewer (Read-only)' }
+              { value: 'User', label: 'User (Standard Member)' },
+              { value: 'Manager', label: 'Manager (Team & Projects)' },
+              { value: 'Admin', label: 'Admin (Full System Control)' }
             ]}
             value={inviteRole}
             onChange={(e) => setInviteRole(e.target.value)}

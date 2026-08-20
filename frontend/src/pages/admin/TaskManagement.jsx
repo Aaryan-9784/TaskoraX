@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 
 const TaskManagement = () => {
   const [tasks, setTasks] = useState([]);
@@ -8,7 +8,7 @@ const TaskManagement = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/tasks`, { withCredentials: true });
+        const res = await api.get('/admin/tasks');
         setTasks(res.data.data.tasks);
       } catch (error) {
         console.error('Failed to fetch tasks:', error);

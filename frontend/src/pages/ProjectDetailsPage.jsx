@@ -77,7 +77,15 @@ const ProjectDetailsPage = () => {
 
   if (loading) return <div className="p-8 text-center text-text-secondary">Loading project data...</div>;
 
-  if (!project) return null;
+  if (!project) {
+    return (
+      <div className="text-center py-20 animate-fade-in">
+        <h2 className="text-xl font-bold text-text-primary mb-2">Project not found</h2>
+        <p className="text-text-secondary mb-6">The project you are looking for does not exist or has been removed.</p>
+        <Button onClick={() => navigate('/projects')}>Back to Projects</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-[calc(100vh-theme(spacing.16))] -m-6 animate-fade-in">

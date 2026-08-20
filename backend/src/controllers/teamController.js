@@ -18,8 +18,21 @@ exports.getAllTeamMembers = catchAsync(async (req, res, next) => {
 });
 
 exports.updateTeamMember = catchAsync(async (req, res, next) => {
-  // Restricted fields that admin/manager can update
-  const allowedFields = ['role', 'department', 'status'];
+  const isAdminOrManager = ['admin', 'Admin', 'manager', 'Manager'].includes(req.user.role);
+  
+  // If non-admin/manager tries to update another user, forbid it
+  if (!isAdminOrManager && req.user.id !== req.params.id) {
+    return next(new AppError('You do not have permission to update other team members', 403));
+  }
+
+  // Non-admins cannot modify roles
+  if (req.body.role && !isAdminOrManager) {
+    return next(new AppError('Only administrators and managers can change user roles', 403));
+  }
+
+  const allowedFields = isAdminOrManager 
+    ? ['role', 'department', 'status'] 
+    : ['department', 'status'];
   
   const updateData = {};
   Object.keys(req.body).forEach(el => {

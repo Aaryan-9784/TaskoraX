@@ -59,7 +59,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin', 'superadmin', 'Super Admin', 'Manager', 'Owner', 'Member', 'viewer', 'Viewer'],
+      enum: ['Admin', 'Manager', 'User', 'admin', 'manager', 'user'],
       default: 'user',
     },
     lastLogin: {
@@ -201,8 +201,6 @@ userSchema.methods.createPasswordResetToken = function () {
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-
-  console.log({ resetToken }, this.passwordResetToken);
 
   this.passwordResetExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
 

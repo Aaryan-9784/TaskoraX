@@ -5,7 +5,7 @@ import AuthSidebar from '../components/auth/AuthSidebar';
 import PasswordField from '../components/auth/PasswordField';
 import AuthButton from '../components/auth/AuthButton';
 import { HiOutlineLockClosed } from 'react-icons/hi2';
-import axios from 'axios';
+import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const ResetPassword = () => {
@@ -40,7 +40,7 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/reset-password/${token}`, {
+      await api.post(`/auth/reset-password/${token}`, {
         password: form.password,
         passwordConfirm: form.passwordConfirm,
       });

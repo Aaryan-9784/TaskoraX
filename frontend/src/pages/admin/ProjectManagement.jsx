@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { HiOutlineFolderOpen, HiOutlineTrash } from 'react-icons/hi2';
 
@@ -13,7 +13,7 @@ const ProjectManagement = () => {
 
   const fetchProjects = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/projects`, { withCredentials: true });
+      const res = await api.get('/admin/projects');
       setProjects(res.data.data.projects);
     } catch (error) {
       console.error('Failed to fetch projects:', error);
@@ -27,7 +27,7 @@ const ProjectManagement = () => {
     if (!window.confirm('Are you sure you want to permanently delete this project?')) return;
     
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/projects/${id}`, { withCredentials: true });
+      await api.delete(`/admin/projects/${id}`);
       toast.success('Project deleted successfully');
       setProjects(projects.filter(p => p._id !== id));
     } catch (error) {

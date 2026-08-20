@@ -24,10 +24,11 @@ const logActivity = async (userId, action, req, metadata = {}) => {
 // --------------------------------------------------------------------------
 
 exports.getDashboardStats = catchAsync(async (req, res, next) => {
-  const [totalUsers, activeUsers, admins, newUsersThisMonth] = await Promise.all([
+  const [totalUsers, activeUsers, admins, managers, newUsersThisMonth] = await Promise.all([
     User.countDocuments(),
     User.countDocuments({ isActive: true }),
-    User.countDocuments({ role: { $in: ['admin', 'superadmin', 'Super Admin'] } }),
+    User.countDocuments({ role: { $in: ['admin', 'Admin'] } }),
+    User.countDocuments({ role: { $in: ['manager', 'Manager'] } }),
     User.countDocuments({
       createdAt: {
         $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
@@ -60,6 +61,7 @@ exports.getDashboardStats = catchAsync(async (req, res, next) => {
         pendingTasks,
         overdueTasks,
         totalAdmins: admins,
+        totalManagers: managers,
         newUsersThisMonth,
         totalProjects,
         activeProjects,
@@ -210,17 +212,15 @@ exports.getUserDetails = catchAsync(async (req, res, next) => {
 exports.createUser = catchAsync(async (req, res, next) => {
   const { name, email, password, role } = req.body;
 
-  // Role validation
-  if ((role === 'superadmin' || role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
-    return next(new AppError('Only Super Admin can create another Super Admin', 403));
-  }
+  const validRoles = ['Admin', 'Manager', 'User', 'admin', 'manager', 'user'];
+  const assignedRole = role && validRoles.includes(role) ? role : 'user';
 
   // Check if user already exists
   const existingUser = await User.findOne({ email }).select('+isActive');
   if (existingUser) {
     if (!existingUser.isActive) {
       existingUser.isActive = true;
-      existingUser.role = role || 'user';
+      existingUser.role = assignedRole;
       existingUser.name = name;
       await existingUser.save({ validateBeforeSave: false });
       
@@ -240,7 +240,7 @@ exports.createUser = catchAsync(async (req, res, next) => {
     name,
     email,
     password,
-    role: role || 'user',
+    role: assignedRole,
     createdBy: req.user._id
   });
 
@@ -256,22 +256,22 @@ exports.createUser = catchAsync(async (req, res, next) => {
 
 exports.updateUser = catchAsync(async (req, res, next) => {
   const { role, isActive, ...otherUpdates } = req.body;
-  
-  if ((role === 'superadmin' || role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
-    return next(new AppError('Only Super Admin can assign Super Admin role', 403));
-  }
 
   const user = await User.findById(req.params.id);
   if (!user) return next(new AppError('User not found', 404));
 
-  // If trying to modify a superadmin, only superadmin can do it
-  if ((user.role === 'superadmin' || user.role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
-    return next(new AppError('You cannot modify a Super Admin', 403));
+  const validRoles = ['Admin', 'Manager', 'User', 'admin', 'manager', 'user'];
+  const updatePayload = { ...otherUpdates, updatedBy: req.user._id };
+  if (role && validRoles.includes(role)) {
+    updatePayload.role = role;
+  }
+  if (typeof isActive === 'boolean') {
+    updatePayload.isActive = isActive;
   }
 
   const updatedUser = await User.findByIdAndUpdate(
     req.params.id,
-    { ...otherUpdates, role, isActive, updatedBy: req.user._id },
+    updatePayload,
     { new: true, runValidators: true }
   ).select('+isActive');
 
@@ -296,10 +296,6 @@ exports.deactivateUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) return next(new AppError('User not found', 404));
 
-  if ((user.role === 'superadmin' || user.role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
-    return next(new AppError('You cannot deactivate a Super Admin', 403));
-  }
-
   user.isActive = false;
   await user.save({ validateBeforeSave: false });
 
@@ -312,17 +308,12 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (!user) return next(new AppError('User not found', 404));
 
-  if ((user.role === 'superadmin' || user.role === 'Super Admin') && req.user.role !== 'superadmin' && req.user.role !== 'Super Admin') {
-    return next(new AppError('You cannot delete a Super Admin', 403));
-  }
-
-  // Soft Delete: just deactivate, or hard delete? The prompt said "Soft Delete Preferred"
   user.isActive = false;
   await user.save({ validateBeforeSave: false });
 
   await logActivity(req.user._id, 'User Delete', req, { targetUser: user._id, action: 'Soft Delete' });
 
-  res.status(204).json({ status: 'success', data: null });
+  res.status(204).send();
 });
 
 // --------------------------------------------------------------------------
@@ -364,7 +355,7 @@ exports.deleteProject = catchAsync(async (req, res, next) => {
 
   await logActivity(req.user._id, 'Project Delete', req, { projectId: project._id });
 
-  res.status(204).json({ status: 'success', data: null });
+  res.status(204).send();
 });
 
 // --------------------------------------------------------------------------
@@ -423,7 +414,7 @@ exports.deleteTask = catchAsync(async (req, res, next) => {
 
   await logActivity(req.user._id, 'Task Delete', req, { taskId: task._id });
 
-  res.status(204).json({ status: 'success', data: null });
+  res.status(204).send();
 });
 
 // --------------------------------------------------------------------------

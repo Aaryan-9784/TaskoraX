@@ -236,9 +236,9 @@ const TeamTab = ({ project, onUpdateProject }) => {
           <Select 
             label="Access Rights / Role"
             options={[
-              { value: 'Member', label: 'Member (Standard Access)' },
-              { value: 'Admin', label: 'Admin (Full Access)' },
-              { value: 'Viewer', label: 'Viewer (Read-only)' }
+              { value: 'User', label: 'User (Standard Member)' },
+              { value: 'Manager', label: 'Manager (Team & Projects)' },
+              { value: 'Admin', label: 'Admin (Full System Control)' }
             ]}
             value={role}
             onChange={(e) => setRole(e.target.value)}

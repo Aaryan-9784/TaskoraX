@@ -5,7 +5,7 @@ import AuthSidebar from '../components/auth/AuthSidebar';
 import AuthInput from '../components/auth/AuthInput';
 import AuthButton from '../components/auth/AuthButton';
 import { HiOutlineEnvelope, HiArrowLeft } from 'react-icons/hi2';
-import axios from 'axios';
+import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const ForgotPassword = () => {
@@ -25,7 +25,7 @@ const ForgotPassword = () => {
 
     setLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/forgot-password`, { email });
+      await api.post('/auth/forgot-password', { email });
       setSuccess(true);
       toast.success('Reset link sent! Check your inbox.');
       setLoading(false);

@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 const AdminRoute = () => {
   return (
-    <RoleGuard allowedRoles={['admin', 'superadmin']}>
+    <RoleGuard allowedRoles={['admin', 'Admin']}>
       <Outlet />
     </RoleGuard>
   );

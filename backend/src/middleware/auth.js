@@ -24,7 +24,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) Check if user still exists
-  const currentUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id).select('+isActive');
   if (!currentUser) {
     return next(
       new AppError(
@@ -34,10 +34,19 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
+  // 4) Check if user is active
+  if (currentUser.isActive === false) {
+    return next(
+      new AppError('Your account has been deactivated. Please contact support.', 403)
+    );
+  }
+
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
   next();
 });
+
+exports.verifyToken = exports.protect;
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {

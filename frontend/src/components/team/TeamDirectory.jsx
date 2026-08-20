@@ -6,10 +6,9 @@ import {
 } from 'react-icons/hi2';
 
 const roleColors = {
-  Owner: 'bg-accent-100/50 text-accent-700 border-accent-200',
-  Admin: 'bg-primary-100/50 text-primary-700 border-primary-200',
-  Manager: 'bg-secondary-100/50 text-secondary-700 border-secondary-200',
-  Member: 'bg-surface-tertiary text-text-secondary border-border',
+  Admin: 'bg-danger-100/50 text-danger-700 border-danger-200',
+  Manager: 'bg-primary-100/50 text-primary-700 border-primary-200',
+  User: 'bg-surface-tertiary text-text-secondary border-border',
 };
 
 const statusColors = {
@@ -20,16 +19,16 @@ const statusColors = {
 };
 
 const getRoleDisplay = (role) => {
-  if (role === 'superadmin' || role === 'Super Admin') return 'Super Admin';
-  if (role === 'user') return 'Member';
-  return role || 'Member';
+  const r = (role || '').toLowerCase();
+  if (r === 'admin' || r === 'superadmin') return 'Admin';
+  if (r === 'manager') return 'Manager';
+  return 'User';
 };
 
 const getRoleColor = (role) => {
   const displayRole = getRoleDisplay(role);
-  if (displayRole === 'Owner' || displayRole === 'Super Admin') return 'bg-accent-100/50 text-accent-700 border-accent-200';
-  if (displayRole === 'Admin') return 'bg-primary-100/50 text-primary-700 border-primary-200';
-  if (displayRole === 'Manager') return 'bg-secondary-100/50 text-secondary-700 border-secondary-200';
+  if (displayRole === 'Admin') return 'bg-danger-100/50 text-danger-700 border-danger-200';
+  if (displayRole === 'Manager') return 'bg-primary-100/50 text-primary-700 border-primary-200';
   return 'bg-surface-tertiary text-text-secondary border-border';
 };
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 
 const ActivityLogs = () => {
   const [logs, setLogs] = useState([]);
@@ -8,7 +8,7 @@ const ActivityLogs = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/activity-logs`, { withCredentials: true });
+        const res = await api.get('/admin/activity-logs');
         setLogs(res.data.data.logs);
       } catch (error) {
         console.error('Failed to fetch logs:', error);

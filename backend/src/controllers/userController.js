@@ -36,7 +36,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated
   const filteredBody = {};
-  const allowedFields = ['name', 'username', 'phone', 'location', 'department', 'email', 'avatar', 'role', 'bio', 'preferences', 'is2FAEnabled', 'occupation', 'website'];
+  const allowedFields = ['name', 'username', 'phone', 'location', 'department', 'email', 'avatar', 'bio', 'preferences', 'is2FAEnabled', 'occupation', 'website'];
   Object.keys(req.body).forEach((el) => {
     if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
   });
@@ -75,19 +75,13 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 exports.deactivateAccount = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { isActive: false });
 
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+  res.status(204).send();
 });
 
 exports.deleteAccount = catchAsync(async (req, res, next) => {
   await User.findByIdAndDelete(req.user.id);
 
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+  res.status(204).send();
 });
 
 exports.getSessions = catchAsync(async (req, res, next) => {
@@ -109,8 +103,5 @@ exports.revokeSession = catchAsync(async (req, res, next) => {
   
   await user.save({ validateBeforeSave: false });
 
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
+  res.status(204).send();
 });

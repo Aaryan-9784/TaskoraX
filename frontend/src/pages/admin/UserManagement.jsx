@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { HiOutlineCheckCircle, HiOutlineXCircle } from 'react-icons/hi2';
 
 const UserManagement = () => {
@@ -14,9 +14,8 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users`, {
+      const res = await api.get('/admin/users', {
         params: { page, limit: 10, search, role: roleFilter },
-        withCredentials: true
       });
       setUsers(res.data.data.users);
       setTotalPages(res.data.pages);
@@ -34,7 +33,7 @@ const UserManagement = () => {
   const handleStatusToggle = async (id, currentStatus) => {
     try {
       const endpoint = currentStatus ? 'deactivate' : 'activate';
-      await axios.patch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/admin/users/${id}/${endpoint}`, {}, { withCredentials: true });
+      await api.patch(`/admin/users/${id}/${endpoint}`);
       fetchUsers();
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -65,9 +64,9 @@ const UserManagement = () => {
           onChange={(e) => setRoleFilter(e.target.value)}
         >
           <option value="">All Roles</option>
-          <option value="user">User</option>
           <option value="admin">Admin</option>
-          <option value="superadmin">Super Admin</option>
+          <option value="manager">Manager</option>
+          <option value="user">User</option>
         </select>
       </div>
 
@@ -107,10 +106,10 @@ const UserManagement = () => {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                        user.role === 'superadmin' ? 'bg-danger-50 text-danger-600' :
-                        user.role === 'admin' ? 'bg-accent-50 text-accent-600' :
-                        'bg-surface-secondary text-text-secondary'
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold capitalize ${
+                        user.role?.toLowerCase() === 'admin' ? 'bg-danger-50 text-danger-600 border border-danger-200' :
+                        user.role?.toLowerCase() === 'manager' ? 'bg-primary-50 text-primary-600 border border-primary-200' :
+                        'bg-surface-secondary text-text-secondary border border-border/50'
                       }`}>
                         {user.role}
                       </span>
