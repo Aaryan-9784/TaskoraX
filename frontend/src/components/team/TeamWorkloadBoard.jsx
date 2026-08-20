@@ -1,9 +1,10 @@
 import { useTask } from '../../context/TaskContext';
 
 const getRoleDisplay = (role) => {
-  if (role === 'superadmin' || role === 'Super Admin') return 'Super Admin';
-  if (role === 'user') return 'Member';
-  return role || 'Member';
+  const r = (role || '').toLowerCase();
+  if (r === 'admin' || r === 'superadmin') return 'Admin';
+  if (r === 'manager') return 'Manager';
+  return 'User';
 };
 
 const TeamWorkloadBoard = ({ members }) => {

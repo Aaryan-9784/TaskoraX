@@ -15,11 +15,7 @@ const GoalTracker = () => {
         console.error('Failed to parse goals', e);
       }
     }
-    return [
-      { id: 1, title: 'Launch MVP', progress: 85, color: 'primary' },
-      { id: 2, title: 'Acquire 100 Users', progress: 40, color: 'secondary' },
-      { id: 3, title: 'Publish 5 Blog Posts', progress: 60, color: 'accent' },
-    ];
+    return [];
   });
 
   useEffect(() => {
@@ -93,50 +89,60 @@ const GoalTracker = () => {
       </div>
 
       <div className="flex-1 flex flex-col gap-5 overflow-y-auto pr-2 custom-scrollbar">
-        {goals.map((goal) => (
-          <div key={goal.id} className="group shrink-0">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-sm font-bold text-text-primary group-hover:text-primary-600 transition-colors truncate pr-2">
-                {goal.title}
-              </span>
-              
-              <div className="flex items-center shrink-0">
-                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity mr-2">
-                  <button 
-                    onClick={() => handleUpdateProgress(goal.id, -10)}
-                    className="p-1 text-text-tertiary hover:text-primary-500 transition-colors rounded hover:bg-primary-500/10"
-                    title="Decrease progress (-10%)"
-                  >
-                    <HiOutlineMinus className="w-3.5 h-3.5" />
-                  </button>
-                  <button 
-                    onClick={() => handleUpdateProgress(goal.id, 10)}
-                    className="p-1 text-text-tertiary hover:text-primary-500 transition-colors rounded hover:bg-primary-500/10"
-                    title="Increase progress (+10%)"
-                  >
-                    <HiOutlinePlus className="w-3.5 h-3.5" />
-                  </button>
-                  <button 
-                    onClick={() => handleDeleteGoal(goal.id)}
-                    className="p-1 text-text-tertiary hover:text-danger-500 transition-colors rounded hover:bg-danger-500/10"
-                    title="Delete goal"
-                  >
-                    <HiOutlineTrash className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-                <span className={`text-xs font-bold ${getTextClasses(goal.color)} w-8 text-right`}>
-                  {goal.progress}%
+        {goals.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center my-auto">
+            <div className="w-10 h-10 rounded-full bg-warning-50 flex items-center justify-center mb-2 text-warning-500">
+              <HiOutlineTrophy className="w-5 h-5" />
+            </div>
+            <p className="text-xs font-semibold text-text-primary mb-1">No monthly goals yet</p>
+            <p className="text-[11px] text-text-tertiary max-w-[200px]">Set milestone targets to track your productivity progress.</p>
+          </div>
+        ) : (
+          goals.map((goal) => (
+            <div key={goal.id} className="group shrink-0">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-sm font-bold text-text-primary group-hover:text-primary-600 transition-colors truncate pr-2">
+                  {goal.title}
                 </span>
+                
+                <div className="flex items-center shrink-0">
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity mr-2">
+                    <button 
+                      onClick={() => handleUpdateProgress(goal.id, -10)}
+                      className="p-1 text-text-tertiary hover:text-primary-500 transition-colors rounded hover:bg-primary-500/10"
+                      title="Decrease progress (-10%)"
+                    >
+                      <HiOutlineMinus className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
+                      onClick={() => handleUpdateProgress(goal.id, 10)}
+                      className="p-1 text-text-tertiary hover:text-primary-500 transition-colors rounded hover:bg-primary-500/10"
+                      title="Increase progress (+10%)"
+                    >
+                      <HiOutlinePlus className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteGoal(goal.id)}
+                      className="p-1 text-text-tertiary hover:text-danger-500 transition-colors rounded hover:bg-danger-500/10"
+                      title="Delete goal"
+                    >
+                      <HiOutlineTrash className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <span className={`text-xs font-bold ${getTextClasses(goal.color)} w-8 text-right`}>
+                    {goal.progress}%
+                  </span>
+                </div>
+              </div>
+              <div className="w-full bg-surface-secondary border border-border/40 rounded-full h-2.5 overflow-hidden">
+                <div 
+                  className={`h-full rounded-full transition-all duration-1000 ease-out ${getColorClasses(goal.color)}`}
+                  style={{ width: `${goal.progress}%` }}
+                ></div>
               </div>
             </div>
-            <div className="w-full bg-surface-secondary border border-border/40 rounded-full h-2.5 overflow-hidden">
-              <div 
-                className={`h-full rounded-full transition-all duration-1000 ease-out ${getColorClasses(goal.color)}`}
-                style={{ width: `${goal.progress}%` }}
-              ></div>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
       
       <div className="mt-6 pt-4 border-t border-border/40 text-center shrink-0">
