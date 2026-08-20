@@ -82,19 +82,14 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in pb-12 max-w-4xl mx-auto">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in pb-12">
       {/* Header */}
-      <div className="pb-6 border-b border-border/50">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600">
-            <HiOutlineKey className="h-5 w-5" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Security Settings</h1>
-            <p className="text-sm text-text-secondary">
-              Update your account password to keep your profile secure.
-            </p>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/50">
+        <div>
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Settings</h1>
+          <p className="text-sm text-text-secondary mt-1">
+            Update your account password and manage your security settings.
+          </p>
         </div>
       </div>
 

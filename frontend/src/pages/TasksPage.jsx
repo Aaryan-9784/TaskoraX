@@ -41,13 +41,13 @@ const TasksPage = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/50">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Tasks</h1>
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Tasks</h1>
           <p className="text-sm text-text-secondary mt-1">
-            Manage and track all your tasks in one place.
+            Manage, organize, and track your daily priorities and workflow.
           </p>
         </div>
         <Button

@@ -146,41 +146,16 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 pb-12">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55 }}
-        className="animate-in animate-in-delay-1"
-      >
-        <div className="card-premium overflow-hidden p-6">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary-600">Admin Dashboard</p>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Admin hub with dashboard-grade layout
-              </h1>
-              <p className="max-w-2xl text-sm md:text-base text-slate-500 dark:text-slate-400">
-                Keep the admin experience aligned with the main dashboard using consistent cards, grids, and theme styling.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 w-full">
-              <div className="rounded-3xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 p-4 text-center">
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Users</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{stats.totalUsers}</p>
-              </div>
-              <div className="rounded-3xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 p-4 text-center">
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Projects</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{stats.totalProjects}</p>
-              </div>
-              <div className="rounded-3xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 p-4 text-center">
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Tasks</p>
-                <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{stats.totalTasks}</p>
-              </div>
-            </div>
-          </div>
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in pb-12">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/50">
+        <div>
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Admin Dashboard</h1>
+          <p className="text-sm text-text-secondary mt-1">
+            System-wide platform overview, metrics, user growth, and activity monitoring.
+          </p>
         </div>
-      </motion.div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 animate-in animate-in-delay-2">
         <StatCard

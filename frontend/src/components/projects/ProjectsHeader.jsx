@@ -13,17 +13,17 @@ const ProjectsHeader = ({
   onSort
 }) => {
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/50">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-text-primary">Projects</h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-surface-secondary text-text-secondary text-xs font-bold border border-border/40">
+            <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Projects</h1>
+            <span className="px-2.5 py-0.5 rounded-full bg-surface-secondary text-text-secondary text-xs font-bold border border-border/60">
               {projectCount} Total
             </span>
           </div>
           <p className="text-sm text-text-secondary mt-1">
-            Manage your workspaces, track progress, and collaborate seamlessly.
+            Manage your workspaces, track team progress, and collaborate seamlessly.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -36,7 +36,7 @@ const ProjectsHeader = ({
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-border/40">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:max-w-md">
           <HiOutlineMagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-tertiary" />
           <input

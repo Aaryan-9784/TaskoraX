@@ -23,7 +23,17 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="space-y-8 pb-12 max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in pb-12">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/50">
+        <div>
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Dashboard</h1>
+          <p className="text-sm text-text-secondary mt-1">
+            Overview of your daily workspace, active tasks, and performance metrics.
+          </p>
+        </div>
+      </div>
+
       {/* Top Hero Section */}
       <div className="animate-in animate-in-delay-1">
         <HeroSection />

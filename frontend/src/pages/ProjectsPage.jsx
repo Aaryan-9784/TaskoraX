@@ -170,7 +170,7 @@ const ProjectsPage = () => {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in pb-8">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in pb-12">
       <ProjectsHeader 
         projectCount={filteredProjects.length} 
         searchQuery={searchQuery}

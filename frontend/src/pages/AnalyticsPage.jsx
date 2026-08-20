@@ -99,15 +99,15 @@ const AnalyticsPage = () => {
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in pb-12">
       {/* Top Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-in animate-in-delay-1 relative z-50">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border/50 animate-in animate-in-delay-1 relative z-50">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">
+          <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">
             Analytics
           </h1>
           <p className="text-sm text-text-secondary mt-1">
-            Track productivity, measure progress, and gather insights.
+            Track productivity, measure performance trends, and gather workspace insights.
           </p>
         </div>
 
