@@ -17,8 +17,9 @@ const TeamWorkloadBoard = ({ members }) => {
       </div>
       <div className="p-5 flex-1 overflow-y-auto custom-scrollbar">
         <div className="space-y-6">
-          {members.map((member) => {
-            const memberId = member._id || member.id;
+          {(members || []).map((member, index) => {
+            const memberId = member?._id || member?.id || `member-${index}`;
+            const memberName = member?.name || member?.email || 'Team Member';
             const memberTasks = (allTasks || []).filter(t => {
               const assigneeId = t.assignee?._id || t.assignee;
               return assigneeId === memberId;
@@ -41,15 +42,15 @@ const TeamWorkloadBoard = ({ members }) => {
             }
 
             return (
-              <div key={member.id} className="group">
+              <div key={memberId} className="group">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full border border-border bg-surface-secondary flex items-center justify-center text-text-primary font-bold text-sm">
-                      {member.name.charAt(0).toUpperCase()}
+                      {memberName.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-text-primary">{member.name}</p>
-                      <p className="text-[10px] text-text-tertiary font-medium">{getRoleDisplay(member.role)}</p>
+                      <p className="text-sm font-bold text-text-primary">{memberName}</p>
+                      <p className="text-[10px] text-text-tertiary font-medium">{getRoleDisplay(member?.role)}</p>
                     </div>
                   </div>
                   <div className="text-right">
